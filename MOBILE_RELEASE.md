@@ -12,7 +12,7 @@ L'app e stata preparata come PWA installabile su Android e iOS.
 - Bottom navigation mobile per le sezioni principali: Oggi, Mappa, Eventi, Coupon, Profilo.
 - Profilo e notifiche sempre disponibili in alto, con menu mobile separato.
 - Transizione tema giorno/notte con effetto tramonto/alba, disattivata per utenti con reduced motion.
-- Atmosphere FX ridotto su mobile: rondine/stella cadente rare, pulviscolo minimo e nessun elemento cliccabile coperto.
+- Atmosphere FX ridotto su mobile: stormo leggero di rondini animate, stella cadente rara, pulviscolo minimo e nessun elemento cliccabile coperto.
 - Feedback online/offline e installabilita PWA tramite evento `beforeinstallprompt`.
 - Mappa OpenStreetMap con look Google-like, marker custom e link a Google Maps per la navigazione reale.
 - Import automatico attivita reali da OpenStreetMap/Overpass, con cache locale nel browser.

@@ -21,7 +21,7 @@ Prototype web standalone della piattaforma MyAvezzano: un atlante locale per eve
 - Demo guidata al primo ingresso, riapribile dal pulsante Guida e dalle impostazioni del profilo.
 - Dashboard locale in home con quick search, smart cards, servizi utili, stato giornata e navigazione mobile app-like.
 - Transizione tema giorno/notte con passaggio tramonto/alba e rispetto di `prefers-reduced-motion`.
-- Atmosphere FX leggero: rondine rara nel tema giorno, stelle/scia notturna rara, pulviscolo estivo quasi invisibile, pausa automatica quando la tab non e visibile.
+- Atmosphere FX leggero: stormo di 4-5 rondini con ali animate nel tema giorno, stella cadente notturna con scia corretta, pulviscolo estivo quasi invisibile e pausa automatica quando la tab non e visibile.
 
 ## Audit prodotto - versione corrente
 

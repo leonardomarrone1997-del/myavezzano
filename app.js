@@ -2034,13 +2034,40 @@ function spawnSwallow() {
     scheduleSwallow();
     return;
   }
-  const bird = document.createElement("span");
-  bird.className = "fx-swallow";
-  bird.style.setProperty("--fly-y", `${9 + Math.random() * 13}vh`);
-  bird.style.setProperty("--fly-duration", `${17 + Math.random() * 8}s`);
-  bird.style.setProperty("--fly-scale", `${0.56 + Math.random() * 0.22}`);
-  root.appendChild(bird);
-  bird.addEventListener("animationend", () => bird.remove(), { once: true });
+  const flockSize = 4 + Math.floor(Math.random() * 2);
+  const baseDirection = Math.random() > 0.28 ? 1 : -1;
+  const baseY = 8 + Math.random() * 16;
+  const baseDuration = 15 + Math.random() * 6;
+
+  Array.from({ length: flockSize }).forEach((_, index) => {
+    const bird = document.createElement("span");
+    const direction = Math.random() > 0.18 ? baseDirection : -baseDirection;
+    const startX = direction === 1 ? -13 : 113;
+    const travelX = direction === 1 ? 126 + Math.random() * 12 : -(126 + Math.random() * 12);
+    const laneOffset = (index - (flockSize - 1) / 2) * (1.2 + Math.random() * 1.5);
+    const drift = -5 + Math.random() * 10;
+    const midX = travelX * (0.33 + Math.random() * 0.08);
+    const lateX = travelX * (0.68 + Math.random() * 0.08);
+
+    bird.className = "fx-swallow";
+    bird.innerHTML = "<i class=\"fx-swallow-body\"></i>";
+    bird.style.setProperty("--fly-start-x", `${startX + (Math.random() * 4 * -direction)}vw`);
+    bird.style.setProperty("--fly-y", `${baseY + laneOffset}vh`);
+    bird.style.setProperty("--fly-mid-x", `${midX}vw`);
+    bird.style.setProperty("--fly-mid-y", `${drift * 0.45 - Math.random() * 2}vh`);
+    bird.style.setProperty("--fly-late-x", `${lateX}vw`);
+    bird.style.setProperty("--fly-late-y", `${drift * 0.85 + Math.random() * 2}vh`);
+    bird.style.setProperty("--fly-travel-x", `${travelX}vw`);
+    bird.style.setProperty("--fly-end-y", `${drift}vh`);
+    bird.style.setProperty("--fly-duration", `${baseDuration + Math.random() * 3}s`);
+    bird.style.setProperty("--fly-delay", `${index * (0.22 + Math.random() * 0.18)}s`);
+    bird.style.setProperty("--fly-scale", `${0.52 + Math.random() * 0.26}`);
+    bird.style.setProperty("--fly-flip", direction);
+    bird.style.setProperty("--fly-opacity", `${0.38 + Math.random() * 0.22}`);
+    bird.style.setProperty("--wing-speed", `${0.46 + Math.random() * 0.18}s`);
+    root.appendChild(bird);
+    bird.addEventListener("animationend", () => bird.remove(), { once: true });
+  });
   scheduleSwallow();
 }
 
@@ -2056,9 +2083,13 @@ function spawnShootingStar() {
   }
   const star = document.createElement("span");
   star.className = "fx-shooting-star";
-  star.style.setProperty("--star-x", `${52 + Math.random() * 32}vw`);
-  star.style.setProperty("--star-y", `${9 + Math.random() * 18}vh`);
-  star.style.setProperty("--star-duration", `${1.05 + Math.random() * 0.5}s`);
+  star.style.setProperty("--star-x", `${8 + Math.random() * 46}vw`);
+  star.style.setProperty("--star-y", `${7 + Math.random() * 18}vh`);
+  star.style.setProperty("--star-length", `${128 + Math.random() * 58}px`);
+  star.style.setProperty("--star-angle", `${19 + Math.random() * 10}deg`);
+  star.style.setProperty("--star-travel-x", `${230 + Math.random() * 90}px`);
+  star.style.setProperty("--star-travel-y", `${78 + Math.random() * 44}px`);
+  star.style.setProperty("--star-duration", `${1.18 + Math.random() * 0.34}s`);
   root.appendChild(star);
   star.addEventListener("animationend", () => star.remove(), { once: true });
   scheduleShootingStar();
