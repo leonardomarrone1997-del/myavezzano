@@ -27,6 +27,7 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+PROJECT_CHAT_REPORT.md
 
 # Build outputs, if generated in future
 dist/

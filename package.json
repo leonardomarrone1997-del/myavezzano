@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "npx serve .",
     "preview": "npx serve .",
+    "build": "echo \"Static PWA: no build step required.\"",
     "check": "echo \"Static project: run the QA checklist in DEPLOYMENT.md before deploying.\""
   },
   "keywords": [
