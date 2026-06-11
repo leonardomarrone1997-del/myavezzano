@@ -373,39 +373,6 @@ const tonightEvents = [
   }
 ];
 
-const homeTonightPicks = [
-  {
-    title: "Cena in centro",
-    place: "Renzo e Caterina",
-    time: "20:30",
-    type: "Cena",
-    meta: "Ristorante consigliato per prenotare senza perdere tempo",
-    image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80",
-    cta: "Apri mappa",
-    action: "open-map-place"
-  },
-  {
-    title: "Aperitivo lungo",
-    place: "Caffe Risorgimento",
-    time: "19:30",
-    type: "Aperitivo",
-    meta: "Drink promo, tavoli disponibili e coupon drink",
-    image: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=900&q=80",
-    cta: "Salva",
-    action: "highlight-primary"
-  },
-  {
-    title: "Serate e musica",
-    place: "Moon Club / Pub La Marsica",
-    time: "21:15+",
-    type: "Serata",
-    meta: "Live, party e locali dove andare dopo cena",
-    image: "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=900&q=80",
-    cta: "Vedi eventi",
-    view: "events"
-  }
-];
-
 const summerHighlights = [
   {
     title: "Aperitivo al tramonto",
@@ -823,26 +790,6 @@ function renderSmartStrip() {
   `).join("");
 }
 
-function renderHomeTonight() {
-  const grid = document.querySelector("#homeTonightGrid");
-  if (!grid) return;
-  grid.innerHTML = homeTonightPicks.map((item) => `
-    <article class="home-tonight-card" data-search="${[item.type, item.title, item.place, item.meta].join(" ").toLowerCase()}">
-      <div class="home-tonight-media lazy-media" ${mediaAttrs(item.image, 520)}></div>
-      <div class="home-tonight-body">
-        <span>${item.type}</span>
-        <strong>${item.title}</strong>
-        <small>${item.time} - ${item.place}</small>
-        <p>${item.meta}</p>
-        <button
-          ${item.view ? `data-view-target="${item.view}"` : `data-action="${item.action}" data-place="${item.place}" data-title="${item.title}" data-type="${item.type}"`}
-          type="button"
-        >${item.cta}</button>
-      </div>
-    </article>
-  `).join("");
-}
-
 function renderDayPlan() {
   const grid = document.querySelector("#dayPlanGrid");
   if (!grid) return;
@@ -889,7 +836,6 @@ function render() {
   `).join("");
 
   renderSmartStrip();
-  renderHomeTonight();
   renderDayPlan();
   const homeBusinessCount = document.querySelector("#homeBusinessCount");
   if (homeBusinessCount) homeBusinessCount.textContent = mapPlaces.length.toLocaleString("it-IT");
@@ -1972,7 +1918,6 @@ function animateActiveView(scope = document.querySelector(".view.active")) {
   const animatedItems = scope.querySelectorAll(`
     .topbar,
     .shortcut-card,
-    .home-tonight-card,
     .post,
     .panel,
     .profile-card,
@@ -2089,10 +2034,10 @@ function spawnSwallow() {
     scheduleSwallow();
     return;
   }
-  const flockSize = 2 + Math.floor(Math.random() * 3);
+  const flockSize = 4 + Math.floor(Math.random() * 2);
   const baseDirection = Math.random() > 0.28 ? 1 : -1;
-  const baseY = 7 + Math.random() * 14;
-  const baseDuration = 22 + Math.random() * 8;
+  const baseY = 8 + Math.random() * 16;
+  const baseDuration = 15 + Math.random() * 6;
 
   Array.from({ length: flockSize }).forEach((_, index) => {
     const bird = document.createElement("span");
@@ -2116,11 +2061,10 @@ function spawnSwallow() {
     bird.style.setProperty("--fly-end-y", `${drift}vh`);
     bird.style.setProperty("--fly-duration", `${baseDuration + Math.random() * 3}s`);
     bird.style.setProperty("--fly-delay", `${index * (0.22 + Math.random() * 0.18)}s`);
-    bird.style.setProperty("--fly-scale", `${0.72 + Math.random() * 0.28}`);
+    bird.style.setProperty("--fly-scale", `${0.52 + Math.random() * 0.26}`);
     bird.style.setProperty("--fly-flip", direction);
-    bird.style.setProperty("--fly-tilt", `${direction * (-3 + Math.random() * 8)}deg`);
-    bird.style.setProperty("--fly-opacity", `${0.52 + Math.random() * 0.20}`);
-    bird.style.setProperty("--wing-speed", `${0.68 + Math.random() * 0.22}s`);
+    bird.style.setProperty("--fly-opacity", `${0.38 + Math.random() * 0.22}`);
+    bird.style.setProperty("--wing-speed", `${0.46 + Math.random() * 0.18}s`);
     root.appendChild(bird);
     bird.addEventListener("animationend", () => bird.remove(), { once: true });
   });
@@ -2128,7 +2072,7 @@ function spawnSwallow() {
 }
 
 function scheduleSwallow(initial = false) {
-  scheduleAtmosphere(spawnSwallow, initial ? 900 : 18000, initial ? 2600 : 42000);
+  scheduleAtmosphere(spawnSwallow, initial ? 2600 : 22000, initial ? 6400 : 46000);
 }
 
 function spawnShootingStar() {
@@ -2536,7 +2480,7 @@ function applySearchFilter() {
   const searchStatus = document.querySelector("#searchStatus");
   const term = searchInput.value.trim().toLowerCase();
   const intents = intelligenceIntent(term);
-  const searchable = document.querySelectorAll(".home-tonight-card, .post, .tonight-card, .event-card, .coupon-card, .reward-card, .summer-card, .destination-item");
+  const searchable = document.querySelectorAll(".post, .tonight-card, .event-card, .coupon-card, .reward-card, .summer-card, .destination-item");
   searchable.forEach((item) => {
     const haystack = `${item.dataset.search || ""} ${item.textContent}`.toLowerCase();
     const relatedPlace = item.dataset.placeId ? mapPlaces.find((place) => place.id === item.dataset.placeId) : null;
@@ -2555,7 +2499,7 @@ function applySearchFilter() {
 
   if (searchStatus) {
     const activeView = document.querySelector(".view.active");
-    const activeResults = [...activeView.querySelectorAll(".home-tonight-card, .post, .tonight-card, .event-card, .coupon-card, .reward-card, .summer-card, .destination-item")]
+    const activeResults = [...activeView.querySelectorAll(".post, .tonight-card, .event-card, .coupon-card, .reward-card, .summer-card, .destination-item")]
       .filter((item) => !item.hidden);
     searchStatus.hidden = !term;
     searchStatus.classList.toggle("is-empty", Boolean(term) && activeResults.length === 0);
