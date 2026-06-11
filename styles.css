@@ -4739,6 +4739,11 @@ body.theme-dark .site-footer::after {
   to { transform: translate3d(-18px, 10px, 0); }
 }
 
+@keyframes stats-stardust {
+  from { transform: translate3d(0, 0, 0) rotate(0deg); }
+  to { transform: translate3d(34px, -22px, 0) rotate(4deg); }
+}
+
 @keyframes swallow-cross {
   0% {
     opacity: 0;
@@ -5021,12 +5026,13 @@ h1 {
   grid-template-columns: 1fr;
   gap: 8px;
   margin-bottom: 14px;
+  position: relative;
 }
 
 .command-copy {
   min-height: 120px;
   gap: 6px;
-  padding: 18px;
+  padding: 18px min(320px, 28vw) 18px 18px;
   border-radius: 8px;
 }
 
@@ -5042,30 +5048,87 @@ h1 {
 }
 
 .command-stats {
-  width: max-content;
+  width: min(286px, 34vw);
   max-width: 100%;
-  display: inline-grid;
-  grid-template-columns: repeat(3, max-content);
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 4px;
-  order: -1;
-  padding: 4px;
-  border-radius: 8px;
-  justify-self: start;
+  padding: 6px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.74);
+  background:
+    radial-gradient(circle at 14% 22%, rgba(255,255,255,.95) 0 1px, transparent 2px),
+    radial-gradient(circle at 74% 18%, rgba(255,255,255,.86) 0 1px, transparent 2px),
+    radial-gradient(circle at 88% 72%, rgba(250,204,21,.42) 0 1px, transparent 2px),
+    linear-gradient(135deg, rgba(255,255,255,.82), rgba(235,244,255,.54));
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.34) inset,
+    0 0 28px rgba(96,165,250,.24),
+    0 16px 42px rgba(20,32,54,.13);
+  backdrop-filter: blur(22px) saturate(1.28);
+  -webkit-backdrop-filter: blur(22px) saturate(1.28);
 }
 
 .command-stats div {
-  min-height: 30px;
-  padding: 5px 8px;
+  min-height: 58px;
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  padding: 8px 9px;
   gap: 6px;
-  border-radius: 7px;
+  border-radius: 9px;
+  background: rgba(255,255,255,.48);
+  border: 1px solid rgba(255,255,255,.58);
+  position: relative;
 }
 
 .command-stats strong {
-  font-size: 14px;
+  color: var(--ink);
+  font-size: 19px;
+  line-height: 1;
 }
 
 .command-stats span {
+  color: #556070;
   font-size: 10px;
+  line-height: 1;
+  font-weight: 950;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.command-stats::before,
+.command-stats::after {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  pointer-events: none;
+}
+
+.command-stats::before {
+  background:
+    radial-gradient(circle, rgba(255,255,255,.9) 0 1px, transparent 2px) 8px 10px / 34px 28px,
+    radial-gradient(circle, rgba(147,197,253,.54) 0 1px, transparent 2px) 18px 3px / 46px 42px;
+  opacity: .58;
+  animation: stats-stardust 16s linear infinite;
+}
+
+.command-stats::after {
+  inset: auto -20% -44% 10%;
+  height: 76px;
+  background: radial-gradient(ellipse at center, rgba(96,165,250,.38), transparent 68%);
+  filter: blur(10px);
+  opacity: .68;
+}
+
+.command-stats > * {
+  position: relative;
+  z-index: 1;
 }
 
 .utility-shell,
@@ -5340,6 +5403,31 @@ body.theme-dark .home-tonight-body p {
   color: #cbd5e1;
 }
 
+body.theme-dark .command-stats {
+  border-color: rgba(191,219,254,.22) !important;
+  background:
+    radial-gradient(circle at 16% 20%, rgba(191,219,254,.50) 0 1px, transparent 2px),
+    radial-gradient(circle at 72% 18%, rgba(255,255,255,.38) 0 1px, transparent 2px),
+    linear-gradient(135deg, rgba(15,23,42,.82), rgba(30,41,59,.60)) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.06) inset,
+    0 0 30px rgba(96,165,250,.18),
+    0 16px 42px rgba(0,0,0,.22);
+}
+
+body.theme-dark .command-stats div {
+  background: rgba(15,23,42,.52);
+  border-color: rgba(226,232,240,.14);
+}
+
+body.theme-dark .command-stats span {
+  color: #cbd5e1;
+}
+
+body.theme-dark .command-stats strong {
+  color: #f8fafc;
+}
+
 body.theme-dark .ghost,
 body.theme-dark .light-action,
 body.theme-dark .post-actions button:not(:first-child),
@@ -5386,6 +5474,22 @@ body.theme-dark .compact-button {
   }
   .command-stats {
     width: auto;
+    position: relative;
+    top: auto;
+    right: auto;
+    order: -1;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-bottom: 4px;
+  }
+  .command-copy {
+    padding: 14px;
+  }
+  .command-stats div {
+    min-height: 52px;
+    padding: 8px;
+  }
+  .command-stats strong {
+    font-size: 17px;
   }
   .home-tonight-head {
     align-items: flex-start;
