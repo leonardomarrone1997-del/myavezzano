@@ -16,7 +16,7 @@
     <link rel="preconnect" href="https://unpkg.com" crossorigin />
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="styles.css?v=60" />
+    <link rel="stylesheet" href="styles.css?v=62" />
   </head>
   <body>
     <a class="skip-link" href="#mainContent">Vai al contenuto</a>
@@ -31,6 +31,13 @@
         <span style="--x: 58%; --y: 19%; --s: .86;"></span>
         <span style="--x: 73%; --y: 14%; --s: .64;"></span>
         <span style="--x: 88%; --y: 24%; --s: .78;"></span>
+      </div>
+      <div class="fx-swallow-field" aria-hidden="true">
+        <span style="--x: 58%; --y: 8%; --s: 1.22; --r: -7deg;"></span>
+        <span style="--x: 68%; --y: 14%; --s: .86; --r: 8deg;"></span>
+        <span style="--x: 78%; --y: 7%; --s: 1.02; --r: -2deg;"></span>
+        <span style="--x: 87%; --y: 17%; --s: .64; --r: 12deg;"></span>
+        <span style="--x: 46%; --y: 18%; --s: .72; --r: -14deg;"></span>
       </div>
     </div>
     <button class="mobile-menu-toggle" id="mobileMenuToggle" type="button" aria-label="Apri menu" aria-controls="mainNav" aria-expanded="false">
@@ -85,23 +92,10 @@
               <input id="searchInput" type="search" placeholder="Cerca eventi, sconti, negozi, servizi" />
               <button class="search-clear" id="clearSearch" type="button" aria-label="Cancella ricerca" hidden>×</button>
             </label>
-            <div class="search-suggestions" aria-label="Ricerche rapide">
-              <button data-search-term="aperitivo stasera" type="button">Aperitivo</button>
-              <button data-search-term="coupon shopping" type="button">Coupon</button>
-              <button data-search-term="ristorante vicino" type="button">Cena</button>
-            </div>
-            <div class="weather-widget" aria-label="Meteo Avezzano demo">
-              <span class="weather-icon" aria-hidden="true"></span>
-              <div>
-                <strong>22&deg;C</strong>
-                <span>Avezzano - demo</span>
-              </div>
-            </div>
             <button class="theme-toggle" id="themeToggle" type="button" aria-label="Attiva tema notturno" aria-pressed="false">
               <span aria-hidden="true"></span>
               <strong id="themeToggleLabel">Notte</strong>
             </button>
-            <button class="ghost guide-button" data-action="open-onboarding" type="button">Guida</button>
             <button class="top-profile-status" id="topProfileStatus" type="button" aria-label="Apri profilo">
               <span class="prestige-ring" aria-hidden="true">
                 <img id="topProfileAvatar" src="assets/app-icon.svg" alt="" />
@@ -123,16 +117,23 @@
               <p class="eyebrow">Dashboard locale</p>
               <h2>Scegli in pochi secondi cosa fare ad Avezzano</h2>
               <p>Un punto unico per trovare luoghi, eventi, vantaggi e servizi utili senza saltare tra mille app.</p>
-              <div class="command-actions">
-                <button class="primary-action" data-view-target="map" type="button">Esplora la mappa</button>
-                <button class="ghost" data-action="install-app" type="button">Installa app</button>
-              </div>
             </div>
             <div class="command-stats" aria-label="Stato piattaforma">
               <div><span>Attivita</span><strong id="homeBusinessCount">86</strong></div>
               <div><span>Stasera</span><strong>12</strong></div>
               <div><span>Coupon</span><strong>24</strong></div>
             </div>
+          </section>
+          <section class="home-tonight panel" aria-label="Cosa fare stasera ad Avezzano">
+            <div class="home-tonight-head">
+              <div>
+                <p class="eyebrow">In primo piano</p>
+                <h2>Cosa fare stasera ad Avezzano</h2>
+                <p>Cena, aperitivo e serate: le scelte piu utili per decidere subito dove andare.</p>
+              </div>
+              <button class="primary-action" data-view-target="events" type="button">Vedi tutte</button>
+            </div>
+            <div class="home-tonight-grid" id="homeTonightGrid"></div>
           </section>
           <div class="utility-shell">
             <section class="utility-column">
@@ -141,7 +142,6 @@
                   <p class="eyebrow">Oggi in citta</p>
                   <h2>Muoviti subito</h2>
                 </div>
-                <button class="ghost" data-view-target="events" type="button">Stasera</button>
               </div>
               <div class="stories" id="stories"></div>
               <section class="smart-strip" id="smartStrip" aria-label="Suggerimenti intelligenti"></section>
@@ -172,17 +172,6 @@
                   <button class="ghost" data-action="filter-nearby" type="button">Filtra</button>
                 </div>
                 <div id="nearbyList" class="compact-list"></div>
-              </div>
-              <div class="panel service-panel">
-                <div class="panel-head">
-                  <h2>Servizi utili</h2>
-                  <span class="pill success">Rapidi</span>
-                </div>
-                <div class="service-list">
-                  <a href="tel:112"><strong>Emergenze</strong><span>112</span></a>
-                  <button data-view-target="map" type="button"><strong>Farmacie e servizi</strong><span>Apri mappa</span></button>
-                  <button data-search-term="ristorante aperto" type="button"><strong>Aperto ora</strong><span>Cerca subito</span></button>
-                </div>
               </div>
               <div class="panel accent-panel">
                 <p class="eyebrow">Nuova apertura</p>
@@ -648,6 +637,6 @@
     <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
     <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script defer src="app.js?v=59"></script>
+    <script defer src="app.js?v=61"></script>
   </body>
 </html>
