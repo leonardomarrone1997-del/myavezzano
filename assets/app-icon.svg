@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">MyAvezzano app icon</title>
+  <desc id="desc">App icon with Avezzano-inspired tower, mountain, map pin, connectivity dish and Italian ribbon.</desc>
+  <defs>
+    <linearGradient id="sky" x1="160" x2="864" y1="130" y2="790" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#27c4ff"/>
+      <stop offset=".46" stop-color="#6beaff"/>
+      <stop offset="1" stop-color="#034c9f"/>
+    </linearGradient>
+    <linearGradient id="blueBand" x1="190" x2="830" y1="660" y2="875" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#063d8c"/>
+      <stop offset=".58" stop-color="#071f62"/>
+      <stop offset="1" stop-color="#020c2d"/>
+    </linearGradient>
+    <linearGradient id="pinRed" x1="392" x2="526" y1="362" y2="560" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ff4038"/>
+      <stop offset="1" stop-color="#a8000c"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="18" stdDeviation="24" flood-color="#001333" flood-opacity=".5"/>
+    </filter>
+  </defs>
+  <rect width="1024" height="1024" rx="210" fill="#02070d"/>
+  <rect x="168" y="146" width="688" height="730" rx="158" fill="url(#sky)" filter="url(#shadow)"/>
+  <path d="M185 584c79-81 154-138 234-157 119-28 169-173 256-179 64-4 86 93 162 134v260H185z" fill="#063f22"/>
+  <path d="M404 407l110-106 99 117-75-43-36 57-21-72-77 47z" fill="#61c800"/>
+  <path d="M515 303l90 107-56-34-31 46-19-62-82 47z" fill="#fff"/>
+  <path d="M184 621c130-80 252-88 367-53 104 31 191 22 290-38v84c-132 83-251 90-361 55-116-37-211-21-296 36z" fill="#fff"/>
+  <path d="M184 641c119-57 229-62 330-31-86 9-172 34-251 86h-79z" fill="#159642"/>
+  <path d="M560 609c112 25 193 8 281-47v102c-82 30-166 46-250 29z" fill="#e42323"/>
+  <path d="M185 680c175-65 276-28 397 0 90 20 166 11 259-27v92H185z" fill="url(#blueBand)"/>
+  <g transform="translate(287 185)">
+    <path d="M29 121L91 82l61 39v322H29z" fill="#d9e6f2" stroke="#08285c" stroke-width="10"/>
+    <path d="M18 58l73-43 74 43v89L91 104l-73 43z" fill="#eef5fb" stroke="#08285c" stroke-width="10"/>
+    <path d="M42 75v34M91 48v42M139 75v34" stroke="#08285c" stroke-width="13"/>
+    <rect x="67" y="176" width="45" height="91" rx="18" fill="#08285c"/>
+    <circle cx="120" cy="136" r="30" fill="#fff" stroke="#08285c" stroke-width="9"/>
+    <circle cx="120" cy="136" r="8" fill="#08285c"/>
+    <rect x="64" y="344" width="28" height="38" rx="5" fill="#08285c"/>
+    <rect x="126" y="344" width="24" height="38" rx="5" fill="#08285c"/>
+  </g>
+  <g transform="translate(384 348)" filter="url(#shadow)">
+    <path d="M91 218S12 127 12 78C12 35 47 0 91 0s79 35 79 78c0 49-79 140-79 140z" fill="#fff" stroke="#092450" stroke-width="9"/>
+    <path d="M91 190S34 122 34 80c0-31 25-56 57-56s57 25 57 56c0 42-57 110-57 110z" fill="url(#pinRed)"/>
+    <circle cx="91" cy="78" r="30" fill="#fff"/>
+  </g>
+  <g transform="translate(582 239) rotate(18)">
+    <ellipse cx="80" cy="174" rx="57" ry="118" fill="#0e99ef" stroke="#073b8c" stroke-width="12"/>
+    <path d="M37 97c43 66 87 103 130 113" fill="none" stroke="#bcefff" stroke-width="16"/>
+    <path d="M104 61c66-19 136 33 154 103M114 19c96-28 194 49 220 150M126-22c123-36 248 63 281 192" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="23"/>
+    <circle cx="238" cy="157" r="24" fill="#0e99ef" stroke="#fff" stroke-width="16"/>
+    <path d="M81 291h95" stroke="#073b8c" stroke-width="18" stroke-linecap="round"/>
+  </g>
+  <text x="176" y="808" font-family="Arial, Helvetica, sans-serif" font-size="98" font-weight="900" fill="#ffffff" stroke="#02113f" stroke-width="6">MyAvezzano</text>
+  <circle cx="236" cy="737" r="18" fill="#1cc7ff"/>
+</svg>

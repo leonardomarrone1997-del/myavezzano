@@ -1,0 +1,52 @@
+{
+  "name": "MyAvezzano",
+  "short_name": "MyAvezzano",
+  "description": "Hub locale intelligente per eventi, luoghi, coupon, servizi e attivita ad Avezzano.",
+  "id": "/myavezzano/",
+  "start_url": "./index.html#feed",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#eef6fb",
+  "theme_color": "#07111f",
+  "categories": ["lifestyle", "navigation", "shopping", "entertainment"],
+  "lang": "it-IT",
+  "icons": [
+    {
+      "src": "assets/app-icon.svg",
+      "sizes": "1024x1024",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Eventi stasera",
+      "short_name": "Eventi",
+      "description": "Apri gli eventi e le serate di oggi",
+      "url": "./index.html#events",
+      "icons": [{ "src": "assets/app-icon.svg", "sizes": "1024x1024", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Coupon e sconti",
+      "short_name": "Coupon",
+      "description": "Apri sconti e coupon disponibili",
+      "url": "./index.html#coupons",
+      "icons": [{ "src": "assets/app-icon.svg", "sizes": "1024x1024", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Mappa",
+      "short_name": "Mappa",
+      "description": "Trova attivita vicine",
+      "url": "./index.html#map",
+      "icons": [{ "src": "assets/app-icon.svg", "sizes": "1024x1024", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Estate 2026",
+      "short_name": "Estate",
+      "description": "Apri la pagina estiva di MyAvezzano",
+      "url": "./index.html#summer",
+      "icons": [{ "src": "assets/app-icon.svg", "sizes": "1024x1024", "type": "image/svg+xml" }]
+    }
+  ]
+}
