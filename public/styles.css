@@ -1219,18 +1219,6 @@ body.theme-dark .theme-toggle span::before {
   font-size: 12px;
   font-weight: 800;
 }
-.verified-badge {
-  min-height: 24px;
-  display: inline-flex;
-  align-items: center;
-  border-radius: 999px;
-  padding: 0 9px;
-  background: #ecfdf5;
-  color: #047857;
-  border: 1px solid #bbf7d0;
-  font-size: 11px;
-  font-weight: 900;
-}
 .summer-hero {
   display: flex;
   justify-content: space-between;
@@ -2397,14 +2385,12 @@ th { color: var(--muted); font-size: 12px; }
 .nav-item::before,
 .summer-icon,
 .weather-icon,
-.verified-badge,
 .pill {
   transition: transform .2s cubic-bezier(.2,.8,.2,1), box-shadow .2s ease;
 }
 
 .nav-item:hover::before,
 .summer-card:hover .summer-icon,
-.verified-badge:hover,
 .pill:hover {
   transform: translateY(-1px) scale(1.04);
 }
@@ -2786,7 +2772,6 @@ body.theme-dark .nav-item:hover {
 }
 
 body.theme-dark .pill,
-body.theme-dark .verified-badge,
 body.theme-dark .notification-log-item {
   background: rgba(15,23,42,.58);
   border-color: rgba(255,255,255,.18);
@@ -3046,15 +3031,10 @@ body.menu-open .mobile-menu-backdrop {
   z-index: 90;
 }
 
-.verified-badge,
 .pill {
   background: rgba(255,255,255,.58);
   border: 1px solid rgba(255,255,255,.72);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.8), 0 8px 16px rgba(20,32,54,.06);
-}
-
-.verified-badge {
-  color: #047857;
 }
 
 .summer-hero {
@@ -4802,26 +4782,7 @@ body.theme-dark .site-footer::after {
   }
 }
 
-/* Readability polish: compact verified badge and clearer dark cards */
-.verified-badge {
-  width: 21px;
-  min-width: 21px;
-  height: 21px;
-  min-height: 21px;
-  display: inline-grid;
-  place-items: center;
-  border-radius: 999px;
-  padding: 0;
-  border: 1px solid rgba(255,255,255,.86);
-  background: linear-gradient(135deg, #36a3ff, #0a66ff);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 950;
-  line-height: 1;
-  box-shadow: 0 6px 14px rgba(10,102,255,.22), inset 0 1px 0 rgba(255,255,255,.35);
-  vertical-align: middle;
-}
-
+/* Readability polish: clearer dark cards */
 body.theme-dark .post,
 body.theme-dark .panel,
 body.theme-dark .map-card,
@@ -4876,13 +4837,6 @@ body.theme-dark .day-plan-item small,
 body.theme-dark .destination-item span,
 body.theme-dark .destination-item small {
   color: #cbd5e1 !important;
-}
-
-body.theme-dark .verified-badge {
-  border-color: rgba(191,219,254,.72);
-  background: linear-gradient(135deg, #60a5fa, #2563eb);
-  color: #fff;
-  box-shadow: 0 0 0 3px rgba(37,99,235,.14), 0 8px 18px rgba(37,99,235,.22);
 }
 
 /* Header control cluster and dark hover contrast */

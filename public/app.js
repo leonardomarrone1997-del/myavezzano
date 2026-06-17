@@ -184,8 +184,6 @@ const userSubmittedBusinesses = [
   }
 ];
 
-const verifiedPartnerNames = new Set(userSubmittedBusinesses.map((place) => place.name));
-
 let mapPlaces = businesses.concat(userSubmittedBusinesses, [
   {
     name: "Moon Club",
@@ -983,7 +981,6 @@ function render() {
 
   document.querySelector("#summerGrid").innerHTML = summerHighlights.map((item) => {
     const place = findPlaceByName(item.place);
-    const verified = place && isVerifiedPartner(place);
     return `
       <article class="summer-card" data-search="${[item.title, item.type, item.place, item.text, place?.category].filter(Boolean).join(" ").toLowerCase()}">
         <div class="summer-icon">☀</div>
@@ -993,7 +990,6 @@ function render() {
           <p>${item.text}</p>
           <div class="summer-meta">
             <span>${item.place}</span>
-            ${verified ? `<span class="verified-badge" aria-label="Verificato" title="Verificato">✓</span>` : ""}
           </div>
           <div class="post-actions">
             <button data-action="open-map-place" data-place="${item.place}" type="button">${item.cta}</button>
@@ -1579,10 +1575,6 @@ function navigationUrl(place) {
   return `https://www.google.com/maps/dir/?api=1${origin}&destination=${destination}&travelmode=walking`;
 }
 
-function isVerifiedPartner(place) {
-  return verifiedPartnerNames.has(place?.name);
-}
-
 function markerTone(place) {
   if (place.category.includes("Ristorante") || place.category.includes("Bar") || place.category.includes("Pub")) return "food";
   if (place.category.includes("Discoteca")) return "night";
@@ -1700,7 +1692,6 @@ function renderMapBusinessList() {
       <span class="destination-copy">
         <strong>${place.name}</strong>
         <span>${place.category} - ${formatDistance(place)}</span>
-        ${isVerifiedPartner(place) ? `<span class="verified-badge" aria-label="Verificato" title="Verificato">✓</span>` : ""}
         <small>${[place.address, place.phone, place.photo ? "Foto reale" : "", place.stats].filter(Boolean).join(" - ")}</small>
       </span>
     </button>
@@ -1853,7 +1844,7 @@ function selectMapPlace(placeId, shouldPan = true) {
 
   document.querySelector("#mapCard").innerHTML = `
     <strong>${place.name}</strong>
-      <span>${[place.category, isVerifiedPartner(place) ? "Verificato" : "", place.phone, place.photo ? "foto reale" : "", formatDistance(place)].filter(Boolean).join(" · ")}</span>
+      <span>${[place.category, place.phone, place.photo ? "foto reale" : "", formatDistance(place)].filter(Boolean).join(" · ")}</span>
   `;
   document.querySelector("#navigationLink").href = navigationUrl(place);
   document.querySelector("#mapStatus").textContent = userPosition

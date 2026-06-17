@@ -43,8 +43,8 @@ Use these settings when importing the project as a new Vercel project:
 
 ## Cache Status
 
-- Service worker cache: `myavezzano-v66`
-- CSS cache bust: `styles.css?v=66`
+- Service worker cache: `myavezzano-v67`
+- CSS cache bust: `styles.css?v=67`
 - Build output: `public/`
 - `index.html`, `/`, `app.js`, `styles.css` and `service-worker.js` are configured with `Cache-Control: no-cache`.
 - `assets/` uses long immutable cache.
