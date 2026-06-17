@@ -4,16 +4,16 @@ Prototype web standalone della piattaforma MyAvezzano: un atlante locale per eve
 
 ## Cosa contiene
 
-- Home cittadina con eventi, sconti, nuove aperture e attivita vicine.
-- Design minimal con testata chiara, card leggere e micro-widget meteo demo per Avezzano.
+- Home cittadina con eventi, sconti, nuove aperture e attività vicine.
+- Design minimal con testata chiara, card leggere e micro-widget meteo per Avezzano.
 - Scorciatoie rapide per cena, aperitivo, coupon, serate ed eventi.
 - Ricerca rapida visibile in home con suggerimenti per stasera, cena, coupon ed eventi.
-- Mappa reale OpenStreetMap con import automatico delle attivita di Avezzano, marker a goccia con logo/foto dove disponibile, cache locale e link a Google Maps.
+- Mappa reale OpenStreetMap con import automatico delle attività di Avezzano, marker a goccia con logo/foto dove disponibile, cache locale e link a Google Maps.
 - Eventi con prenotazioni e ticket digitali demo.
-- Coupon digitali con QR Code demo.
-- Sistema fedelta con livello, progress e premi.
+- Coupon digitali con QR Code locali.
+- Sistema fedeltà con livello, progress e premi.
 - Sezione "Crea il tuo negozio" a pagamento, con piani da 12,99 EUR/mese e dashboard sbloccabile dopo checkout demo.
-- Admin panel con moderazione e analytics citta.
+- Admin panel con moderazione e analytics città.
 - Icona app personalizzata in `assets/app-icon.svg`.
 - Manifest PWA e service worker per installazione su Android/iOS.
 - Registrazione demo attiva con email/password, Google, telefono e Apple usando storage locale.
@@ -22,7 +22,7 @@ Prototype web standalone della piattaforma MyAvezzano: un atlante locale per eve
 - Demo guidata al primo ingresso, riapribile dal pulsante Guida e dalle impostazioni del profilo.
 - Dashboard locale in home con quick search, smart cards, stato giornata e navigazione mobile app-like.
 - Transizione tema giorno/notte con passaggio tramonto/alba e rispetto di `prefers-reduced-motion`.
-- Atmosphere FX leggero: stormo di 4-5 rondini con ali animate nel tema giorno, stella cadente notturna con scia corretta, pulviscolo estivo quasi invisibile e pausa automatica quando la tab non e visibile.
+- Atmosphere FX leggero: stormo di 4-5 rondini con ali animate nel tema giorno, stella cadente notturna con scia corretta, pulviscolo estivo quasi invisibile e pausa automatica quando la tab non è visibile.
 
 ## Audit prodotto - versione corrente
 
@@ -30,7 +30,7 @@ Prototype web standalone della piattaforma MyAvezzano: un atlante locale per eve
 
 - PWA statica senza build, facile da provare e pubblicare.
 - Mappa reale con OpenStreetMap, cache e apertura Google Maps.
-- Account demo, admin nascosto, profilo, coupon, eventi e merchant dashboard gia collegati a flussi locali.
+- Account demo, admin nascosto, profilo, coupon, eventi e merchant dashboard già collegati a flussi locali.
 - Direzione visiva "Atlante Vivo" con coordinate, pass, marker, WebGL e tema dark/light.
 
 ### Corretto e migliorato
@@ -46,10 +46,10 @@ Prototype web standalone della piattaforma MyAvezzano: un atlante locale per eve
 ### Da completare per produzione reale
 
 - Backend API, database server-side, sessioni sicure e rate limit.
-- Foto reali proprietarie/CDN per tutte le attivita.
+- Foto reali proprietarie/CDN per tutte le attività.
 - Pagamenti reali per commercianti e fatturazione.
 - Push notification reali tramite Web Push/FCM/APNs.
-- Test Lighthouse, accessibilita e dispositivi fisici prima della pubblicazione.
+- Test Lighthouse, accessibilità e dispositivi fisici prima della pubblicazione.
 
 ## Come aprirla
 
@@ -75,15 +75,15 @@ La voce Admin non compare nel menu pubblico. Dopo login con queste credenziali, 
 ## Asset visuali
 
 Lo sfondo sfocato di Avezzano usa una foto panoramica pubblica da Wikimedia Commons: `Avezzano_view.jpg`.
-Se il sito viene pubblicato in produzione, e consigliato salvare l'immagine in locale/CDN e mantenere il credito autore/licenza nella pagina legale.
+Se il sito viene pubblicato in produzione, è consigliato salvare l'immagine in locale/CDN e mantenere il credito autore/licenza nella pagina legale.
 
 ## IA interna invisibile
 
 Il sito include `MyAvezzano Intelligence Layer`, un livello locale e invisibile che:
 
 - interpreta ricerche come "pizza", "vestiti", "stasera", "palestra", "sconti";
-- ordina attivita e lista "Vicino a te" con ranking smart;
-- calcola un punteggio qualita per schede locali;
+- ordina attività e lista "Vicino a te" con ranking smart;
+- calcola un punteggio qualità per schede locali;
 - mostra insight solo nel `Pannello GOD` admin;
 - non espone chatbot o elementi visibili agli utenti normali.
 

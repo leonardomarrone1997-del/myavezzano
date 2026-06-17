@@ -11,7 +11,7 @@ const businesses = [
     stats: "Aperto ora"
   },
   {
-    name: "Caffe Risorgimento",
+    name: "Caffè Risorgimento",
     category: "Bar",
     distance: "600 m",
     lat: 42.0320,
@@ -43,7 +43,7 @@ const userSubmittedBusinesses = [
     lng: 13.4230,
     address: "Via Garibaldi 136, Avezzano",
     phone: "+3908631871946",
-    stats: "Attivita inserita",
+    stats: "Attività inserita",
     logo: "assets/app-icon.svg",
     image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=600&q=80",
     caption: "Negozio di abbigliamento inserito nella rete MyAvezzano."
@@ -56,7 +56,7 @@ const userSubmittedBusinesses = [
     lng: 13.4384,
     address: "Via Tiburtina Valeria 112, Avezzano",
     phone: "+390863448059",
-    stats: "Attivita inserita",
+    stats: "Attività inserita",
     photo: "https://www.fabricasgr.com/wp-content/uploads/2019/10/ipercoop_terni1-300x169.jpg",
     photoCredit: "Fabrica SGR",
     image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=600&q=80",
@@ -70,7 +70,7 @@ const userSubmittedBusinesses = [
     lng: 13.4256,
     address: "Via Camillo Corradini 172, Avezzano",
     phone: "+39086332128",
-    stats: "Attivita inserita",
+    stats: "Attività inserita",
     photo: "https://dellolio1920avezzano.it/img/dellolio-storia-avezzano.jpg",
     logo: "https://dellolio1920avezzano.it/img/dellolio__logo-desktop.svg",
     photoCredit: "Dell'Olio 1920",
@@ -221,7 +221,7 @@ let mapPlaces = businesses.concat(userSubmittedBusinesses, [
     distance: "850 m",
     lat: 42.0301,
     lng: 13.4266,
-    address: "Corso della Liberta, Avezzano",
+    address: "Corso della Libertà, Avezzano",
     stats: "Live music",
     image: "https://images.unsplash.com/photo-1483412033650-1015ddeb83d1?auto=format&fit=crop&w=500&q=80"
   },
@@ -275,7 +275,7 @@ let mapPlaces = businesses.concat(userSubmittedBusinesses, [
     distance: "Centro",
     lat: 42.0332,
     lng: 13.4251,
-    address: "Corso della Liberta, Avezzano",
+    address: "Corso della Libertà, Avezzano",
     stats: "Prevendite eventi",
     image: "https://images.unsplash.com/photo-1526243741027-444d633d7365?auto=format&fit=crop&w=500&q=80",
     caption: "Punto prevendita demo per biglietti e informazioni sugli eventi estivi."
@@ -332,7 +332,7 @@ const quickActions = [
   ["APERITIVO", "Drink e locali", "events", "aperitivo"],
   ["COUPON", "Sconti attivi", "coupons", "coupon"],
   ["SERATE", "Musica e locali", "events", "serate"],
-  ["EVENTI", "Agenda citta", "events", "eventi"]
+  ["EVENTI", "Agenda città", "events", "eventi"]
 ];
 
 const cityHighlights = [
@@ -357,7 +357,7 @@ const cityHighlights = [
   {
     type: "Evento stasera",
     title: "Aperitivo lungo in centro",
-    place: "Caffe Risorgimento",
+    place: "Caffè Risorgimento",
     when: "Oggi - 19:30",
     detail: "Drink promo, tavoli disponibili e reminder automatico prima dell'inizio.",
     image: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1000&q=80",
@@ -366,9 +366,9 @@ const cityHighlights = [
   {
     type: "Sconto",
     title: "2x1 aperitivo entro le 20:00",
-    place: "Caffe Risorgimento",
+    place: "Caffè Risorgimento",
     when: "Scade oggi",
-    detail: "Mostra il QR alla cassa, usa il coupon e accumula punti fedelta.",
+    detail: "Mostra il QR alla cassa, usa il coupon e accumula punti fedeltà.",
     image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1000&q=80",
     cta: "Apri coupon"
   },
@@ -404,7 +404,7 @@ const cityHighlights = [
     title: "Prova gratuita FitLab Avezzano",
     place: "FitLab Avezzano",
     when: "Prenota entro 48 ore",
-    detail: "Ingresso prova, scheda iniziale e punti fedelta al check-in.",
+    detail: "Ingresso prova, scheda iniziale e punti fedeltà al check-in.",
     image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1000&q=80",
     cta: "Prenota"
   }
@@ -416,13 +416,13 @@ const eventCategories = [
   ["Feste", "Compleanni, party e feste a tema"],
   ["Serate", "Aperitivi, live music e karaoke"],
   ["Eventi in disco", "DJ set, guest e prevendite"],
-  ["Calendario", "Programma completo della citta"]
+  ["Calendario", "Programma completo della città"]
 ];
 
 const tonightEvents = [
   {
     title: "Aperitivo lungo in centro",
-    place: "Caffe Risorgimento",
+    place: "Caffè Risorgimento",
     time: "19:30",
     type: "Serata",
     meta: "Ingresso libero - coupon drink",
@@ -488,9 +488,9 @@ const events = [
 ];
 
 const coupons = [
-  ["Aperitivo 2x1", "Caffe Risorgimento", "Scade oggi alle 20:00", "35 punti"],
-  ["-20% nuova collezione", "Atelier Marsica", "Valido fino a domenica", "80 usi rimasti"],
-  ["Ingresso prova gratuito", "FitLab Avezzano", "Prenota entro 48 ore", "50 punti"]
+  ["Aperitivo 2x1", "Caffè Risorgimento", "Scade oggi alle 20:00", "35 punti", "assets/coupons/aperitivo-2x1.svg"],
+  ["-20% nuova collezione", "Atelier Marsica", "Valido fino a domenica", "80 usi rimasti", "assets/coupons/atelier-marsica-20.svg"],
+  ["Ingresso prova gratuito", "FitLab Avezzano", "Prenota entro 48 ore", "50 punti", "assets/coupons/fitlab-prova-gratis.svg"]
 ];
 
 const rewards = [
@@ -500,7 +500,7 @@ const rewards = [
 ];
 
 const savedProfileCoupons = [
-  ["Aperitivo 2x1", "Caffe Risorgimento", "Scade oggi alle 20:00"],
+  ["Aperitivo 2x1", "Caffè Risorgimento", "Scade oggi alle 20:00"],
   ["-20% nuova collezione", "Atelier Marsica", "Valido fino a domenica"],
   ["Prova gratuita", "FitLab Avezzano", "Prenota entro 48 ore"]
 ];
@@ -516,7 +516,7 @@ const userPreferences = ["Eventi", "Sconti", "Nuove aperture", "Ristoranti", "Pa
 const pageMeta = {
   feed: {
     eyebrow: "MyAvezzano live",
-    title: "La citta, a portata di giornata",
+    title: "La città, a portata di giornata",
     copy: "Eventi, locali, negozi e piccole scoperte di Avezzano raccolti in una home semplice, bella da aprire e veloce da usare."
   },
   map: {
@@ -527,12 +527,12 @@ const pageMeta = {
   events: {
     eyebrow: "Palinsesto urbano",
     title: "La sera ha una regia",
-    copy: "Eventi e serate letti come una programmazione: orari, ritmo, prenotazioni demo e reminder senza dispersione."
+    copy: "Eventi e serate letti come una programmazione: orari, ritmo, prenotazioni e reminder senza dispersione."
   },
   coupons: {
     eyebrow: "Valore immediato",
     title: "Sconti che sembrano oggetti",
-    copy: "Ogni coupon e trattato come un pass: leggibile, riscattabile, salvabile, con QR e punti come parte dell'esperienza."
+    copy: "Ogni coupon è trattato come un pass: leggibile, riscattabile, salvabile, con QR e punti come parte dell'esperienza."
   },
   loyalty: {
     eyebrow: "Credito locale",
@@ -597,29 +597,29 @@ const onboardingSteps = [
     view: "feed",
     eyebrow: "Primo ingresso",
     title: "La home ti mostra cosa conta oggi",
-    copy: "MyAvezzano non e pensata come un social infinito: apre subito su eventi, sconti, nuove aperture e cose utili in citta.",
+    copy: "MyAvezzano non è pensata come un social infinito: apre subito su eventi, sconti, nuove aperture e cose utili in città.",
     points: ["Scorri le card principali", "Salva quello che ti interessa", "Apri subito mappa, coupon o eventi"]
   },
   {
     view: "events",
     eyebrow: "Serate",
     title: "Trova cosa fare questa sera",
-    copy: "La sezione Eventi raccoglie divertimento, feste, serate, disco e calendario, con prenotazione demo e reminder.",
+    copy: "La sezione Eventi raccoglie divertimento, feste, serate, disco e calendario, con prenotazione e reminder.",
     points: ["Filtra per tipo di evento", "Prenota una serata", "Attiva un reminder automatico"]
   },
   {
     view: "map",
     eyebrow: "Mappa",
     title: "Scopri locali e negozi vicino a te",
-    copy: "La mappa usa segnaposto a goccia con logo/foto del locale e puo aprire Google Maps per la navigazione reale.",
-    points: ["Importa attivita reali da OpenStreetMap", "Usa la tua posizione", "Apri la destinazione in Google Maps"]
+    copy: "La mappa usa segnaposto a goccia con logo/foto del locale e può aprire Google Maps per la navigazione reale.",
+    points: ["Importa attività reali da OpenStreetMap", "Usa la tua posizione", "Apri la destinazione in Google Maps"]
   },
   {
     view: "coupons",
     eyebrow: "Vantaggi",
     title: "Usa coupon QR e raccogli punti",
-    copy: "I coupon digitali si salvano nel profilo, possono essere scansionati in demo e alimentano il sistema fedelta.",
-    points: ["Apri i coupon disponibili", "Scansiona un QR demo", "Riscatta premi con i punti"]
+    copy: "I coupon digitali si salvano nel profilo, possono essere scansionati e alimentano il sistema fedeltà.",
+    points: ["Apri i coupon disponibili", "Scansiona un QR", "Riscatta premi con i punti"]
   },
   {
     view: "profile",
@@ -819,7 +819,7 @@ function intelligenceInsights() {
   return [
     [`${missingPhotos} schede senza foto reale`, "Priorita media"],
     [`${missingPhones} schede senza telefono`, "Priorita alta"],
-    [`${lowQuality.length} schede sotto qualita 60/100`, lowQuality.map((place) => place.name).join(", ") || "Nessuna"],
+    [`${lowQuality.length} schede sotto qualità 60/100`, lowQuality.map((place) => place.name).join(", ") || "Nessuna"],
     ["Ranking invisibile attivo", "Ricerca, mappa e vicino a te usano intenti locali"]
   ];
 }
@@ -1000,14 +1000,16 @@ function render() {
     `;
   }).join("");
 
-  document.querySelector("#couponsGrid").innerHTML = coupons.map(([title, place, expires, meta]) => `
+  document.querySelector("#couponsGrid").innerHTML = coupons.map(([title, place, expires, meta, qrSrc]) => `
     <article class="coupon-card">
       <div class="card-body">
         <p class="eyebrow">${place}</p>
         <h2>${title}</h2>
         <p>${expires}</p>
         <span class="pill success">${meta}</span>
-        <div class="qr" aria-label="QR Code demo"></div>
+        <div class="qr" aria-label="QR Code coupon ${title}">
+          <img src="${qrSrc}" alt="QR coupon ${title} - ${place}" loading="lazy" decoding="async" />
+        </div>
       </div>
     </article>
   `).join("");
@@ -1121,7 +1123,7 @@ function settingsPanel(user) {
         <span>Newsletter settimanale</span>
         <input type="checkbox" />
       </label>
-      <button class="ghost full-button" data-action="open-onboarding" type="button">Rivedi demo guidata</button>
+      <button class="ghost full-button" data-action="open-onboarding" type="button">Rivedi guida</button>
       <button class="ghost full-button" id="profileOpenAccountModal" type="button">Gestisci account e logout</button>
     </div>
   `;
@@ -1321,7 +1323,7 @@ function renderMerchantArea() {
   }
   document.querySelectorAll("#merchantNotificationTitle, #merchantNotificationBody, #merchantNotificationTarget, #sendMerchantNotification, #previewMerchantNotification")
     .forEach((item) => { item.disabled = !isGold; });
-  setMerchantNotificationFeedback(isGold ? "Canale notifiche pronto. Il filtro contenuti e attivo." : "Le notifiche promozionali sono disponibili solo per account Gold.", isGold ? "success" : "info");
+  setMerchantNotificationFeedback(isGold ? "Canale notifiche pronto. Il filtro contenuti è attivo." : "Le notifiche promozionali sono disponibili solo per account Gold.", isGold ? "success" : "info");
   renderMerchantNotificationLog();
 }
 
@@ -1432,7 +1434,7 @@ function renderAdminDashboard() {
           </div>
         </section>
         <section class="panel">
-          <h2>Analytics citta</h2>
+          <h2>Analytics città</h2>
           <div class="bar-chart">
             <span style="height:48%"></span>
             <span style="height:72%"></span>
@@ -1485,7 +1487,7 @@ function handleAdminAction(button) {
   if (button.dataset.adminAction === "seed-demo") {
     seedAdminUser().then(() => {
       renderAdminDashboard();
-      showToast("Account admin demo verificato.", "success");
+    showToast("Account admin demo attivato.", "success");
     });
     return;
   }
@@ -1526,8 +1528,8 @@ function handleAdminAction(button) {
 }
 
 const legalCopy = {
-  privacy: ["Privacy Policy", "MyAvezzano MVP salva dati account, preferenze, coupon ed eventi in storage locale del browser. In produzione i dati saranno trattati su server sicuro con consenso, finalita esplicite e strumenti di cancellazione."],
-  terms: ["Termini e condizioni", "Il prototipo mostra funzionalita demo per utenti, commercianti e admin. Coupon, pagamenti, prenotazioni e statistiche non generano obblighi reali finche non saranno collegati a servizi certificati."],
+  privacy: ["Privacy Policy", "MyAvezzano MVP salva dati account, preferenze, coupon ed eventi in storage locale del browser. In produzione i dati saranno trattati su server sicuro con consenso, finalità esplicite e strumenti di cancellazione."],
+  terms: ["Termini e condizioni", "Il prototipo mostra funzionalità demo per utenti, commercianti e admin. Coupon, pagamenti, prenotazioni e statistiche non generano obblighi reali finché non saranno collegati a servizi certificati."],
   cookies: ["Cookie Policy", "La versione statica non usa cookie di tracciamento proprietari. Usa localStorage per sessione, preferenze, cache demo e PWA. Servizi esterni come mappe o immagini possono applicare proprie policy."]
 };
 
@@ -1777,12 +1779,12 @@ async function loadRealAvezzanoBusinesses(force = false) {
 
   const status = document.querySelector("#mapStatus");
   isLoadingRealPlaces = true;
-  status.textContent = "Importazione attivita reali da OpenStreetMap in corso...";
+  status.textContent = "Importazione attività reali da OpenStreetMap in corso...";
 
   if (!force) {
     const cached = cachedOsmPlaces();
     if (cached.length) {
-      applyImportedPlaces(cached, `${cached.length} attivita caricate dalla cache locale. Aggiornamento online in corso...`);
+      applyImportedPlaces(cached, `${cached.length} attività caricate dalla cache locale. Aggiornamento online in corso...`);
     }
   }
 
@@ -1811,13 +1813,13 @@ async function loadRealAvezzanoBusinesses(force = false) {
       .sort((a, b) => distanceInKm(AVEZZANO_CENTER, a) - distanceInKm(AVEZZANO_CENTER, b))
       .slice(0, MAX_REAL_PLACES);
 
-    if (!places.length) throw new Error("Nessuna attivita trovata");
+    if (!places.length) throw new Error("Nessuna attività trovata");
     localStorage.setItem(OSM_CACHE_KEY, JSON.stringify(places));
-    applyImportedPlaces(places, `${places.length} attivita reali importate da OpenStreetMap. Le foto sono reali dove disponibili, altrimenti categoria demo.`);
+    applyImportedPlaces(places, `${places.length} attività reali importate da OpenStreetMap. Le foto sono reali dove disponibili, altrimenti categoria demo.`);
   } catch {
     const cached = cachedOsmPlaces();
     if (cached.length) {
-      applyImportedPlaces(cached, `${cached.length} attivita caricate dalla cache locale. Import online non riuscito.`);
+      applyImportedPlaces(cached, `${cached.length} attività caricate dalla cache locale. Import online non riuscito.`);
     } else {
       status.textContent = "Import online non riuscito. La demo resta con dati locali; riprova con connessione attiva.";
     }
@@ -1866,6 +1868,15 @@ function selectMapPlace(placeId, shouldPan = true) {
   });
 }
 
+function refreshInteractiveMapLayout() {
+  if (!interactiveMap) return;
+  [40, 160, 360].forEach((delay) => {
+    setTimeout(() => {
+      if (interactiveMap) interactiveMap.invalidateSize();
+    }, delay);
+  });
+}
+
 function initInteractiveMap() {
   const mapElement = document.querySelector("#realMap");
   const status = document.querySelector("#mapStatus");
@@ -1879,10 +1890,10 @@ function initInteractiveMap() {
   }
 
   if (interactiveMap) {
-    interactiveMap.invalidateSize();
+    refreshInteractiveMapLayout();
     const cached = cachedOsmPlaces();
     if (cached.length && !realPlacesLoaded) {
-      applyImportedPlaces(cached.slice(0, MAX_REAL_PLACES), `${Math.min(cached.length, MAX_REAL_PLACES)} attivita caricate dalla cache locale.`);
+      applyImportedPlaces(cached.slice(0, MAX_REAL_PLACES), `${Math.min(cached.length, MAX_REAL_PLACES)} attività caricate dalla cache locale.`);
     }
     return;
   }
@@ -1905,11 +1916,11 @@ function initInteractiveMap() {
   selectMapPlace(selectedPlace.id, false);
   const cached = cachedOsmPlaces();
   if (cached.length) {
-    applyImportedPlaces(cached.slice(0, MAX_REAL_PLACES), `${Math.min(cached.length, MAX_REAL_PLACES)} attivita caricate dalla cache locale. Usa "Importa attivita reali" per aggiornare.`);
+    applyImportedPlaces(cached.slice(0, MAX_REAL_PLACES), `${Math.min(cached.length, MAX_REAL_PLACES)} attività caricate dalla cache locale. Usa "Importa attività reali" per aggiornare.`);
   } else {
-    status.textContent = "Demo veloce attiva. Usa Importa attivita reali per aggiornare da OpenStreetMap.";
+    status.textContent = "Demo veloce attiva. Usa Importa attività reali per aggiornare da OpenStreetMap.";
   }
-  setTimeout(() => interactiveMap.invalidateSize(), 80);
+  refreshInteractiveMapLayout();
 }
 
 function switchView(view, updateHash = true) {
@@ -1955,7 +1966,10 @@ function switchView(view, updateHash = true) {
   }
 
   if (view === "map") {
-    setTimeout(initInteractiveMap, 80);
+    setTimeout(() => {
+      initInteractiveMap();
+      refreshInteractiveMapLayout();
+    }, 80);
   }
 
   if (view === "profile") {
@@ -2333,8 +2347,8 @@ function handleAction(button) {
   }
 
   if (action === "scan-qr") {
-    const total = addDemoItem("couponRedemptions", { title: "QR demo scansionato" });
-    showToast(`QR demo letto correttamente. Scansioni salvate: ${total}.`, "success");
+    const total = addDemoItem("couponRedemptions", { title: "QR coupon scansionato" });
+    showToast(`QR coupon letto correttamente. Scansioni salvate: ${total}.`, "success");
     return;
   }
 
@@ -2413,13 +2427,13 @@ function handleAction(button) {
   }
 
   if (action === "upload-media") {
-    showToast("Upload demo pronto: in produzione aprira galleria/camera.");
+    showToast("Upload demo pronto: in produzione aprirà galleria/camera.");
     return;
   }
 
   if (action === "create-coupon") {
-    addDemoItem("merchantCoupons", { title: "Nuovo coupon QR demo" });
-    showToast("Coupon QR demo creato e aggiunto alla campagna.", "success");
+    addDemoItem("merchantCoupons", { title: "Nuovo coupon QR" });
+    showToast("Coupon QR creato e aggiunto alla campagna.", "success");
     return;
   }
 
@@ -2460,7 +2474,7 @@ document.querySelector("#prevOnboarding").addEventListener("click", () => {
 document.querySelector("#nextOnboarding").addEventListener("click", () => {
   if (onboardingIndex === onboardingSteps.length - 1) {
     closeOnboarding(true);
-    showToast("Perfetto, MyAvezzano e pronto da esplorare.", "success");
+    showToast("Perfetto, MyAvezzano è pronto da esplorare.", "success");
     return;
   }
   onboardingIndex += 1;
@@ -2999,7 +3013,7 @@ function updateAuthUi() {
   document.querySelector("#openSignup").textContent = accountLabel;
   document.querySelector("#openSignupMini").textContent = miniLabel;
   signupCopy.textContent = user
-    ? `Ciao ${user.name}, il tuo account ${user.role === "admin" ? "admin" : "utente"} e attivo.`
+    ? `Ciao ${user.name}, il tuo account ${user.role === "admin" ? "admin" : "utente"} è attivo.`
     : "Crea il tuo account per salvare eventi, coupon, nuove aperture e reminder cittadini.";
 
   logoutAccountButton.hidden = !user;
@@ -3331,12 +3345,12 @@ document.querySelector("#confirmMerchantPayment").addEventListener("click", () =
   }
 
   if (businessName.length < 2) {
-    setMerchantFeedback("Inserisci il nome della tua attivita.", "error");
+    setMerchantFeedback("Inserisci il nome della tua attività.", "error");
     return;
   }
 
   if (category.length < 2) {
-    setMerchantFeedback("Inserisci la categoria della tua attivita.", "error");
+    setMerchantFeedback("Inserisci la categoria della tua attività.", "error");
     return;
   }
 
@@ -3592,7 +3606,7 @@ async function bootApp() {
   window.addEventListener("beforeinstallprompt", (event) => {
     event.preventDefault();
     installPromptEvent = event;
-    showToast("MyAvezzano puo essere installata come app.", "success");
+  showToast("MyAvezzano può essere installata come app.", "success");
   });
 
   window.addEventListener("offline", () => showToast("Sei offline: uso dati salvati e funzioni locali.", "error"));
