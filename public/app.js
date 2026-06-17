@@ -1868,6 +1868,15 @@ function selectMapPlace(placeId, shouldPan = true) {
   });
 }
 
+function refreshInteractiveMapLayout() {
+  if (!interactiveMap) return;
+  [40, 160, 360].forEach((delay) => {
+    setTimeout(() => {
+      if (interactiveMap) interactiveMap.invalidateSize();
+    }, delay);
+  });
+}
+
 function initInteractiveMap() {
   const mapElement = document.querySelector("#realMap");
   const status = document.querySelector("#mapStatus");
@@ -1881,7 +1890,7 @@ function initInteractiveMap() {
   }
 
   if (interactiveMap) {
-    interactiveMap.invalidateSize();
+    refreshInteractiveMapLayout();
     const cached = cachedOsmPlaces();
     if (cached.length && !realPlacesLoaded) {
       applyImportedPlaces(cached.slice(0, MAX_REAL_PLACES), `${Math.min(cached.length, MAX_REAL_PLACES)} attività caricate dalla cache locale.`);
@@ -1911,7 +1920,7 @@ function initInteractiveMap() {
   } else {
     status.textContent = "Demo veloce attiva. Usa Importa attività reali per aggiornare da OpenStreetMap.";
   }
-  setTimeout(() => interactiveMap.invalidateSize(), 80);
+  refreshInteractiveMapLayout();
 }
 
 function switchView(view, updateHash = true) {
@@ -1957,7 +1966,10 @@ function switchView(view, updateHash = true) {
   }
 
   if (view === "map") {
-    setTimeout(initInteractiveMap, 80);
+    setTimeout(() => {
+      initInteractiveMap();
+      refreshInteractiveMapLayout();
+    }, 80);
   }
 
   if (view === "profile") {

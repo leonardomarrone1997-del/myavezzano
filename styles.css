@@ -5536,6 +5536,119 @@ body.theme-dark .search-dock input {
     width: auto;
   }
 
+  #mapView .map-layout {
+    gap: 14px;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #mapView .map-panel {
+    width: 100%;
+    min-width: 0;
+  }
+
+  #mapView .map-surface.real-map-shell {
+    min-height: 0;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  #mapView .real-map {
+    min-height: clamp(540px, 68svh, 720px);
+    border: 1px solid rgba(226,232,240,.46);
+    border-radius: 16px;
+    box-shadow: 0 14px 30px rgba(15,23,42,.14);
+  }
+
+  #mapView .map-toolbar {
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    max-width: none;
+    gap: 6px;
+    padding: 4px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.70);
+    border: 1px solid rgba(255,255,255,.62);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  #mapView .map-provider-badge,
+  #mapView .map-toolbar .ghost,
+  #mapView .map-toolbar .primary-action {
+    width: 34px;
+    min-height: 34px;
+    font-size: 14px;
+    background: rgba(255,255,255,.74) !important;
+    border-color: rgba(255,255,255,.58) !important;
+    box-shadow: none;
+  }
+
+  #mapView .map-provider-badge {
+    font-size: 10px;
+  }
+
+  #mapView .map-toolbar .primary-action {
+    background: rgba(37,99,235,.86) !important;
+    border-color: rgba(255,255,255,.46) !important;
+  }
+
+  #mapView .leaflet-control-zoom {
+    display: none;
+  }
+
+  #mapView .real-map-shell .map-card,
+  #mapView .map-status {
+    position: relative;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    max-width: 100%;
+    margin: 8px 0 0;
+    padding: 10px 12px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(15,23,42,.08);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  #mapView .map-status {
+    margin-top: 6px;
+    font-size: 11px;
+  }
+
+  body.theme-dark #mapView .real-map {
+    border-color: rgba(226,232,240,.16);
+    box-shadow: 0 14px 30px rgba(0,0,0,.24);
+  }
+
+  body.theme-dark #mapView .map-toolbar {
+    background: rgba(15,23,42,.56);
+    border-color: rgba(226,232,240,.12);
+  }
+
+  body.theme-dark #mapView .map-provider-badge,
+  body.theme-dark #mapView .map-toolbar .ghost {
+    background: rgba(15,23,42,.46) !important;
+    border-color: rgba(226,232,240,.14) !important;
+    color: #e5eefc !important;
+  }
+
+  body.theme-dark #mapView .map-toolbar .primary-action {
+    background: rgba(37,99,235,.74) !important;
+    border-color: rgba(191,219,254,.24) !important;
+  }
+
+  body.theme-dark #mapView .real-map-shell .map-card,
+  body.theme-dark #mapView .map-status {
+    background: rgba(15,23,42,.78) !important;
+    border-color: rgba(226,232,240,.14) !important;
+  }
+
   .destination-item {
     min-height: 74px;
     padding: 9px;
