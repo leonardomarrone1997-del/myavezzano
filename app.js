@@ -914,7 +914,7 @@ function render() {
 
   renderSmartStrip();
   renderDayPlan();
-  document.querySelector("#feedList").innerHTML = cityHighlights.map((item) => {
+  document.querySelector("#feedList").innerHTML = cityHighlights.slice(0, 4).map((item) => {
     const relatedPlace = findPlaceByName(item.place);
     const searchText = [item.type, item.title, item.place, item.when, item.detail, item.cta, relatedPlace?.category, relatedPlace?.stats].filter(Boolean).join(" ");
     return `

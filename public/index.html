@@ -16,7 +16,7 @@
     <link rel="preconnect" href="https://unpkg.com" crossorigin />
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="styles.css?v=68" />
+    <link rel="stylesheet" href="styles.css?v=69" />
   </head>
   <body>
     <a class="skip-link" href="#mainContent">Vai al contenuto</a>
@@ -110,27 +110,13 @@
           <section class="home-quick-actions" aria-label="Azioni rapide">
             <div class="stories" id="stories"></div>
           </section>
-          <section class="search-dock" aria-label="Ricerca rapida locale">
-            <label class="search" for="searchInput">
-              <span aria-hidden="true">Cerca</span>
-              <input id="searchInput" type="search" placeholder="Cerca eventi, coupon, cena, palestra..." autocomplete="off" />
-              <button class="search-clear" id="clearSearch" type="button" aria-label="Cancella ricerca" hidden>x</button>
-            </label>
-            <div class="search-suggestions" aria-label="Ricerche rapide">
-              <button data-search-term="stasera" type="button">Stasera</button>
-              <button data-search-term="cena" type="button">Cena</button>
-              <button data-search-term="coupon" type="button">Coupon</button>
-              <button data-search-term="eventi" type="button">Eventi</button>
-            </div>
-            <p class="search-status" id="searchStatus" hidden></p>
-          </section>
           <section class="home-command-center" aria-label="Dashboard locale">
             <div class="command-copy">
               <p class="eyebrow">Dashboard locale</p>
-              <h2>Scegli in pochi secondi cosa fare ad Avezzano</h2>
-              <p>Un punto unico per trovare luoghi, eventi, vantaggi e servizi utili senza saltare tra mille app.</p>
+              <h2>Scegli cosa fare oggi</h2>
+              <p>Eventi, sconti e luoghi utili in un'unica schermata semplice.</p>
               <div class="command-actions">
-                <button class="primary-action" data-view-target="map" type="button">Esplora la mappa</button>
+                <button class="primary-action" data-view-target="map" type="button">Esplora mappa</button>
                 <button class="ghost" data-action="install-app" type="button">Installa app</button>
               </div>
             </div>
@@ -623,6 +609,6 @@
     <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
     <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script defer src="app.js?v=68"></script>
+    <script defer src="app.js?v=69"></script>
   </body>
 </html>
