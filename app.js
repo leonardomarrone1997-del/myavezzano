@@ -549,6 +549,11 @@ const pageMeta = {
     title: "Apri una presenza che lavora",
     copy: "Non una scheda statica: un pannello per pubblicare offerte, leggere segnali e trasformare visibilità in azioni."
   },
+  campaign: {
+    eyebrow: "Piano pubblicitario",
+    title: "La città incontra l’app",
+    copy: "QR, vetrine, locandine, stand e materiali coordinati trasformano MyAvezzano in una presenza reale nei luoghi della città."
+  },
   admin: {
     eyebrow: "Pannello admin",
     title: "Regia operativa MyAvezzano",
@@ -574,6 +579,7 @@ const titles = {
   loyalty: pageMeta.loyalty.title,
   profile: pageMeta.profile.title,
   merchant: pageMeta.merchant.title,
+  campaign: pageMeta.campaign.title,
   admin: pageMeta.admin.title,
   summer: pageMeta.summer.title,
   legal: pageMeta.legal.title
@@ -587,6 +593,7 @@ const citySignatures = {
   loyalty: ["AVZ-05", "Saldo / premi / progressi", "Credito locale", "Punti"],
   profile: ["AVZ-06", "ID personale / archivio", "Tessera cittadina", "Privato"],
   merchant: ["AVZ-07", "Scheda / campagne / checkout", "Console business", "B2B"],
+  campaign: ["AVZ-MKT", "QR / vetrine / eventi", "Piano città", "Territorio"],
   admin: ["AVZ-ADM", "Insight / utenti / controllo", "Cabina di regia", "Riservato"],
   summer: ["AVZ-26", "Estate / tappe / luce", "Itinerario", "2026"],
   legal: ["AVZ-00", "Privacy / termini / cookie", "Registro fiducia", "Chiaro"]
@@ -2015,6 +2022,11 @@ function animateActiveView(scope = document.querySelector(".view.active")) {
     .legal-tab,
     .merchant-pricing-hero,
     .pricing-card,
+    .campaign-hero,
+    .campaign-metrics article,
+    .campaign-feature,
+    .campaign-playbook,
+    .campaign-gallery article,
     .admin-hero,
     .signup-panel,
     .demo-panel
