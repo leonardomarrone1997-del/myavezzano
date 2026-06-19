@@ -33,6 +33,71 @@
         }
       }
     </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://myavezzano.vercel.app/" },
+              { "@type": "ListItem", "position": 2, "name": "Attività locali", "item": "https://myavezzano.vercel.app/attivita-locali.html" }
+            ]
+          },
+          {
+            "@type": "ItemList",
+            "name": "Esempi demo di attività locali su MyAvezzano",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "item": {
+                  "@type": "CafeOrCoffeeShop",
+                  "name": "Caffè Risorgimento",
+                  "address": {
+                    "@type": "PostalAddress",
+                    "addressLocality": "Avezzano",
+                    "addressRegion": "AQ",
+                    "addressCountry": "IT"
+                  },
+                  "areaServed": "Avezzano"
+                }
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "item": {
+                  "@type": "Store",
+                  "name": "Atelier Marsica",
+                  "address": {
+                    "@type": "PostalAddress",
+                    "addressLocality": "Avezzano",
+                    "addressRegion": "AQ",
+                    "addressCountry": "IT"
+                  },
+                  "areaServed": "Avezzano"
+                }
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "item": {
+                  "@type": "ExerciseGym",
+                  "name": "FitLab Avezzano",
+                  "address": {
+                    "@type": "PostalAddress",
+                    "addressLocality": "Avezzano",
+                    "addressRegion": "AQ",
+                    "addressCountry": "IT"
+                  },
+                  "areaServed": "Avezzano"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
     <link rel="stylesheet" href="styles.css?v=72" />
   </head>
   <body class="seo-body">
@@ -49,6 +114,11 @@
           <a href="estate-2026.html">Estate 2026</a>
         </nav>
       </header>
+      <nav class="seo-breadcrumb" aria-label="Percorso pagina">
+        <a href="index.html">Home</a>
+        <span>/</span>
+        <span>Attività locali</span>
+      </nav>
 
       <main>
         <section class="seo-hero">
@@ -76,6 +146,37 @@
             <article class="seo-card">
               <h3>Palestre e benessere</h3>
               <p>Fitness, centri estetici, servizi alla persona e coupon demo.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="seo-section">
+          <p class="seo-kicker">Esempi demo</p>
+          <h2>Schede attività strutturate</h2>
+          <div class="seo-grid">
+            <article class="seo-card">
+              <h3>Caffè Risorgimento</h3>
+              <ul class="seo-meta">
+                <li>Bar</li>
+                <li>Avezzano</li>
+              </ul>
+              <p>Locale demo usato per mostrare coupon, aperitivi e posizionamento in mappa.</p>
+            </article>
+            <article class="seo-card">
+              <h3>Atelier Marsica</h3>
+              <ul class="seo-meta">
+                <li>Negozio</li>
+                <li>Shopping</li>
+              </ul>
+              <p>Scheda demo per offerte, promozioni e nuove collezioni.</p>
+            </article>
+            <article class="seo-card">
+              <h3>FitLab Avezzano</h3>
+              <ul class="seo-meta">
+                <li>Palestra</li>
+                <li>Fitness</li>
+              </ul>
+              <p>Scheda demo per attività sportive, prove gratuite e raccolta punti.</p>
             </article>
           </div>
         </section>

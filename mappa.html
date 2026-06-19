@@ -28,6 +28,29 @@
         }
       }
     </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://myavezzano.vercel.app/" },
+              { "@type": "ListItem", "position": 2, "name": "Mappa", "item": "https://myavezzano.vercel.app/mappa.html" }
+            ]
+          },
+          {
+            "@type": "ItemList",
+            "name": "Categorie sulla mappa MyAvezzano",
+            "itemListElement": [
+              { "@type": "ListItem", "position": 1, "name": "Locali e ristoranti ad Avezzano" },
+              { "@type": "ListItem", "position": 2, "name": "Negozi e servizi ad Avezzano" },
+              { "@type": "ListItem", "position": 3, "name": "Eventi vicini ad Avezzano" }
+            ]
+          }
+        ]
+      }
+    </script>
     <link rel="stylesheet" href="styles.css?v=72" />
   </head>
   <body class="seo-body">
@@ -44,6 +67,11 @@
           <a href="attivita-locali.html">Attività locali</a>
         </nav>
       </header>
+      <nav class="seo-breadcrumb" aria-label="Percorso pagina">
+        <a href="index.html">Home</a>
+        <span>/</span>
+        <span>Mappa</span>
+      </nav>
 
       <main>
         <section class="seo-hero">

@@ -25,12 +25,46 @@
           "@type": "OfferCatalog",
           "name": "Coupon MyAvezzano",
           "itemListElement": [
-            { "@type": "Offer", "name": "Aperitivo 2x1", "category": "Bar e aperitivo", "areaServed": "Avezzano" },
-            { "@type": "Offer", "name": "-20% nuova collezione", "category": "Shopping locale", "areaServed": "Avezzano" },
-            { "@type": "Offer", "name": "Ingresso prova gratuito", "category": "Fitness", "areaServed": "Avezzano" }
+            {
+              "@type": "Offer",
+              "name": "Aperitivo 2x1",
+              "category": "Bar e aperitivo",
+              "areaServed": "Avezzano",
+              "url": "https://myavezzano.vercel.app/coupon.html",
+              "availability": "https://schema.org/InStock",
+              "seller": { "@type": "CafeOrCoffeeShop", "name": "Caffè Risorgimento" }
+            },
+            {
+              "@type": "Offer",
+              "name": "-20% nuova collezione",
+              "category": "Shopping locale",
+              "areaServed": "Avezzano",
+              "url": "https://myavezzano.vercel.app/coupon.html",
+              "availability": "https://schema.org/InStock",
+              "seller": { "@type": "Store", "name": "Atelier Marsica" }
+            },
+            {
+              "@type": "Offer",
+              "name": "Ingresso prova gratuito",
+              "category": "Fitness",
+              "areaServed": "Avezzano",
+              "url": "https://myavezzano.vercel.app/coupon.html",
+              "availability": "https://schema.org/InStock",
+              "seller": { "@type": "ExerciseGym", "name": "FitLab Avezzano" }
+            }
           ]
         },
         "inLanguage": "it-IT"
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://myavezzano.vercel.app/" },
+          { "@type": "ListItem", "position": 2, "name": "Coupon", "item": "https://myavezzano.vercel.app/coupon.html" }
+        ]
       }
     </script>
     <link rel="stylesheet" href="styles.css?v=72" />
@@ -49,6 +83,11 @@
           <a href="attivita-locali.html">Attività locali</a>
         </nav>
       </header>
+      <nav class="seo-breadcrumb" aria-label="Percorso pagina">
+        <a href="index.html">Home</a>
+        <span>/</span>
+        <span>Coupon</span>
+      </nav>
 
       <main>
         <section class="seo-hero">

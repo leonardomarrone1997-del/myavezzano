@@ -30,6 +30,101 @@
         ]
       }
     </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://myavezzano.vercel.app/" },
+              { "@type": "ListItem", "position": 2, "name": "Eventi", "item": "https://myavezzano.vercel.app/eventi.html" }
+            ]
+          },
+          {
+            "@type": "ItemList",
+            "name": "Appuntamenti principali ad Avezzano",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "item": {
+                  "@type": "Event",
+                  "name": "School of Rock 2026",
+                  "startDate": "2026-06-27",
+                  "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+                  "eventStatus": "https://schema.org/EventScheduled",
+                  "image": "https://myavezzano.vercel.app/assets/avezzano-hero-day.jpg",
+                  "description": "Musica live e notte rock al Pinguino Village di Avezzano.",
+                  "location": {
+                    "@type": "Place",
+                    "name": "Pinguino Village",
+                    "address": {
+                      "@type": "PostalAddress",
+                      "addressLocality": "Avezzano",
+                      "addressRegion": "AQ",
+                      "addressCountry": "IT"
+                    }
+                  },
+                  "organizer": { "@type": "Organization", "name": "MyAvezzano" },
+                  "url": "https://myavezzano.vercel.app/eventi.html"
+                }
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "item": {
+                  "@type": "Event",
+                  "name": "Teatro Off: Dopo Cristo",
+                  "startDate": "2026-07-09T21:00:00+02:00",
+                  "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+                  "eventStatus": "https://schema.org/EventScheduled",
+                  "image": "https://myavezzano.vercel.app/assets/avezzano-hero-day.jpg",
+                  "description": "Cabaret e teatro contemporaneo nel giardino del Castello Orsini.",
+                  "location": {
+                    "@type": "Place",
+                    "name": "Castello Orsini",
+                    "address": {
+                      "@type": "PostalAddress",
+                      "addressLocality": "Avezzano",
+                      "addressRegion": "AQ",
+                      "addressCountry": "IT"
+                    }
+                  },
+                  "organizer": { "@type": "Organization", "name": "MyAvezzano" },
+                  "url": "https://myavezzano.vercel.app/eventi.html"
+                }
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "item": {
+                  "@type": "Event",
+                  "name": "Festiv'Alba 2026",
+                  "startDate": "2026-07-01",
+                  "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+                  "eventStatus": "https://schema.org/EventScheduled",
+                  "image": "https://myavezzano.vercel.app/assets/avezzano-hero-day.jpg",
+                  "description": "Musica e teatro nella cornice archeologica dell'Anfiteatro Romano di Alba Fucens.",
+                  "location": {
+                    "@type": "Place",
+                    "name": "Anfiteatro Romano di Alba Fucens",
+                    "address": {
+                      "@type": "PostalAddress",
+                      "addressLocality": "Massa d'Albe",
+                      "addressRegion": "AQ",
+                      "addressCountry": "IT"
+                    }
+                  },
+                  "organizer": { "@type": "Organization", "name": "MyAvezzano" },
+                  "url": "https://myavezzano.vercel.app/eventi.html"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
     <link rel="stylesheet" href="styles.css?v=72" />
   </head>
   <body class="seo-body">
@@ -46,6 +141,11 @@
           <a href="attivita-locali.html">Attività locali</a>
         </nav>
       </header>
+      <nav class="seo-breadcrumb" aria-label="Percorso pagina">
+        <a href="index.html">Home</a>
+        <span>/</span>
+        <span>Eventi</span>
+      </nav>
 
       <main>
         <section class="seo-hero">
