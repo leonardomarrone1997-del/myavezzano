@@ -3,7 +3,25 @@
   <url>
     <loc>https://myavezzano.vercel.app/</loc>
     <lastmod>2026-06-19</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://myavezzano.vercel.app/eventi.html</loc>
+    <lastmod>2026-06-19</lastmod>
+  </url>
+  <url>
+    <loc>https://myavezzano.vercel.app/coupon.html</loc>
+    <lastmod>2026-06-19</lastmod>
+  </url>
+  <url>
+    <loc>https://myavezzano.vercel.app/mappa.html</loc>
+    <lastmod>2026-06-19</lastmod>
+  </url>
+  <url>
+    <loc>https://myavezzano.vercel.app/estate-2026.html</loc>
+    <lastmod>2026-06-19</lastmod>
+  </url>
+  <url>
+    <loc>https://myavezzano.vercel.app/attivita-locali.html</loc>
+    <lastmod>2026-06-19</lastmod>
   </url>
 </urlset>

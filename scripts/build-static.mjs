@@ -6,6 +6,11 @@ const root = path.resolve(fileURLToPath(new URL("..", import.meta.url)));
 const output = path.join(root, "public");
 const entries = [
   "index.html",
+  "eventi.html",
+  "coupon.html",
+  "mappa.html",
+  "estate-2026.html",
+  "attivita-locali.html",
   "styles.css",
   "app.js",
   "manifest.json",
