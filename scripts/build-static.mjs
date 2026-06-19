@@ -12,6 +12,7 @@ const entries = [
   "service-worker.js",
   "robots.txt",
   "sitemap.xml",
+  "googleb99b104558bbc069.html",
   "assets"
 ];
 
