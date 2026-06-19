@@ -1,13 +1,18 @@
-const CACHE_NAME = "myavezzano-v69";
+const CACHE_NAME = "myavezzano-v71";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
   "./manifest.json",
+  "./robots.txt",
+  "./sitemap.xml",
   "./assets/app-icon.svg",
   "./assets/avezzano-hero-day.jpg",
   "./assets/avezzano-hero-night.jpg",
+  "./assets/coupons/aperitivo-2x1.svg",
+  "./assets/coupons/atelier-marsica-20.svg",
+  "./assets/coupons/fitlab-prova-gratis.svg",
   "./assets/home-actions/cena-light.png",
   "./assets/home-actions/cena-dark.png",
   "./assets/home-actions/aperitivo-light.png",

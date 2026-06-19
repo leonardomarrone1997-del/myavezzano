@@ -488,9 +488,9 @@ const events = [
 ];
 
 const coupons = [
-  ["Aperitivo 2x1", "Caffè Risorgimento", "Scade oggi alle 20:00", "35 punti", "assets/coupons/aperitivo-2x1.svg"],
-  ["-20% nuova collezione", "Atelier Marsica", "Valido fino a domenica", "80 usi rimasti", "assets/coupons/atelier-marsica-20.svg"],
-  ["Ingresso prova gratuito", "FitLab Avezzano", "Prenota entro 48 ore", "50 punti", "assets/coupons/fitlab-prova-gratis.svg"]
+  ["Aperitivo 2x1", "Caffè Risorgimento", "Scade oggi alle 20:00", "35 punti", "assets/coupons/aperitivo-2x1.svg", "AVZ-APERITIVO-2X1"],
+  ["-20% nuova collezione", "Atelier Marsica", "Valido fino a domenica", "80 usi rimasti", "assets/coupons/atelier-marsica-20.svg", "AVZ-MARSICA-20"],
+  ["Ingresso prova gratuito", "FitLab Avezzano", "Prenota entro 48 ore", "50 punti", "assets/coupons/fitlab-prova-gratis.svg", "AVZ-FITLAB-PROVA"]
 ];
 
 const rewards = [
@@ -1000,15 +1000,18 @@ function render() {
     `;
   }).join("");
 
-  document.querySelector("#couponsGrid").innerHTML = coupons.map(([title, place, expires, meta, qrSrc]) => `
+  document.querySelector("#couponsGrid").innerHTML = coupons.map(([title, place, expires, meta, qrSrc, couponCode]) => `
     <article class="coupon-card">
       <div class="card-body">
         <p class="eyebrow">${place}</p>
         <h2>${title}</h2>
         <p>${expires}</p>
         <span class="pill success">${meta}</span>
-        <div class="qr" aria-label="QR Code coupon ${title}">
-          <img src="${qrSrc}" alt="QR coupon ${title} - ${place}" loading="lazy" decoding="async" />
+        <div class="qr-stack">
+          <div class="qr" aria-label="QR Code coupon ${title}">
+            <img src="${qrSrc}" alt="QR coupon ${title} - ${place}" loading="lazy" decoding="async" />
+          </div>
+          <span class="coupon-code-label">${couponCode}</span>
         </div>
       </div>
     </article>
