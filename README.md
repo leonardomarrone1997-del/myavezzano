@@ -1,6 +1,6 @@
 # MyAvezzano / LocalHub
 
-Prototype web standalone della piattaforma MyAvezzano: un atlante locale per eventi, luoghi, coupon, servizi utili, profilo utente, commercianti e admin.
+Prototipo web standalone della piattaforma MyAvezzano: un atlante locale per eventi, luoghi, coupon, servizi utili, profilo utente, commercianti e admin.
 
 ## Cosa contiene
 
@@ -8,19 +8,19 @@ Prototype web standalone della piattaforma MyAvezzano: un atlante locale per eve
 - Design minimal con testata chiara, card leggere e micro-widget meteo per Avezzano.
 - Scorciatoie rapide per cena, aperitivo, coupon, serate ed eventi.
 - Ricerca rapida visibile in home con suggerimenti per stasera, cena, coupon ed eventi.
-- Mappa reale OpenStreetMap con import automatico delle attività di Avezzano, marker a goccia con logo/foto dove disponibile, cache locale e link a Google Maps.
-- Eventi con prenotazioni e ticket digitali demo.
-- Coupon digitali con QR Code locali.
-- Sistema fedeltà con livello, progress e premi.
+- Mappa reale OpenStreetMap con importazione automatica delle attività di Avezzano, marker a goccia con logo/foto dove disponibile, cache locale e link a Google Maps.
+- Eventi con prenotazioni e biglietti digitali demo.
+- Coupon digitali con QR code locali.
+- Sistema fedeltà con livello, progresso e premi.
 - Sezione "Crea il tuo negozio" a pagamento, con piani da 12,99 EUR/mese e dashboard sbloccabile dopo checkout demo.
-- Admin panel con moderazione e analytics città.
+- Pannello admin con moderazione e analytics città.
 - Icona app personalizzata in `assets/app-icon.svg`.
 - Manifest PWA e service worker per installazione su Android/iOS.
 - Registrazione demo attiva con email/password, Google, telefono e Apple usando storage locale.
 - Pannello profilo utente con foto profilo, impostazioni, coupon, eventi, preferenze e creazione negozio.
 - Pulsanti principali collegati a flussi demo con toast, salvataggi locali, prenotazioni, reminder, filtri, strumenti commerciante e riepilogo nel profilo utente.
 - Demo guidata al primo ingresso, riapribile dal pulsante Guida e dalle impostazioni del profilo.
-- Dashboard locale in home con quick search, smart cards, stato giornata e navigazione mobile app-like.
+- Dashboard locale in home con ricerca rapida, schede smart, stato della giornata e navigazione mobile in stile app.
 - Transizione tema giorno/notte con passaggio tramonto/alba e rispetto di `prefers-reduced-motion`.
 - Atmosphere FX leggero: stormo di 4-5 rondini con ali animate nel tema giorno, stella cadente notturna con scia corretta, pulviscolo estivo quasi invisibile e pausa automatica quando la tab non è visibile.
 
@@ -30,18 +30,18 @@ Prototype web standalone della piattaforma MyAvezzano: un atlante locale per eve
 
 - PWA statica senza build, facile da provare e pubblicare.
 - Mappa reale con OpenStreetMap, cache e apertura Google Maps.
-- Account demo, admin nascosto, profilo, coupon, eventi e merchant dashboard già collegati a flussi locali.
-- Direzione visiva "Atlante Vivo" con coordinate, pass, marker, WebGL e tema dark/light.
+- Account demo, admin nascosto, profilo, coupon, eventi e dashboard commerciante già collegati a flussi locali.
+- Direzione visiva "Atlante Vivo" con coordinate, pass, marker, WebGL e tema chiaro/scuro.
 
 ### Corretto e migliorato
 
-- Home trasformata in dashboard locale con priorita chiare: cerca, esplora, salva, usa servizi.
-- Navigazione mobile aggiunta come bottom nav, mantenendo menu laterale e profilo in alto.
-- Ricerca globale resa piu visibile con suggerimenti rapidi e stato risultati.
+- Home trasformata in dashboard locale con priorità chiare: cerca, esplora, salva, usa servizi.
+- Navigazione mobile aggiunta in basso, mantenendo menu laterale e profilo in alto.
+- Ricerca globale resa più visibile con suggerimenti rapidi e stato dei risultati.
 - Aggiunta sezione "La tua giornata" alimentata da salvataggi, eventi e reminder locali.
-- Footer reso piu professionale e coerente con una piattaforma reale.
+- Footer reso più professionale e coerente con una piattaforma reale.
 - Service worker aggiornato con navigazioni network-first e fallback offline.
-- Manifest aggiornato con start URL, shortcut Estate 2026 e descrizione piu chiara.
+- Manifest aggiornato con start URL, scorciatoia Estate 2026 e descrizione più chiara.
 
 ### Da completare per produzione reale
 
@@ -59,7 +59,7 @@ Apri `index.html` nel browser:
 
 Non richiede build, dipendenze o server locale.
 
-Per testare PWA, service worker e storage in modo piu fedele:
+Per testare PWA, service worker e storage in modo più fedele:
 
 `http://127.0.0.1:4178/`
 
@@ -70,7 +70,7 @@ Per testare PWA, service worker e storage in modo piu fedele:
 
 L'app crea automaticamente l'account admin demo al primo avvio.
 
-La voce Admin non compare nel menu pubblico. Dopo login con queste credenziali, nel profilo appare il pulsante `Pannello GOD`, che apre l'area riservata admin.
+La voce Admin non compare nel menu pubblico. Dopo il login con queste credenziali, nel profilo appare il pulsante `Pannello admin`, che apre l'area riservata.
 
 ## Asset visuali
 
@@ -82,9 +82,9 @@ Se il sito viene pubblicato in produzione, è consigliato salvare l'immagine in 
 Il sito include `MyAvezzano Intelligence Layer`, un livello locale e invisibile che:
 
 - interpreta ricerche come "pizza", "vestiti", "stasera", "palestra", "sconti";
-- ordina attività e lista "Vicino a te" con ranking smart;
+- ordina attività e lista "Vicino a te" con ranking intelligente;
 - calcola un punteggio qualità per schede locali;
-- mostra insight solo nel `Pannello GOD` admin;
+- mostra insight solo nel `Pannello admin`;
 - non espone chatbot o elementi visibili agli utenti normali.
 
 ## Database e sicurezza MVP
@@ -103,7 +103,7 @@ Le password email/password vengono salvate come hash SHA-256 con salt tramite We
 
 ## Nota tecnica
 
-In questa sessione Flutter e npm non sono disponibili, quindi questo output e un MVP web statico pronto da provare. La struttura e pensata per essere convertita in:
+In questa sessione Flutter e npm non sono disponibili, quindi questo output è un MVP web statico pronto da provare. La struttura è pensata per essere convertita in:
 
 - Flutter mobile/web per il frontend.
 - Node.js/NestJS per backend API.

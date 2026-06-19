@@ -85,7 +85,7 @@ const userSubmittedBusinesses = [
     lng: 13.4269,
     address: "Via Orazio Mattei 27, Avezzano",
     phone: "+393477956213",
-    stats: "Attivita inserita",
+    stats: "Attività inserita",
     logo: "assets/app-icon.svg",
     image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80",
     caption: "Ristorante inserito nella rete MyAvezzano."
@@ -98,7 +98,7 @@ const userSubmittedBusinesses = [
     lng: 13.4191,
     address: "Via Francia 33, Avezzano",
     phone: "+393288827472",
-    stats: "Attivita inserita",
+    stats: "Attività inserita",
     logo: "assets/app-icon.svg",
     image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=600&q=80",
     caption: "Negozio di abbigliamento inserito nella rete MyAvezzano."
@@ -111,11 +111,11 @@ const userSubmittedBusinesses = [
     lng: 13.4126,
     address: "Via XX Settembre 411, Avezzano",
     phone: "",
-    stats: "Attivita inserita",
+    stats: "Attività inserita",
     photo: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Shopping_Park_Ten.jpg/330px-Shopping_Park_Ten.jpg",
     photoCredit: "Wikimedia Commons",
     image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=600&q=80",
-    caption: "Attivita commerciale inserita nella rete MyAvezzano."
+    caption: "Attività commerciale inserita nella rete MyAvezzano."
   },
   {
     name: "Tezenis",
@@ -125,7 +125,7 @@ const userSubmittedBusinesses = [
     lng: 13.4252,
     address: "Via Camillo Corradini 115/117, Avezzano",
     phone: "+39086321855",
-    stats: "Attivita inserita",
+    stats: "Attività inserita",
     logo: "assets/app-icon.svg",
     image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=600&q=80",
     caption: "Negozio di abbigliamento inserito nella rete MyAvezzano."
@@ -138,7 +138,7 @@ const userSubmittedBusinesses = [
     lng: 13.4198,
     address: "Via Filippo Brunelleschi 65, Avezzano",
     phone: "+39086325941",
-    stats: "Attivita inserita",
+    stats: "Attività inserita",
     logo: "assets/app-icon.svg",
     image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80",
     caption: "Ristorante e pizzeria inserito nella rete MyAvezzano."
@@ -151,10 +151,10 @@ const userSubmittedBusinesses = [
     lng: 13.4269,
     address: "V. Monsignor Pio Marcello Bagnoli 75/79, Avezzano",
     phone: "+39086325280",
-    stats: "Attivita inserita",
+    stats: "Attività inserita",
     logo: "assets/app-icon.svg",
     image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=600&q=80",
-    caption: "Attivita locale inserita nella rete MyAvezzano."
+    caption: "Attività locale inserita nella rete MyAvezzano."
   },
   {
     name: "OMG SRL",
@@ -164,10 +164,10 @@ const userSubmittedBusinesses = [
     lng: 13.4130,
     address: "Via XX Settembre 396, Avezzano",
     phone: "+39086338225",
-    stats: "Attivita inserita",
+    stats: "Attività inserita",
     logo: "assets/app-icon.svg",
     image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=600&q=80",
-    caption: "Attivita commerciale inserita nella rete MyAvezzano."
+    caption: "Attività commerciale inserita nella rete MyAvezzano."
   },
   {
     name: "Rigatoni Avezzano",
@@ -177,7 +177,7 @@ const userSubmittedBusinesses = [
     lng: 13.4142,
     address: "Via Roma 323, Avezzano",
     phone: "+390863451919",
-    stats: "Attivita inserita",
+    stats: "Attività inserita",
     logo: "assets/app-icon.svg",
     image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80",
     caption: "Ristorante inserito nella rete MyAvezzano."
@@ -324,7 +324,7 @@ const categoryImages = {
   "Hotel": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80",
   "Negozio": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=600&q=80",
   "Servizio": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=600&q=80",
-  "Attivita locale": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80"
+  "Attività locale": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80"
 };
 
 const quickActions = [
@@ -350,7 +350,7 @@ const cityHighlights = [
     title: "Festiv'Alba 2026 ad Alba Fucens",
     place: "Anfiteatro Romano di Alba Fucens",
     when: "1 luglio - 7 agosto 2026",
-    detail: "Musica, teatro classico e grandi appuntamenti nella cornice archeologica vicino Avezzano.",
+    detail: "Musica, teatro classico e grandi appuntamenti nella cornice archeologica vicino ad Avezzano.",
     image: "https://images.unsplash.com/photo-1531572753322-ad063cecc140?auto=format&fit=crop&w=1000&q=80",
     cta: "Vedi date"
   },
@@ -516,8 +516,8 @@ const userPreferences = ["Eventi", "Sconti", "Nuove aperture", "Ristoranti", "Pa
 const pageMeta = {
   feed: {
     eyebrow: "MyAvezzano live",
-    title: "La città, a portata di giornata",
-    copy: "Eventi, locali, negozi e piccole scoperte di Avezzano raccolti in una home semplice, bella da aprire e veloce da usare."
+    title: "La città, giorno per giorno",
+    copy: "Eventi, locali, negozi e piccole scoperte di Avezzano raccolti in una schermata semplice, piacevole da aprire e veloce da usare."
   },
   map: {
     eyebrow: "Cartografia viva",
@@ -550,7 +550,7 @@ const pageMeta = {
     copy: "Non una scheda statica: un pannello per pubblicare offerte, leggere segnali e trasformare visibilità in azioni."
   },
   admin: {
-    eyebrow: "Pannello GOD",
+    eyebrow: "Pannello admin",
     title: "Regia operativa MyAvezzano",
     copy: "Utenti, contenuti, insight invisibili e strumenti di controllo raccolti in una cabina di comando essenziale."
   },
@@ -587,7 +587,7 @@ const citySignatures = {
   loyalty: ["AVZ-05", "Saldo / premi / progressi", "Credito locale", "Punti"],
   profile: ["AVZ-06", "ID personale / archivio", "Tessera cittadina", "Privato"],
   merchant: ["AVZ-07", "Scheda / campagne / checkout", "Console business", "B2B"],
-  admin: ["AVZ-GOD", "Insight / utenti / controllo", "Cabina di regia", "Riservato"],
+  admin: ["AVZ-ADM", "Insight / utenti / controllo", "Cabina di regia", "Riservato"],
   summer: ["AVZ-26", "Estate / tappe / luce", "Itinerario", "2026"],
   legal: ["AVZ-00", "Privacy / termini / cookie", "Registro fiducia", "Chiaro"]
 };
@@ -1008,7 +1008,7 @@ function render() {
         <p>${expires}</p>
         <span class="pill success">${meta}</span>
         <div class="qr-stack">
-          <div class="qr" aria-label="QR Code coupon ${title}">
+          <div class="qr" aria-label="QR code coupon ${title}">
             <img src="${qrSrc}" alt="QR coupon ${title} - ${place}" loading="lazy" decoding="async" />
           </div>
           <span class="coupon-code-label">${couponCode}</span>
@@ -1145,7 +1145,7 @@ function renderProfileActions() {
   const adminAction = isAdmin(user)
     ? `
       <button class="profile-action-card god-action" data-view-target="admin" type="button">
-        <strong>Pannello GOD</strong>
+      <strong>Pannello admin</strong>
         <span>Controllo admin completo</span>
       </button>
     `
@@ -1175,7 +1175,7 @@ function renderProfileActions() {
     </button>
     <button class="profile-action-card" data-view-target="map" type="button">
       <strong>Luoghi salvati</strong>
-      <span>Attivita e percorsi</span>
+      <span>Attività e percorsi</span>
     </button>
   `;
 }
@@ -1211,7 +1211,7 @@ function renderProfilePanel(panel = "settings") {
 
 function prestigeState(user = getStoredUser()) {
   if (!user) return { level: "Base", progress: 18, points: 0 };
-  if (user.role === "admin") return { level: "GOD", progress: 96, points: 9990 };
+  if (user.role === "admin") return { level: "Admin", progress: 96, points: 9990 };
   const basePoints = 1240 + profileCouponRows().length * 110 + profileEventRows().length * 90;
   const progress = Math.min(92, 42 + Math.round((basePoints % 900) / 18));
   return { level: basePoints > 1600 ? "Gold" : "Silver", progress, points: basePoints };
@@ -1343,7 +1343,7 @@ function renderAdminDashboard() {
       <section class="panel empty-profile">
         <strong>Area riservata agli amministratori</strong>
         <span>Accedi con un account admin per gestire utenti, contenuti e statistiche.</span>
-        <button class="primary-action" id="adminLoginButton" type="button">Login admin</button>
+        <button class="primary-action" id="adminLoginButton" type="button">Accedi come admin</button>
       </section>
     `;
     document.querySelector("#adminLoginButton")?.addEventListener("click", () => openSignup("login"));
@@ -1363,8 +1363,8 @@ function renderAdminDashboard() {
     <div class="admin-shell">
       <section class="panel admin-hero god-hero">
         <div>
-          <p class="eyebrow">GOD mode</p>
-          <h2>Pannello GOD MyAvezzano</h2>
+          <p class="eyebrow">Area admin</p>
+          <h2>Pannello admin MyAvezzano</h2>
           <p>Controllo riservato all'account admin: utenti, ruoli, contenuti, richieste, sicurezza e dati locali.</p>
         </div>
         <button class="ghost" data-admin-action="logout" type="button">Logout</button>
@@ -1373,7 +1373,7 @@ function renderAdminDashboard() {
         <div><span>Utenti</span><strong>${users.filter((user) => user.status !== "deleted").length}</strong></div>
         <div><span>Admin</span><strong>${users.filter((user) => user.role === "admin").length}</strong></div>
         <div><span>Richieste</span><strong>${requests.length}</strong></div>
-        <div><span>Attivita</span><strong>${mapPlaces.length}</strong></div>
+        <div><span>Attività</span><strong>${mapPlaces.length}</strong></div>
       </section>
       <section class="panel intelligence-panel">
         <div class="panel-head">
@@ -1389,7 +1389,7 @@ function renderAdminDashboard() {
       </section>
       <section class="panel god-command">
         <div>
-          <strong>Azioni rapide GOD</strong>
+          <strong>Azioni rapide admin</strong>
           <span>Strumenti demo per controllo totale del prototipo.</span>
         </div>
         <div class="composer-actions">
@@ -1482,8 +1482,8 @@ function handleAdminAction(button) {
       merchant: getMerchantSubscription(),
       exportedAt: new Date().toISOString()
     };
-    console.info("MyAvezzano GOD export", payload);
-    showToast("Export GOD generato in console browser.", "success");
+    console.info("MyAvezzano admin export", payload);
+    showToast("Export admin generato nella console del browser.", "success");
     return;
   }
 
@@ -1605,7 +1605,7 @@ function categoryFromTags(tags) {
   if (tourism === "hotel" || tourism === "guest_house" || tourism === "apartment") return "Hotel";
   if (shop) return "Negozio";
   if (tags.office || tags.craft || tags.healthcare) return "Servizio";
-  return "Attivita locale";
+  return "Attività locale";
 }
 
 function addressFromTags(tags) {
@@ -1648,7 +1648,7 @@ async function imageFromOsmTags(tags, category) {
   if (commons?.startsWith("File:")) return commonsFilePath(commons);
 
   const wikidata = await wikidataImage(tags.wikidata);
-  return wikidata || categoryImages[category] || categoryImages["Attivita locale"];
+  return wikidata || categoryImages[category] || categoryImages["Attività locale"];
 }
 
 async function osmElementToPlace(element, index) {
@@ -1818,13 +1818,13 @@ async function loadRealAvezzanoBusinesses(force = false) {
 
     if (!places.length) throw new Error("Nessuna attività trovata");
     localStorage.setItem(OSM_CACHE_KEY, JSON.stringify(places));
-    applyImportedPlaces(places, `${places.length} attività reali importate da OpenStreetMap. Le foto sono reali dove disponibili, altrimenti categoria demo.`);
+    applyImportedPlaces(places, `${places.length} attività reali importate da OpenStreetMap. Le foto sono reali quando disponibili; in alternativa viene usata l'immagine demo della categoria.`);
   } catch {
     const cached = cachedOsmPlaces();
     if (cached.length) {
-      applyImportedPlaces(cached, `${cached.length} attività caricate dalla cache locale. Import online non riuscito.`);
+      applyImportedPlaces(cached, `${cached.length} attività caricate dalla cache locale. Importazione online non riuscita.`);
     } else {
-      status.textContent = "Import online non riuscito. La demo resta con dati locali; riprova con connessione attiva.";
+      status.textContent = "Importazione online non riuscita. La demo resta con dati locali; riprova con una connessione attiva.";
     }
   } finally {
     isLoadingRealPlaces = false;
@@ -2430,7 +2430,7 @@ function handleAction(button) {
   }
 
   if (action === "upload-media") {
-    showToast("Upload demo pronto: in produzione aprirà galleria/camera.");
+    showToast("Caricamento demo pronto: in produzione aprirà galleria o fotocamera.");
     return;
   }
 

@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>MyAvezzano - Atlante locale di Avezzano</title>
-    <meta name="description" content="Hub locale per eventi, luoghi, coupon, servizi utili e attività ad Avezzano." />
+    <title>MyAvezzano | Eventi, coupon e attività ad Avezzano</title>
+    <meta name="description" content="Scopri eventi, coupon, mappa, nuove aperture e attività locali ad Avezzano. Una PWA semplice per scegliere cosa fare oggi in città." />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#f7f8fb" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -18,12 +18,23 @@
     <link rel="preconnect" href="https://unpkg.com" crossorigin />
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <meta property="og:title" content="MyAvezzano - Eventi, coupon e attività locali ad Avezzano" />
-    <meta property="og:description" content="Scopri eventi, sconti, nuove aperture, mappa e servizi utili ad Avezzano." />
+    <meta property="og:locale" content="it_IT" />
+    <meta property="og:site_name" content="MyAvezzano" />
+    <meta property="og:title" content="MyAvezzano | Eventi, coupon e attività ad Avezzano" />
+    <meta property="og:description" content="Scopri eventi, coupon, mappa, nuove aperture e attività locali ad Avezzano. Una PWA semplice per scegliere cosa fare oggi in città." />
     <meta property="og:url" content="https://myavezzano.vercel.app/" />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://myavezzano.vercel.app/assets/avezzano-hero-day.jpg" />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content="https://myavezzano.vercel.app/assets/social-preview.jpg" />
+    <meta property="og:image:secure_url" content="https://myavezzano.vercel.app/assets/social-preview.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Anteprima MyAvezzano con eventi, coupon e mappa di Avezzano." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="MyAvezzano | Eventi, coupon e attività ad Avezzano" />
+    <meta name="twitter:description" content="Eventi, coupon, mappa, nuove aperture e attività locali ad Avezzano in una PWA semplice." />
+    <meta name="twitter:image" content="https://myavezzano.vercel.app/assets/social-preview.jpg" />
+    <meta name="twitter:image:alt" content="Anteprima MyAvezzano con eventi, coupon e mappa di Avezzano." />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -46,7 +57,7 @@
         ]
       }
     </script>
-    <link rel="stylesheet" href="styles.css?v=72" />
+    <link rel="stylesheet" href="styles.css?v=73" />
   </head>
   <body>
     <a class="skip-link" href="#mainContent">Vai al contenuto</a>
@@ -100,8 +111,8 @@
         <header class="topbar">
           <div>
             <p class="eyebrow" id="pageEyebrow">MyAvezzano live</p>
-            <h1 id="pageTitle">La città, a portata di giornata</h1>
-            <p class="topbar-copy" id="pageCopy">Eventi, locali, negozi e piccole scoperte di Avezzano raccolti in una home semplice, bella da aprire e veloce da usare.</p>
+            <h1 id="pageTitle">La città, giorno per giorno</h1>
+            <p class="topbar-copy" id="pageCopy">Eventi, locali, negozi e piccole scoperte di Avezzano raccolti in una schermata semplice, piacevole da aprire e veloce da usare.</p>
             <div class="city-signature" aria-label="Coordinate sezione">
               <span id="pageCode">AVZ-00</span>
               <span id="pageCoords">42.0326 N / 13.4256 E</span>
@@ -205,7 +216,7 @@
                 <strong>Seleziona una destinazione</strong>
                 <span>Scegli un'attività dall'elenco o dalla mappa per avviare la navigazione reale.</span>
               </div>
-              <p class="map-status" id="mapStatus">Mappa centrata su Avezzano. Import automatico attività reali da OpenStreetMap.</p>
+              <p class="map-status" id="mapStatus">Mappa centrata su Avezzano. Importazione automatica delle attività reali da OpenStreetMap.</p>
             </div>
             <aside class="panel map-panel">
               <div class="panel-head">
@@ -228,7 +239,7 @@
           <div class="event-categories" id="eventCategories"></div>
           <div class="tonight-panel">
             <div>
-              <p class="eyebrow">Cosa c'e questa sera?</p>
+              <p class="eyebrow">Cosa c'è questa sera?</p>
               <h2>Serate consigliate vicino a te</h2>
               <p>Una selezione rapida per decidere dove andare stasera: aperitivi, feste, musica live e discoteca.</p>
             </div>
@@ -330,7 +341,7 @@
               </button>
               <button class="profile-action-card" data-view-target="map" type="button">
                 <strong>Luoghi salvati</strong>
-                <span>Attivita e percorsi</span>
+                <span>Attività e percorsi</span>
               </button>
             </section>
 
@@ -387,10 +398,10 @@
               <article class="pricing-card">
                 <p class="eyebrow">Gold</p>
                 <h2>59,99 EUR/mese</h2>
-                <p>Per campagne locali, notifiche web app e massima visibilità cittadina.</p>
+                <p>Per campagne locali, notifiche per web app e massima visibilità cittadina.</p>
                 <ul>
                   <li>Posizionamento prioritario</li>
-                  <li>Notifiche promozionali web app</li>
+                  <li>Notifiche promozionali per web app</li>
                   <li>Analytics avanzate</li>
                   <li>Supporto prioritario</li>
                 </ul>
@@ -414,12 +425,12 @@
                   <input id="merchantBusinessCategory" type="text" placeholder="Bar, ristorante, negozio..." />
                 </label>
                 <label class="field">
-                  <span>Metodo pagamento demo</span>
+                  <span>Metodo di pagamento demo</span>
                   <input id="merchantPaymentMethod" type="text" placeholder="Carta demo **** 4242" />
                 </label>
                 <button class="primary-action full-button" id="confirmMerchantPayment" type="button">Paga e crea negozio</button>
               </div>
-              <p class="legal">Checkout demo: nessun addebito reale. In produzione collegare Stripe, Nexi o altro gateway di pagamento.</p>
+              <p class="legal">Checkout demo: nessun addebito reale. In produzione andrà collegato Stripe, Nexi o un altro gateway di pagamento.</p>
             </section>
           </div>
 
@@ -615,7 +626,7 @@
         <button class="primary-action full-button" id="loginAccount" type="button" hidden>Accedi</button>
         <button class="ghost full-button" id="recoverPassword" type="button" hidden>Recupera password</button>
         <button class="ghost full-button logout-button" id="logoutAccount" type="button" hidden>Esci dall'account</button>
-        <p class="legal">Admin test: admin@myavezzano.it / Admin123!</p>
+        <p class="legal">Accesso admin demo: admin@myavezzano.it / Admin123!</p>
       </section>
     </div>
 
@@ -646,6 +657,6 @@
     <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
     <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script defer src="app.js?v=72"></script>
+    <script defer src="app.js?v=75"></script>
   </body>
 </html>
