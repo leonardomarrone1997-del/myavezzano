@@ -1,7 +1,7 @@
 {
   "name": "MyAvezzano",
   "short_name": "MyAvezzano",
-  "description": "Hub locale intelligente per eventi, luoghi, coupon, servizi e attivita ad Avezzano.",
+  "description": "Hub locale intelligente per eventi, luoghi, coupon, servizi e attività ad Avezzano.",
   "id": "/myavezzano/",
   "start_url": "./index.html#feed",
   "scope": "./",
@@ -37,7 +37,7 @@
     {
       "name": "Mappa",
       "short_name": "Mappa",
-      "description": "Trova attivita vicine",
+      "description": "Trova attività vicine",
       "url": "./index.html#map",
       "icons": [{ "src": "assets/app-icon.svg", "sizes": "1024x1024", "type": "image/svg+xml" }]
     },

@@ -111,8 +111,8 @@
         <header class="topbar">
           <div>
             <p class="eyebrow" id="pageEyebrow">MyAvezzano live</p>
-            <h1 id="pageTitle">La città, a portata di giornata</h1>
-            <p class="topbar-copy" id="pageCopy">Eventi, locali, negozi e piccole scoperte di Avezzano raccolti in una home semplice, bella da aprire e veloce da usare.</p>
+            <h1 id="pageTitle">La città, giorno per giorno</h1>
+            <p class="topbar-copy" id="pageCopy">Eventi, locali, negozi e piccole scoperte di Avezzano raccolti in una schermata semplice, piacevole da aprire e veloce da usare.</p>
             <div class="city-signature" aria-label="Coordinate sezione">
               <span id="pageCode">AVZ-00</span>
               <span id="pageCoords">42.0326 N / 13.4256 E</span>
@@ -216,7 +216,7 @@
                 <strong>Seleziona una destinazione</strong>
                 <span>Scegli un'attività dall'elenco o dalla mappa per avviare la navigazione reale.</span>
               </div>
-              <p class="map-status" id="mapStatus">Mappa centrata su Avezzano. Import automatico attività reali da OpenStreetMap.</p>
+              <p class="map-status" id="mapStatus">Mappa centrata su Avezzano. Importazione automatica delle attività reali da OpenStreetMap.</p>
             </div>
             <aside class="panel map-panel">
               <div class="panel-head">
@@ -239,7 +239,7 @@
           <div class="event-categories" id="eventCategories"></div>
           <div class="tonight-panel">
             <div>
-              <p class="eyebrow">Cosa c'e questa sera?</p>
+              <p class="eyebrow">Cosa c'è questa sera?</p>
               <h2>Serate consigliate vicino a te</h2>
               <p>Una selezione rapida per decidere dove andare stasera: aperitivi, feste, musica live e discoteca.</p>
             </div>
@@ -341,7 +341,7 @@
               </button>
               <button class="profile-action-card" data-view-target="map" type="button">
                 <strong>Luoghi salvati</strong>
-                <span>Attivita e percorsi</span>
+                <span>Attività e percorsi</span>
               </button>
             </section>
 
@@ -398,10 +398,10 @@
               <article class="pricing-card">
                 <p class="eyebrow">Gold</p>
                 <h2>59,99 EUR/mese</h2>
-                <p>Per campagne locali, notifiche web app e massima visibilità cittadina.</p>
+                <p>Per campagne locali, notifiche per web app e massima visibilità cittadina.</p>
                 <ul>
                   <li>Posizionamento prioritario</li>
-                  <li>Notifiche promozionali web app</li>
+                  <li>Notifiche promozionali per web app</li>
                   <li>Analytics avanzate</li>
                   <li>Supporto prioritario</li>
                 </ul>
@@ -425,12 +425,12 @@
                   <input id="merchantBusinessCategory" type="text" placeholder="Bar, ristorante, negozio..." />
                 </label>
                 <label class="field">
-                  <span>Metodo pagamento demo</span>
+                  <span>Metodo di pagamento demo</span>
                   <input id="merchantPaymentMethod" type="text" placeholder="Carta demo **** 4242" />
                 </label>
                 <button class="primary-action full-button" id="confirmMerchantPayment" type="button">Paga e crea negozio</button>
               </div>
-              <p class="legal">Checkout demo: nessun addebito reale. In produzione collegare Stripe, Nexi o altro gateway di pagamento.</p>
+              <p class="legal">Checkout demo: nessun addebito reale. In produzione andrà collegato Stripe, Nexi o un altro gateway di pagamento.</p>
             </section>
           </div>
 
@@ -626,7 +626,7 @@
         <button class="primary-action full-button" id="loginAccount" type="button" hidden>Accedi</button>
         <button class="ghost full-button" id="recoverPassword" type="button" hidden>Recupera password</button>
         <button class="ghost full-button logout-button" id="logoutAccount" type="button" hidden>Esci dall'account</button>
-        <p class="legal">Admin test: admin@myavezzano.it / Admin123!</p>
+        <p class="legal">Accesso admin demo: admin@myavezzano.it / Admin123!</p>
       </section>
     </div>
 
@@ -657,6 +657,6 @@
     <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
     <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script defer src="app.js?v=73"></script>
+    <script defer src="app.js?v=75"></script>
   </body>
 </html>
