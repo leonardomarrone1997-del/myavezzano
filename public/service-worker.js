@@ -1,4 +1,4 @@
-const CACHE_NAME = "myavezzano-v73";
+const CACHE_NAME = "myavezzano-v74";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -15,6 +15,7 @@ const APP_SHELL = [
   "./assets/app-icon.svg",
   "./assets/avezzano-hero-day.jpg",
   "./assets/avezzano-hero-night.jpg",
+  "./assets/social-preview.jpg",
   "./assets/coupons/aperitivo-2x1.svg",
   "./assets/coupons/atelier-marsica-20.svg",
   "./assets/coupons/fitlab-prova-gratis.svg",
