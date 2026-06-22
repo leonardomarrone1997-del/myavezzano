@@ -16,6 +16,8 @@ const APP_SHELL = [
   "./assets/app-icon.svg",
   "./assets/avezzano-hero-day.jpg",
   "./assets/avezzano-hero-night.jpg",
+  "./assets/avezzano-hero-day-mobile.jpg",
+  "./assets/avezzano-hero-night-mobile.jpg",
   "./assets/social-preview.jpg",
   "./assets/coupons/aperitivo-2x1.svg",
   "./assets/coupons/atelier-marsica-20.svg",

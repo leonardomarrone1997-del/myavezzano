@@ -519,9 +519,9 @@ const pageMeta = {
     copy: "Punti reali, partner verificati e percorsi rapidi: la mappa non decora, serve a trasformare l'interesse in movimento."
   },
   events: {
-    eyebrow: "Palinsesto urbano",
-    title: "La sera ha una regia",
-    copy: "Eventi e serate letti come una programmazione: orari, ritmo, prenotazioni e reminder senza dispersione."
+    eyebrow: "Agenda cittadina",
+    title: "Cosa fare, con date vere",
+    copy: "Eventi, sport, ambiente, motori, musica e teatro tra Avezzano e Alba Fucens, con filtri, salvataggi e reminder."
   },
   coupons: {
     eyebrow: "Valore immediato",

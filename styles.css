@@ -7354,6 +7354,11 @@ body.theme-dark .agenda-price {
 }
 
 @media (max-width: 760px) {
+  :root {
+    --avezzano-hero-day: url("assets/avezzano-hero-day-mobile.jpg");
+    --avezzano-hero-night: url("assets/avezzano-hero-night-mobile.jpg");
+  }
+
   .event-ticket-note {
     grid-template-columns: 1fr;
     gap: 8px;

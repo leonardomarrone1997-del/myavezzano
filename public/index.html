@@ -17,7 +17,6 @@
     <link rel="canonical" href="https://myavezzano.vercel.app/" />
     <link rel="preconnect" href="https://unpkg.com" crossorigin />
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <meta property="og:locale" content="it_IT" />
     <meta property="og:site_name" content="MyAvezzano" />
     <meta property="og:title" content="MyAvezzano | Eventi, coupon e attività ad Avezzano" />
@@ -57,7 +56,7 @@
         ]
       }
     </script>
-    <link rel="stylesheet" href="styles.css?v=76" />
+    <link rel="stylesheet" href="styles.css?v=77" />
   </head>
   <body>
     <a class="skip-link" href="#mainContent">Vai al contenuto</a>
@@ -239,7 +238,7 @@
           <div class="section-head">
             <div>
               <p class="eyebrow">Eventi Avezzano</p>
-              <h2>Divertimento, feste, serate e disco</h2>
+              <h2>Calendario di Avezzano e area immediata</h2>
             </div>
             <button class="primary-action" data-action="create-reminder" type="button">Crea reminder</button>
           </div>
@@ -247,20 +246,27 @@
           <div class="tonight-panel">
             <div>
               <p class="eyebrow">Cosa c'è questa sera?</p>
-              <h2>Serate consigliate vicino a te</h2>
-              <p>Una selezione rapida per decidere dove andare stasera: aperitivi, feste, musica live e discoteca.</p>
+              <h2 id="tonightHeading">Agenda aggiornata di oggi</h2>
+              <p id="tonightCopy">Controlliamo gli appuntamenti in programma ad Avezzano e nell'area immediata.</p>
             </div>
             <button class="light-action" data-action="create-reminder" type="button">Attiva reminder</button>
           </div>
           <div id="tonightGrid" class="tonight-grid"></div>
+          <aside class="event-ticket-note" aria-label="Informazioni biglietteria Dal Tramonto all'Alba OFF">
+            <div>
+              <p class="eyebrow">Dal Tramonto all'Alba OFF</p>
+              <strong>Biglietti e sedi</strong>
+            </div>
+            <p>Borgo medievale <b>10 euro</b> · Giardini Castello Orsini e Aia dei Musei <b>15/22 euro</b> · Anfiteatro Romano <b>25 euro</b>.</p>
+          </aside>
           <div class="section-head calendar-head">
             <div>
               <p class="eyebrow">Calendario</p>
-              <h2>Prossimi eventi</h2>
+              <h2>Eventi da fare</h2>
             </div>
-            <button class="ghost" data-action="calendar-month" type="button">Vedi mese</button>
+            <button class="ghost" data-action="calendar-month" type="button">Vai al prossimo</button>
           </div>
-          <div id="eventsGrid" class="cards-grid"></div>
+          <div id="eventsGrid" class="event-agenda" aria-live="polite"></div>
         </section>
 
         <section class="view" id="summerView">
@@ -757,7 +763,7 @@
 
     <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
-    <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script defer src="app.js?v=76"></script>
+    <script defer src="events-data.js?v=77"></script>
+    <script defer src="app.js?v=77"></script>
   </body>
 </html>

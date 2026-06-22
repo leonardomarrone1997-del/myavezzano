@@ -288,6 +288,31 @@ let mapPlaces = businesses.concat(userSubmittedBusinesses, [
 const AVEZZANO_CENTER = { lat: 42.0326, lng: 13.4256 };
 let interactiveMap;
 let routeLine;
+let leafletLoadPromise;
+
+function loadLeaflet() {
+  if (window.L) return Promise.resolve(window.L);
+  if (leafletLoadPromise) return leafletLoadPromise;
+
+  leafletLoadPromise = new Promise((resolve, reject) => {
+    if (!document.querySelector("#leafletStyles")) {
+      const stylesheet = document.createElement("link");
+      stylesheet.id = "leafletStyles";
+      stylesheet.rel = "stylesheet";
+      stylesheet.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+      document.head.append(stylesheet);
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+    script.async = true;
+    script.onload = () => resolve(window.L);
+    script.onerror = () => reject(new Error("Leaflet non disponibile"));
+    document.head.append(script);
+  });
+
+  return leafletLoadPromise;
+}
 let userMarker;
 let selectedPlace = mapPlaces[0];
 let userPosition = null;
@@ -411,40 +436,16 @@ const cityHighlights = [
 ];
 
 const eventCategories = [
-  ["Estate 2026", "Cartellone, festival e grandi appuntamenti"],
-  ["Divertimento", "Tutto quello che anima la serata"],
-  ["Feste", "Compleanni, party e feste a tema"],
-  ["Serate", "Aperitivi, live music e karaoke"],
-  ["Eventi in disco", "DJ set, guest e prevendite"],
-  ["Calendario", "Programma completo della città"]
+  ["Tutti", "Agenda completa", "all"],
+  ["Avezzano", "Eventi in città", "avezzano"],
+  ["Alba Fucens", "Area immediata", "alba"],
+  ["Teatro", "Spettacoli e classici", "teatro"],
+  ["Musica", "Concerti e tribute", "musica"],
+  ["Sport", "Gare e attività", "sport"],
+  ["Archivio", "Eventi già svolti", "archivio"]
 ];
 
-const tonightEvents = [
-  {
-    title: "Aperitivo lungo in centro",
-    place: "Caffè Risorgimento",
-    time: "19:30",
-    type: "Serata",
-    meta: "Ingresso libero - coupon drink",
-    image: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=900&q=80"
-  },
-  {
-    title: "Latin Party",
-    place: "Moon Club",
-    time: "22:45",
-    type: "Eventi in disco",
-    meta: "Prevendita digitale - 130 prenotazioni",
-    image: "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=900&q=80"
-  },
-  {
-    title: "Live acoustic night",
-    place: "Pub La Marsica",
-    time: "21:15",
-    type: "Divertimento",
-    meta: "Musica live - tavoli disponibili",
-    image: "https://images.unsplash.com/photo-1483412033650-1015ddeb83d1?auto=format&fit=crop&w=900&q=80"
-  }
-];
+let activeEventCategory = "all";
 
 const summerHighlights = [
   {
@@ -477,15 +478,8 @@ const summerHighlights = [
   }
 ];
 
-const events = [
-  ["School of Rock 2026", "Sab 27 giugno 2026", "Pinguino Village - Walter Cianciusi, Andrea Di Pietro ed Enrico Cianciusi", "https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=900&q=80"],
-  ["Festiv'Alba: Ensemble Musica Antiqua Latina", "Mer 1 luglio 2026", "Anfiteatro Romano di Alba Fucens - musica classica", "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=900&q=80"],
-  ["Teatro Off: Dopo Cristo", "Gio 9 luglio 2026 - 21:00", "Giardino del Castello Orsini - monologo comico di Tiziano La Bella", "https://images.unsplash.com/photo-1503095396549-807759245b35?auto=format&fit=crop&w=900&q=80"],
-  ["Festiv'Alba: Fratello Sole, Sorella Luna", "Dom 2 agosto 2026", "Anfiteatro Romano di Alba Fucens - commedia musicale", "https://images.unsplash.com/photo-1508973379184-7517410fb0bc?auto=format&fit=crop&w=900&q=80"],
-  ["Festiv'Alba: Truculentus", "Lun 3 agosto 2026", "Plauto - Anfiteatro Romano di Alba Fucens", "https://images.unsplash.com/photo-1507924538820-ede94a04019d?auto=format&fit=crop&w=900&q=80"],
-  ["Festiv'Alba: Le SUPPLICI", "Mer 5 agosto 2026", "Da Eschilo, di e con Moni Ovadia", "https://images.unsplash.com/photo-1503095396549-807759245b35?auto=format&fit=crop&w=900&q=80"],
-  ["Festiv'Alba: Antigone", "Ven 7 agosto 2026", "Cronache di un teatro di guerra - maltempo Teatro dei Marsi", "https://images.unsplash.com/photo-1513106580091-1d82408b8cd6?auto=format&fit=crop&w=900&q=80"]
-];
+const calendarEvents = window.MYAVEZZANO_EVENTS || [];
+const archivedEvents = window.MYAVEZZANO_ARCHIVED_EVENTS || [];
 
 const coupons = [
   ["Aperitivo 2x1", "Caffè Risorgimento", "Scade oggi alle 20:00", "35 punti", "assets/coupons/aperitivo-2x1.svg", "AVZ-APERITIVO-2X1"],
@@ -525,9 +519,9 @@ const pageMeta = {
     copy: "Punti reali, partner verificati e percorsi rapidi: la mappa non decora, serve a trasformare l'interesse in movimento."
   },
   events: {
-    eyebrow: "Palinsesto urbano",
-    title: "La sera ha una regia",
-    copy: "Eventi e serate letti come una programmazione: orari, ritmo, prenotazioni e reminder senza dispersione."
+    eyebrow: "Agenda cittadina",
+    title: "Cosa fare, con date vere",
+    copy: "Eventi, sport, ambiente, motori, musica e teatro tra Avezzano e Alba Fucens, con filtri, salvataggi e reminder."
   },
   coupons: {
     eyebrow: "Valore immediato",
@@ -910,6 +904,142 @@ function renderDayPlan() {
   `).join("");
 }
 
+function eventDate(date) {
+  return new Date(`${date}T12:00:00`);
+}
+
+function eventDayParts(item) {
+  const date = eventDate(item.date);
+  return {
+    weekday: new Intl.DateTimeFormat("it-IT", { weekday: "short" }).format(date).replace(".", ""),
+    day: new Intl.DateTimeFormat("it-IT", { day: "2-digit" }).format(date),
+    month: new Intl.DateTimeFormat("it-IT", { month: "short" }).format(date).replace(".", "")
+  };
+}
+
+function eventRangeLabel(item) {
+  const start = eventDate(item.date);
+  if (!item.endDate) {
+    return new Intl.DateTimeFormat("it-IT", { weekday: "short", day: "numeric", month: "long" }).format(start);
+  }
+  const end = eventDate(item.endDate);
+  const startLabel = new Intl.DateTimeFormat("it-IT", { day: "numeric", month: "short" }).format(start);
+  const endLabel = new Intl.DateTimeFormat("it-IT", { day: "numeric", month: "short" }).format(end);
+  return `${startLabel} - ${endLabel}`;
+}
+
+function eventMatchesFilter(item, filter) {
+  if (filter === "all") return !item.past;
+  if (filter === "archivio") return Boolean(item.past);
+  if (item.past) return false;
+  if (filter === "avezzano") return item.area === "Avezzano";
+  if (filter === "alba") return item.area === "Alba Fucens";
+  return item.category.toLowerCase() === filter;
+}
+
+function eventCardMarkup(item, { compact = false } = {}) {
+  const parts = eventDayParts(item);
+  const search = [item.title, item.place, item.area, item.category, item.detail, item.price].join(" ").toLowerCase();
+  return `
+    <article class="agenda-event${compact ? " agenda-event-featured" : ""}${item.past ? " is-past" : ""}" id="event-${item.id}" data-search="${search}">
+      <time class="agenda-date" datetime="${item.date}">
+        <span>${parts.weekday}</span>
+        <strong>${parts.day}</strong>
+        <small>${parts.month}</small>
+      </time>
+      <div class="agenda-event-copy">
+        <div class="agenda-event-meta">
+          <span class="agenda-tag">${item.category}</span>
+          <span>${eventRangeLabel(item)} · ${item.time}</span>
+        </div>
+        <h3>${item.title}</h3>
+        <p class="agenda-place">${item.place}</p>
+        <p>${item.detail}</p>
+        <div class="agenda-event-footer">
+          <span class="agenda-price">${item.price}</span>
+          ${item.past ? "" : `
+            <div class="agenda-event-actions">
+              <button class="ghost" data-action="event-reminder" data-title="${item.title}" type="button">Reminder</button>
+              <button class="save-action" data-action="save-event" data-title="${item.title}" type="button">Salva</button>
+            </div>
+          `}
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function renderEventCategories() {
+  document.querySelector("#eventCategories").innerHTML = eventCategories.map(([title, text, filter]) => `
+    <button class="event-chip ${filter === activeEventCategory ? "active" : ""}" data-action="event-category" data-category="${title}" data-event-filter="${filter}" aria-pressed="${filter === activeEventCategory}" type="button">
+      <strong>${title}</strong>
+      <span>${text}</span>
+    </button>
+  `).join("");
+}
+
+function renderTonightAgenda() {
+  const grid = document.querySelector("#tonightGrid");
+  const heading = document.querySelector("#tonightHeading");
+  const copy = document.querySelector("#tonightCopy");
+  if (!grid || !heading || !copy) return;
+
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  const todayEvents = calendarEvents.filter((item) => item.date <= today && (item.endDate || item.date) >= today);
+  const visible = todayEvents.length ? todayEvents : calendarEvents.filter((item) => (item.endDate || item.date) >= today).slice(0, 1);
+
+  if (!visible.length) {
+    heading.textContent = "Cartellone 2026 concluso";
+    copy.textContent = "Apri l'archivio per rivedere gli appuntamenti pubblicati.";
+    grid.innerHTML = "";
+    return;
+  }
+
+  heading.textContent = todayEvents.length ? "In programma oggi" : "Il prossimo appuntamento";
+  copy.textContent = todayEvents.length
+    ? `${todayEvents.length} ${todayEvents.length === 1 ? "evento" : "eventi"} in agenda oggi.`
+    : `Nessun evento oggi: il prossimo è ${eventRangeLabel(visible[0])}.`;
+  grid.innerHTML = visible.map((item) => eventCardMarkup(item, { compact: true })).join("");
+}
+
+function renderEventAgenda(filter = activeEventCategory) {
+  activeEventCategory = filter;
+  renderEventCategories();
+  const grid = document.querySelector("#eventsGrid");
+  if (!grid) return;
+
+  const source = filter === "archivio" ? archivedEvents : calendarEvents;
+  const filtered = source.filter((item) => eventMatchesFilter(item, filter));
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="agenda-empty"><strong>Nessun evento in questa categoria.</strong><span>Prova un altro filtro del calendario.</span></div>`;
+    return;
+  }
+
+  const groups = filtered.reduce((months, item) => {
+    const date = eventDate(item.date);
+    const key = `${date.getFullYear()}-${date.getMonth()}`;
+    if (!months[key]) {
+      months[key] = {
+        title: new Intl.DateTimeFormat("it-IT", { month: "long", year: "numeric" }).format(date),
+        items: []
+      };
+    }
+    months[key].items.push(item);
+    return months;
+  }, {});
+
+  grid.innerHTML = Object.values(groups).map((group) => `
+    <section class="agenda-month">
+      <div class="agenda-month-head">
+        <h3>${group.title}</h3>
+        <span>${group.items.length} ${group.items.length === 1 ? "appuntamento" : "appuntamenti"}</span>
+      </div>
+      <div class="agenda-month-list">${group.items.map((item) => eventCardMarkup(item)).join("")}</div>
+    </section>
+  `).join("");
+}
+
 function render() {
   document.querySelector("#stories").innerHTML = quickActions.map(([title, text, view, icon]) => `
     <button class="shortcut-card" data-view-target="${view}" type="button">
@@ -948,43 +1078,8 @@ function render() {
 
   renderMapBusinessList();
 
-  document.querySelector("#eventCategories").innerHTML = eventCategories.map(([title, text], index) => `
-    <button class="event-chip ${index === 0 ? "active" : ""}" data-action="event-category" data-category="${title}" type="button">
-      <strong>${title}</strong>
-      <span>${text}</span>
-    </button>
-  `).join("");
-
-  document.querySelector("#tonightGrid").innerHTML = tonightEvents.map((item) => `
-    <article class="tonight-card">
-      <div class="tonight-media lazy-media" ${mediaAttrs(item.image, 720)}></div>
-      <div class="tonight-body">
-        <div class="tonight-time">${item.time}</div>
-        <p class="eyebrow">${item.type}</p>
-        <h2>${item.title}</h2>
-        <p>${item.place} - ${item.meta}</p>
-        <div class="post-actions">
-          <button data-action="book-event" data-title="${item.title}" type="button">Prenota</button>
-          <button data-action="save-event" data-title="${item.title}" type="button">Salva</button>
-        </div>
-      </div>
-    </article>
-  `).join("");
-
-  document.querySelector("#eventsGrid").innerHTML = events.map(([title, date, meta, image]) => `
-    <article class="event-card">
-      <div class="card-media lazy-media" ${mediaAttrs(image, 640)}></div>
-      <div class="card-body">
-        <h2>${title}</h2>
-        <p>${date}</p>
-        <span class="pill">${meta}</span>
-        <div class="post-actions">
-          <button data-action="book-event" data-title="${title}" type="button">Prenota</button>
-          <button class="save-action" data-action="save-event" data-title="${title}" type="button">Salva</button>
-        </div>
-      </div>
-    </article>
-  `).join("");
+  renderTonightAgenda();
+  renderEventAgenda();
 
   document.querySelector("#summerGrid").innerHTML = summerHighlights.map((item) => {
     const place = findPlaceByName(item.place);
@@ -1899,6 +1994,8 @@ function initInteractiveMap() {
     return;
   }
 
+  mapElement.classList.remove("map-offline");
+
   if (interactiveMap) {
     refreshInteractiveMapLayout();
     const cached = cachedOsmPlaces();
@@ -1976,7 +2073,12 @@ function switchView(view, updateHash = true) {
   }
 
   if (view === "map") {
-    setTimeout(() => {
+    setTimeout(async () => {
+      try {
+        await loadLeaflet();
+      } catch {
+        // The map keeps its Google Maps fallback when the CDN is unavailable.
+      }
       initInteractiveMap();
       refreshInteractiveMapLayout();
     }, 80);
@@ -2010,6 +2112,9 @@ function animateActiveView(scope = document.querySelector(".view.active")) {
     .tonight-card,
     .event-chip,
     .event-card,
+    .event-ticket-note,
+    .agenda-month-head,
+    .agenda-event,
     .coupon-card,
     .reward-card,
     .summer-card,
@@ -2022,11 +2127,6 @@ function animateActiveView(scope = document.querySelector(".view.active")) {
     .legal-tab,
     .merchant-pricing-hero,
     .pricing-card,
-    .campaign-hero,
-    .campaign-metrics article,
-    .campaign-feature,
-    .campaign-playbook,
-    .campaign-gallery article,
     .admin-hero,
     .signup-panel,
     .demo-panel
@@ -2357,7 +2457,9 @@ function handleAction(button) {
   }
 
   if (action === "calendar-month") {
-    showToast("Vista mensile demo: 3 eventi questa settimana e 8 nel mese.");
+    const firstEvent = document.querySelector("#eventsGrid .agenda-event");
+    firstEvent?.scrollIntoView({ behavior: "smooth", block: "center" });
+    showToast("Calendario posizionato sul primo appuntamento visibile.");
     return;
   }
 
@@ -2406,8 +2508,18 @@ function handleAction(button) {
   }
 
   if (action === "event-category") {
-    document.querySelectorAll(".event-chip").forEach((chip) => chip.classList.toggle("active", chip === button));
+    renderEventAgenda(button.dataset.eventFilter || "all");
     showToast(`Filtro eventi attivo: ${button.dataset.category}.`);
+    return;
+  }
+
+  if (action === "event-reminder") {
+    const title = button.dataset.title;
+    const total = addDemoItem("reminders", { title });
+    button.textContent = "Attivo";
+    button.classList.add("is-saved");
+    renderDayPlan();
+    showToast(`Reminder attivato per ${title}. Totale: ${total}.`, "success");
     return;
   }
 
