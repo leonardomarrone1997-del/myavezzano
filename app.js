@@ -324,6 +324,11 @@ let installPromptEvent = null;
 const atmosphereTimers = new Set();
 let atmospherePaused = false;
 let searchPlaceholderTimer = 0;
+let heroParallaxFrame = 0;
+let scrollAtmosphereFrame = 0;
+let eventsViewRendered = false;
+let mapViewRendered = false;
+let webglAuraInitialized = false;
 const searchPlaceholders = [
   "Cerca locali, eventi, servizi...",
   "Dove vuoi andare oggi?",
@@ -336,6 +341,7 @@ const wikidataImageCache = new Map();
 const DEMO_STATE_KEY = "myavezzano_demo_state";
 const ONBOARDING_KEY = "myavezzano_onboarding_seen";
 const THEME_STORAGE_KEY = "myavezzano_theme";
+const FX_MODE_STORAGE_KEY = "myavezzano_fx_mode";
 const ADMIN_CONTROL_KEY = "myavezzano_admin_control_v1";
 
 const categoryImages = {
@@ -1060,6 +1066,13 @@ function renderEventAgenda(filter = activeEventCategory) {
   `).join("");
 }
 
+function ensureEventsViewRendered() {
+  if (eventsViewRendered) return;
+  renderTonightAgenda();
+  renderEventAgenda();
+  eventsViewRendered = true;
+}
+
 function render() {
   document.querySelector("#stories").innerHTML = quickActions.map(([title, text, view, icon]) => `
     <button class="shortcut-card" data-view-target="${view}" type="button">
@@ -1095,11 +1108,6 @@ function render() {
     </article>
   `;
   }).join("");
-
-  renderMapBusinessList();
-
-  renderTonightAgenda();
-  renderEventAgenda();
 
   document.querySelector("#summerGrid").innerHTML = summerHighlights.map((item) => {
     const place = findPlaceByName(item.place);
@@ -1153,7 +1161,7 @@ function render() {
   renderUserProfile("settings");
   renderMerchantArea();
   applySearchFilter();
-  hydrateLazyMedia(document.querySelector(".view.active") || document, true);
+  hydrateLazyMedia(document.querySelector(".view.active") || document);
   stampCityArtifacts(document);
   animateGlobalSurfaces();
 }
@@ -2032,6 +2040,7 @@ function createMapIcon(place) {
 }
 
 function renderMapBusinessList() {
+  if (!mapViewRendered && !document.body.classList.contains("view-map")) return;
   const term = document.querySelector("#searchInput")?.value.trim() || "";
   const places = term ? intelligentPlaces(term) : mapPlaces;
   document.querySelector("#mapBusinessList").innerHTML = places.map((place) => `
@@ -2306,7 +2315,7 @@ function switchView(view, updateHash = true) {
   document.querySelector("#pageCoords").textContent = signature[1];
   document.querySelector("#pageArtifact").textContent = signature[2];
   document.querySelector("#pagePulse").textContent = signature[3];
-  hydrateLazyMedia(targetView, true);
+  hydrateLazyMedia(targetView);
   applySearchFilter();
 
   if (updateHash && window.location.hash !== `#${view}`) {
@@ -2314,6 +2323,8 @@ function switchView(view, updateHash = true) {
   }
 
   if (view === "map") {
+    mapViewRendered = true;
+    renderMapBusinessList();
     setTimeout(async () => {
       try {
         await loadLeaflet();
@@ -2323,6 +2334,10 @@ function switchView(view, updateHash = true) {
       initInteractiveMap();
       refreshInteractiveMapLayout();
     }, 80);
+  }
+
+  if (view === "events") {
+    ensureEventsViewRendered();
   }
 
   if (view === "profile") {
@@ -2345,7 +2360,6 @@ function switchView(view, updateHash = true) {
 function animateActiveView(scope = document.querySelector(".view.active")) {
   if (!scope || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   const animatedItems = scope.querySelectorAll(`
-    .topbar,
     .shortcut-card,
     .post,
     .panel,
@@ -2372,9 +2386,14 @@ function animateActiveView(scope = document.querySelector(".view.active")) {
     .signup-panel,
     .demo-panel
   `);
+  const animationLimit = isCompactViewport() ? 8 : 16;
 
   animatedItems.forEach((item, index) => {
     item.classList.remove("motion-ready", "motion-item");
+    if (index >= animationLimit) {
+      item.style.removeProperty("--stagger");
+      return;
+    }
     item.style.setProperty("--stagger", Math.min(index, 16));
     window.requestAnimationFrame(() => {
       item.classList.add("motion-item");
@@ -2385,12 +2404,6 @@ function animateActiveView(scope = document.querySelector(".view.active")) {
 
 function animateGlobalSurfaces() {
   animateActiveView();
-  const topbar = document.querySelector(".topbar");
-  if (topbar) {
-    topbar.classList.remove("motion-ready", "motion-item");
-    topbar.style.setProperty("--stagger", 0);
-    window.requestAnimationFrame(() => topbar.classList.add("motion-item"));
-  }
 }
 
 function preferredTheme() {
@@ -2417,7 +2430,7 @@ function toggleTheme() {
   const nextTheme = document.body.classList.contains("theme-dark") ? "light" : "dark";
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
-  if (!prefersReducedMotion) {
+  if (!prefersReducedMotion && !document.body.classList.contains("fx-light")) {
     clearTimeout(themeTransitionTimer);
     document.body.classList.remove("theme-transition", "theme-to-dark", "theme-to-light", "theme-transitioning", "sunset-transition", "sunrise-transition", "night-entering", "day-entering");
     document.body.offsetHeight;
@@ -2437,6 +2450,36 @@ function toggleTheme() {
   showToast(nextTheme === "dark" ? "Tema notturno attivato." : "Tema giorno attivato.", "success");
 }
 
+function preferredFxMode() {
+  return localStorage.getItem(FX_MODE_STORAGE_KEY) === "light" ? "light" : "full";
+}
+
+function applyFxMode(mode = preferredFxMode(), syncEffects = true) {
+  const isLight = mode === "light";
+  document.body.classList.toggle("fx-light", isLight);
+  const toggle = document.querySelector("#fxModeToggle");
+  const label = document.querySelector("#fxModeLabel");
+  if (toggle) {
+    toggle.setAttribute("aria-pressed", String(isLight));
+    toggle.setAttribute("aria-label", isLight ? "Riattiva gli effetti visivi" : "Attiva modalità Light senza effetti");
+    toggle.title = isLight ? "Riattiva gli effetti visivi" : "Modalità Light senza effetti";
+  }
+  if (label) label.textContent = isLight ? "FX" : "Light";
+  if (!syncEffects) return;
+
+  document.querySelectorAll(".fx-swallow, .fx-shooting-star").forEach((item) => item.remove());
+  updateAtmosphereForTheme();
+  window.dispatchEvent(new CustomEvent("myavezzano:fxchange"));
+  if (!isLight) initWebglAura();
+}
+
+function toggleFxMode() {
+  const nextMode = document.body.classList.contains("fx-light") ? "full" : "light";
+  localStorage.setItem(FX_MODE_STORAGE_KEY, nextMode);
+  applyFxMode(nextMode);
+  showToast(nextMode === "light" ? "Modalità Light attivata." : "Effetti visivi riattivati.", "success");
+}
+
 function respectsReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
@@ -2451,7 +2494,7 @@ function clearAtmosphereTimers() {
 }
 
 function scheduleAtmosphere(callback, minDelay = 18000, maxDelay = 36000) {
-  if (atmospherePaused || respectsReducedMotion()) return;
+  if (atmospherePaused || respectsReducedMotion() || isCompactViewport() || document.body.classList.contains("fx-light")) return;
   const delay = minDelay + Math.random() * (maxDelay - minDelay);
   const timer = window.setTimeout(() => {
     atmosphereTimers.delete(timer);
@@ -2548,7 +2591,7 @@ function scheduleShootingStar(initial = false) {
 
 function updateAtmosphereForTheme() {
   clearAtmosphereTimers();
-  if (atmospherePaused || respectsReducedMotion()) {
+  if (atmospherePaused || respectsReducedMotion() || isCompactViewport() || document.body.classList.contains("fx-light")) {
     document.body.classList.add("fx-paused");
     return;
   }
@@ -2585,19 +2628,35 @@ function initHeroMicroParallax() {
   const canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
   if (!canHover) return;
   window.addEventListener("pointermove", (event) => {
-    const x = ((event.clientX / window.innerWidth) - 0.5) * 8;
-    const y = ((event.clientY / window.innerHeight) - 0.5) * 5;
-    topbar.style.setProperty("--hero-parallax-x", `${x.toFixed(2)}px`);
-    topbar.style.setProperty("--hero-parallax-y", `${y.toFixed(2)}px`);
+    if (heroParallaxFrame || document.body.classList.contains("fx-light")) return;
+    const { clientX, clientY } = event;
+    heroParallaxFrame = window.requestAnimationFrame(() => {
+      const x = ((clientX / window.innerWidth) - 0.5) * 8;
+      const y = ((clientY / window.innerHeight) - 0.5) * 5;
+      topbar.style.setProperty("--hero-parallax-x", `${x.toFixed(2)}px`);
+      topbar.style.setProperty("--hero-parallax-y", `${y.toFixed(2)}px`);
+      heroParallaxFrame = 0;
+    });
   }, { passive: true });
 }
 
 function initScrollAtmosphere() {
+  let wasScrolled = null;
   const update = () => {
-    document.body.classList.toggle("is-scrolled", window.scrollY > 18);
+    const isScrolled = window.scrollY > 18;
+    if (isScrolled !== wasScrolled) {
+      document.body.classList.toggle("is-scrolled", isScrolled);
+      wasScrolled = isScrolled;
+    }
   };
   update();
-  window.addEventListener("scroll", update, { passive: true });
+  window.addEventListener("scroll", () => {
+    if (scrollAtmosphereFrame) return;
+    scrollAtmosphereFrame = window.requestAnimationFrame(() => {
+      update();
+      scrollAtmosphereFrame = 0;
+    });
+  }, { passive: true });
 }
 
 function initSearchPlaceholderCycle() {
@@ -3759,7 +3818,8 @@ document.querySelector("#cancelMerchantPlan").addEventListener("click", () => {
 function initWebglAura() {
   const canvas = document.querySelector("#webglAura");
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (!canvas || reduceMotion) return;
+  const saveData = Boolean(navigator.connection?.saveData);
+  if (webglAuraInitialized || !canvas || reduceMotion || saveData || isCompactViewport() || document.body.classList.contains("fx-light")) return;
 
   const gl = canvas.getContext("webgl", {
     alpha: true,
@@ -3884,6 +3944,7 @@ function initWebglAura() {
     console.warn(gl.getProgramInfoLog(program));
     return;
   }
+  webglAuraInitialized = true;
 
   const buffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -3897,9 +3958,10 @@ function initWebglAura() {
   let animationFrame = 0;
   let startTime = performance.now();
   let isVisible = true;
+  let lastFrameTime = 0;
 
   function resize() {
-    const ratio = Math.min(window.devicePixelRatio || 1, window.innerWidth < 760 ? 1.15 : 1.55);
+    const ratio = Math.min(window.devicePixelRatio || 1, 1.25);
     const width = Math.max(1, Math.floor(window.innerWidth * ratio));
     const height = Math.max(1, Math.floor(window.innerHeight * ratio));
     if (canvas.width !== width || canvas.height !== height) {
@@ -3910,7 +3972,15 @@ function initWebglAura() {
   }
 
   function render(now) {
-    if (!isVisible) return;
+    if (!isVisible || document.body.classList.contains("fx-light")) {
+      animationFrame = 0;
+      return;
+    }
+    if (now - lastFrameTime < 33) {
+      animationFrame = requestAnimationFrame(render);
+      return;
+    }
+    lastFrameTime = now;
     resize();
     gl.useProgram(program);
     gl.enable(gl.BLEND);
@@ -3934,22 +4004,29 @@ function initWebglAura() {
 
   window.addEventListener("pointermove", (event) => updatePointer(event.clientX, event.clientY), { passive: true });
   window.addEventListener("resize", resize, { passive: true });
-  document.addEventListener("visibilitychange", () => {
-    isVisible = !document.hidden;
-    if (isVisible) {
+  const syncAnimation = () => {
+    isVisible = !document.hidden && !document.body.classList.contains("fx-light");
+    canvas.hidden = !isVisible;
+    document.body.classList.toggle("webgl-ready", isVisible);
+    if (isVisible && !animationFrame) {
       startTime = performance.now();
+      lastFrameTime = 0;
       animationFrame = requestAnimationFrame(render);
-    } else {
+    } else if (!isVisible && animationFrame) {
       cancelAnimationFrame(animationFrame);
+      animationFrame = 0;
     }
-  });
+  };
 
-  document.body.classList.add("webgl-ready");
-  animationFrame = requestAnimationFrame(render);
+  document.addEventListener("visibilitychange", syncAnimation);
+  window.addEventListener("myavezzano:fxchange", syncAnimation);
+
+  syncAnimation();
 }
 
 async function bootApp() {
   applyTheme();
+  applyFxMode(preferredFxMode(), false);
   initAtmosphereFX();
   initHeroMicroParallax();
   initScrollAtmosphere();
@@ -3990,5 +4067,6 @@ async function bootApp() {
 }
 
 document.querySelector("#themeToggle")?.addEventListener("click", toggleTheme);
+document.querySelector("#fxModeToggle")?.addEventListener("click", toggleFxMode);
 
 bootApp();

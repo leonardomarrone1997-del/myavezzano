@@ -17,6 +17,10 @@
     <link rel="canonical" href="https://myavezzano.vercel.app/" />
     <link rel="preconnect" href="https://unpkg.com" crossorigin />
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
+    <link rel="preload" as="image" href="assets/avezzano-hero-day-mobile.jpg" media="(max-width: 760px) and (prefers-color-scheme: light)" fetchpriority="high" />
+    <link rel="preload" as="image" href="assets/avezzano-hero-night-mobile.jpg" media="(max-width: 760px) and (prefers-color-scheme: dark)" fetchpriority="high" />
+    <link rel="preload" as="image" href="assets/avezzano-hero-day.jpg" media="(min-width: 761px) and (prefers-color-scheme: light)" fetchpriority="high" />
+    <link rel="preload" as="image" href="assets/avezzano-hero-night.jpg" media="(min-width: 761px) and (prefers-color-scheme: dark)" fetchpriority="high" />
     <meta property="og:locale" content="it_IT" />
     <meta property="og:site_name" content="MyAvezzano" />
     <meta property="og:title" content="MyAvezzano | Eventi, coupon e attività ad Avezzano" />
@@ -56,9 +60,9 @@
         ]
       }
     </script>
-    <link rel="stylesheet" href="styles.css?v=78" />
+    <link rel="stylesheet" href="styles.css?v=81" />
   </head>
-  <body>
+<body class="view-feed">
     <a class="skip-link" href="#mainContent">Vai al contenuto</a>
     <canvas class="webgl-aura" id="webglAura" aria-hidden="true"></canvas>
     <div class="theme-sky-transition" id="themeSkyTransition" aria-hidden="true"></div>
@@ -128,10 +132,16 @@
                 <span>Avezzano</span>
               </div>
             </div>
-            <button class="theme-toggle" id="themeToggle" type="button" aria-label="Attiva tema notturno" aria-pressed="false">
-              <span aria-hidden="true"></span>
-              <strong id="themeToggleLabel">Notte</strong>
-            </button>
+            <div class="theme-mode-group" aria-label="Tema e prestazioni">
+              <button class="theme-toggle" id="themeToggle" type="button" aria-label="Attiva tema notturno" aria-pressed="false">
+                <span aria-hidden="true"></span>
+                <strong id="themeToggleLabel">Notte</strong>
+              </button>
+              <button class="fx-mode-toggle" id="fxModeToggle" type="button" aria-label="Attiva modalità Light senza effetti" aria-pressed="false" title="Modalità Light senza effetti">
+                <span aria-hidden="true"></span>
+                <strong id="fxModeLabel">Light</strong>
+              </button>
+            </div>
             <button class="ghost guide-button" data-action="open-onboarding" type="button">Guida</button>
             <button class="top-profile-status" id="topProfileStatus" type="button" aria-label="Apri profilo">
               <span class="prestige-ring" aria-hidden="true">
@@ -544,7 +554,7 @@
               </div>
             </div>
             <figure class="campaign-visual">
-              <img src="assets/marketing/citta-live.png" alt="Concept Città Live MyAvezzano con app, QR e materiali pubblicitari" loading="lazy" decoding="async" />
+              <img src="assets/marketing/citta-live.webp" width="1672" height="941" alt="Concept Città Live MyAvezzano con app, QR e materiali pubblicitari" loading="lazy" decoding="async" />
             </figure>
           </section>
 
@@ -568,7 +578,7 @@
 
           <section class="campaign-feature-grid">
             <article class="campaign-feature is-large">
-              <img src="assets/marketing/touchpoint-kit.png" alt="Kit touchpoint MyAvezzano con espositori, vetrofanie, manifesti e stand" loading="lazy" decoding="async" />
+              <img src="assets/marketing/touchpoint-kit.webp" width="1672" height="941" alt="Kit touchpoint MyAvezzano con espositori, vetrofanie, manifesti e stand" loading="lazy" decoding="async" />
               <div>
                 <p class="eyebrow">Kit città</p>
                 <h3>Un’unica piattaforma, tanti punti di contatto</h3>
@@ -576,7 +586,7 @@
               </div>
             </article>
             <article class="campaign-feature">
-              <img src="assets/marketing/trova-il-qr.png" alt="Concept Trova il QR con premi, coupon e punti" loading="lazy" decoding="async" />
+              <img src="assets/marketing/trova-il-qr.webp" width="1672" height="941" alt="Concept Trova il QR con premi, coupon e punti" loading="lazy" decoding="async" />
               <div>
                 <p class="eyebrow">Gamification</p>
                 <h3>Trova il QR</h3>
@@ -584,7 +594,7 @@
               </div>
             </article>
             <article class="campaign-feature">
-              <img src="assets/marketing/estate-avezzano-2026.png" alt="Campagna Estate Avezzano 2026 con calendario eventi e coupon" loading="lazy" decoding="async" />
+              <img src="assets/marketing/estate-avezzano-2026.webp" width="1672" height="941" alt="Campagna Estate Avezzano 2026 con calendario eventi e coupon" loading="lazy" decoding="async" />
               <div>
                 <p class="eyebrow">Estate 2026</p>
                 <h3>Eventi, cultura e promozioni</h3>
@@ -611,15 +621,15 @@
 
           <section class="campaign-gallery" aria-label="Concept grafici campagna">
             <article>
-              <img src="assets/marketing/campagna-alternative.png" alt="Alternative grafiche MyAvezzano per materiali pubblicitari" loading="lazy" decoding="async" />
+              <img src="assets/marketing/campagna-alternative.webp" width="1672" height="941" alt="Alternative grafiche MyAvezzano per materiali pubblicitari" loading="lazy" decoding="async" />
               <div><strong>Alternative visuali</strong><span>Palette, espositori, vetrofanie, vele e materiali da banco.</span></div>
             </article>
             <article>
-              <img src="assets/marketing/citta-live.png" alt="Concept Città Live per app urbana MyAvezzano" loading="lazy" decoding="async" />
+              <img src="assets/marketing/citta-live.webp" width="1672" height="941" alt="Concept Città Live per app urbana MyAvezzano" loading="lazy" decoding="async" />
               <div><strong>Città Live</strong><span>Concept elegante per una guida cittadina quotidiana.</span></div>
             </article>
             <article>
-              <img src="assets/marketing/trova-il-qr.png" alt="Concept Trova il QR per caccia urbana MyAvezzano" loading="lazy" decoding="async" />
+              <img src="assets/marketing/trova-il-qr.webp" width="1672" height="941" alt="Concept Trova il QR per caccia urbana MyAvezzano" loading="lazy" decoding="async" />
               <div><strong>Trova il QR</strong><span>Concept più giocoso per coinvolgere utenti e attività.</span></div>
             </article>
           </section>
@@ -763,7 +773,7 @@
 
     <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
-    <script defer src="events-data.js?v=78"></script>
-    <script defer src="app.js?v=78"></script>
+    <script defer src="events-data.js?v=81"></script>
+    <script defer src="app.js?v=81"></script>
   </body>
 </html>
