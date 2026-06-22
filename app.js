@@ -336,6 +336,7 @@ const wikidataImageCache = new Map();
 const DEMO_STATE_KEY = "myavezzano_demo_state";
 const ONBOARDING_KEY = "myavezzano_onboarding_seen";
 const THEME_STORAGE_KEY = "myavezzano_theme";
+const ADMIN_CONTROL_KEY = "myavezzano_admin_control_v1";
 
 const categoryImages = {
   "Ristorante": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80",
@@ -880,13 +881,13 @@ function renderDayPlan() {
     {
       label: "Coupon salvati",
       value: coupons.length,
-      text: coupons.length ? coupons[0].title : "Salva un vantaggio dalla home.",
+      text: coupons.length ? coupons[0][0] : "Salva un vantaggio dalla home.",
       view: "coupons"
     },
     {
       label: "Eventi in agenda",
       value: events.length,
-      text: events.length ? events[0].title : "Prenota o salva una serata.",
+      text: events.length ? events[0][0] : "Prenota o salva una serata.",
       view: "events"
     },
     {
@@ -938,6 +939,18 @@ function eventMatchesFilter(item, filter) {
   return item.category.toLowerCase() === filter;
 }
 
+function eventAttendanceCount(item) {
+  const categoryBase = {
+    Ambiente: 92,
+    Motori: 168,
+    Musica: 184,
+    Sport: 226,
+    Teatro: 74
+  }[item.category] || 68;
+  const hash = [...item.id].reduce((total, character) => total + character.charCodeAt(0), 0);
+  return categoryBase + (hash % 137);
+}
+
 function eventCardMarkup(item, { compact = false } = {}) {
   const parts = eventDayParts(item);
   const search = [item.title, item.place, item.area, item.category, item.detail, item.price].join(" ").toLowerCase();
@@ -956,12 +969,18 @@ function eventCardMarkup(item, { compact = false } = {}) {
         <h3>${item.title}</h3>
         <p class="agenda-place">${item.place}</p>
         <p>${item.detail}</p>
+        ${item.past ? "" : `
+          <p class="agenda-attendance" data-event-attendance="${item.id}">
+            <strong>${eventAttendanceCount(item)}</strong> persone parteciperanno a questo evento
+          </p>
+        `}
         <div class="agenda-event-footer">
           <span class="agenda-price">${item.price}</span>
           ${item.past ? "" : `
             <div class="agenda-event-actions">
               <button class="ghost" data-action="event-reminder" data-title="${item.title}" type="button">Reminder</button>
-              <button class="save-action" data-action="save-event" data-title="${item.title}" type="button">Salva</button>
+              <a class="ghost agenda-details" href="eventi/${item.id}.html">Dettagli</a>
+              <button class="save-action" data-action="save-event" data-event-id="${item.id}" data-title="${item.title}" type="button">Salva</button>
             </div>
           `}
         </div>
@@ -1312,17 +1331,17 @@ function renderProfilePanel(panel = "settings") {
   if (accountButton) accountButton.addEventListener("click", openSignup);
 }
 
-function prestigeState(user = getStoredUser()) {
-  if (!user) return { level: "Base", progress: 18, points: 0 };
-  if (user.role === "admin") return { level: "Admin", progress: 96, points: 9990 };
+function citizenLevelState(user = getStoredUser()) {
+  if (!user) return { level: "Esploratore", progress: 18, points: 0 };
+  if (user.role === "admin") return { level: "Amministratore", progress: 96, points: 9990 };
   const basePoints = 1240 + profileCouponRows().length * 110 + profileEventRows().length * 90;
   const progress = Math.min(92, 42 + Math.round((basePoints % 900) / 18));
-  return { level: basePoints > 1600 ? "Gold" : "Silver", progress, points: basePoints };
+  return { level: basePoints > 1600 ? "Insider locale" : "Cittadino", progress, points: basePoints };
 }
 
 function renderTopProfileStatus() {
   const user = getStoredUser();
-  const state = prestigeState(user);
+  const state = citizenLevelState(user);
   const status = document.querySelector("#topProfileStatus");
   if (!status) return;
   document.querySelector("#topProfileAvatar").src = user?.avatar || "assets/app-icon.svg";
@@ -1344,7 +1363,7 @@ function notificationItems() {
     { title: "Coupon in scadenza", text: "2x1 aperitivo valido fino alle 20:00.", tone: "coupon" },
     {
       title: user ? `Ciao ${user.name}` : "Profilo non attivo",
-      text: user ? "Il tuo livello prestigio e aggiornato." : "Accedi per salvare notifiche e preferenze.",
+      text: user ? "Il tuo livello cittadino risulta aggiornato." : "Accedi per salvare notifiche e preferenze.",
       tone: user ? "profile" : "quiet"
     },
     ...merchantItems
@@ -1386,7 +1405,7 @@ function toggleNotificationMenu() {
 
 function renderUserProfile(panel = "settings") {
   const user = getStoredUser();
-  const prestige = prestigeState(user);
+  const citizenLevel = citizenLevelState(user);
   const avatar = user?.avatar || "assets/app-icon.svg";
   document.querySelector("#profileAvatar").src = avatar;
   document.querySelector("#profileName").textContent = user ? user.name : "Accedi a MyAvezzano";
@@ -1395,8 +1414,8 @@ function renderUserProfile(panel = "settings") {
     : "Crea un account per salvare coupon, eventi e preferenze.";
   document.querySelector("#profileCouponCount").textContent = user ? profileCouponRows().length : 0;
   document.querySelector("#profileEventCount").textContent = user ? profileEventRows().length : 0;
-  document.querySelector("#profilePointCount").textContent = user ? prestige.points.toLocaleString("it-IT") : 0;
-  document.querySelector("#profileLevel").textContent = prestige.level;
+  document.querySelector("#profilePointCount").textContent = user ? citizenLevel.points.toLocaleString("it-IT") : 0;
+  document.querySelector("#profileLevel").textContent = citizenLevel.level;
   document.querySelector("#profileSignupButton").hidden = Boolean(user);
   renderProfileActions();
   renderProfilePanel(panel);
@@ -1437,6 +1456,58 @@ function isAdmin(user = getStoredUser()) {
   return user?.role === "admin";
 }
 
+function defaultAdminControl() {
+  return {
+    maintenance: false,
+    registrations: true,
+    moderation: true,
+    push: true,
+    featuredEvent: "street-green-fest",
+    lastSync: null,
+    broadcasts: [],
+    audit: [],
+    moderationQueue: [
+      { id: "venue-moon-club", type: "Attivita", title: "Moon Club", status: "pending" },
+      { id: "comment-report", type: "Segnalazione", title: "Commento segnalato", status: "pending" },
+      { id: "coupon-fitlab", type: "Coupon", title: "Prova gratuita FitLab", status: "pending" }
+    ]
+  };
+}
+
+function getAdminControl() {
+  const defaults = defaultAdminControl();
+  const stored = readJson(ADMIN_CONTROL_KEY, {});
+  return {
+    ...defaults,
+    ...stored,
+    broadcasts: Array.isArray(stored.broadcasts) ? stored.broadcasts : defaults.broadcasts,
+    audit: Array.isArray(stored.audit) ? stored.audit : defaults.audit,
+    moderationQueue: Array.isArray(stored.moderationQueue) ? stored.moderationQueue : defaults.moderationQueue
+  };
+}
+
+function saveAdminControl(control) {
+  writeJson(ADMIN_CONTROL_KEY, control);
+}
+
+function addAdminAudit(control, message) {
+  control.audit = [
+    { message, at: new Date().toISOString() },
+    ...(control.audit || [])
+  ].slice(0, 20);
+  saveAdminControl(control);
+}
+
+function adminControlButton(key, label, description, value) {
+  return `
+    <button class="admin-control-toggle ${value ? "is-on" : ""}" data-admin-action="toggle-control" data-control-key="${key}" aria-pressed="${value}" type="button">
+      <span class="admin-control-indicator" aria-hidden="true"></span>
+      <span><strong>${label}</strong><small>${description}</small></span>
+      <b>${value ? "Attivo" : "Disattivo"}</b>
+    </button>
+  `;
+}
+
 function renderAdminDashboard() {
   const root = document.querySelector("#adminDashboard");
   if (!root) return;
@@ -1461,22 +1532,42 @@ function renderAdminDashboard() {
     ...(state.campaigns || []).map((item) => ["Campagna", item.title, "Demo"])
   ];
   const aiInsights = intelligenceInsights();
+  const adminControl = getAdminControl();
+  const pendingModeration = adminControl.moderationQueue.filter((item) => item.status === "pending").length;
+  const featuredEvent = calendarEvents.find((item) => item.id === adminControl.featuredEvent) || calendarEvents[0];
 
   root.innerHTML = `
     <div class="admin-shell">
       <section class="panel admin-hero god-hero">
         <div>
-          <p class="eyebrow">Area admin</p>
-          <h2>Pannello admin MyAvezzano</h2>
-          <p>Controllo riservato all'account admin: utenti, ruoli, contenuti, richieste, sicurezza e dati locali.</p>
+          <p class="eyebrow">Console GOD</p>
+          <h2>Regia completa MyAvezzano</h2>
+          <p>Utenti, contenuti, eventi, comunicazioni e stato della piattaforma in un unico pannello operativo.</p>
         </div>
         <button class="ghost" data-admin-action="logout" type="button">Logout</button>
       </section>
-      <section class="metrics">
+      <section class="metrics admin-metrics">
         <div><span>Utenti</span><strong>${users.filter((user) => user.status !== "deleted").length}</strong></div>
-        <div><span>Admin</span><strong>${users.filter((user) => user.role === "admin").length}</strong></div>
-        <div><span>Richieste</span><strong>${requests.length}</strong></div>
         <div><span>Attività</span><strong>${mapPlaces.length}</strong></div>
+        <div><span>Eventi</span><strong>${calendarEvents.length}</strong></div>
+        <div><span>Da moderare</span><strong>${pendingModeration}</strong></div>
+        <div><span>Salvataggi</span><strong>${requests.length}</strong></div>
+        <div><span>Comunicazioni</span><strong>${adminControl.broadcasts.length}</strong></div>
+      </section>
+      <section class="panel admin-platform-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Piattaforma</p>
+            <h2>Controlli operativi</h2>
+          </div>
+          <span class="pill ${adminControl.maintenance ? "warning" : "success"}">${adminControl.maintenance ? "Manutenzione" : "Online"}</span>
+        </div>
+        <div class="admin-control-grid">
+          ${adminControlButton("maintenance", "Modalità manutenzione", "Sospende temporaneamente le funzioni pubbliche", adminControl.maintenance)}
+          ${adminControlButton("registrations", "Nuove registrazioni", "Consenti la creazione di nuovi account", adminControl.registrations)}
+          ${adminControlButton("moderation", "Moderazione preventiva", "Controlla i contenuti prima della pubblicazione", adminControl.moderation)}
+          ${adminControlButton("push", "Notifiche push", "Abilita le comunicazioni agli utenti", adminControl.push)}
+        </div>
       </section>
       <section class="panel intelligence-panel">
         <div class="panel-head">
@@ -1497,6 +1588,7 @@ function renderAdminDashboard() {
         </div>
         <div class="composer-actions">
           <button class="ghost" data-admin-action="export-data" type="button">Esporta dati</button>
+          <button class="ghost" data-admin-action="sync-content" type="button">Sincronizza contenuti</button>
           <button class="ghost" data-admin-action="seed-demo" type="button">Ripristina demo</button>
           <button class="ghost" data-admin-action="clear-demo-state" type="button">Pulisci azioni demo</button>
           <button class="ghost" data-admin-action="refresh-ai" type="button">Ricalcola IA</button>
@@ -1530,14 +1622,61 @@ function renderAdminDashboard() {
         </section>
         <section class="panel">
           <div class="panel-head">
-            <h2>Richieste e contenuti</h2>
-            <span class="pill warning">${requests.length || 3} in coda</span>
+            <h2>Coda moderazione</h2>
+            <span class="pill ${pendingModeration ? "warning" : "success"}">${pendingModeration} in attesa</span>
           </div>
-          <div class="campaign-list">
-            ${(requests.length ? requests : [["Moderazione", "Moon Club", "Da verificare"], ["Contenuto", "Commento segnalato", "Urgente"], ["Offerta", "Coupon palestra", "Ok"]]).map(([type, title, status]) => `
-              <div><strong>${title}</strong><span>${type} - ${status}</span></div>
+          <div class="admin-list">
+            ${adminControl.moderationQueue.map((item) => `
+              <div class="admin-list-row">
+                <div><strong>${item.title}</strong><span>${item.type}</span></div>
+                ${item.status === "pending" ? `
+                  <div class="admin-row-actions">
+                    <button class="ghost compact-button" data-admin-action="moderate-content" data-content-id="${item.id}" data-decision="rejected" type="button">Rifiuta</button>
+                    <button class="primary-action compact-button" data-admin-action="moderate-content" data-content-id="${item.id}" data-decision="approved" type="button">Approva</button>
+                  </div>
+                ` : `<span class="pill ${item.status === "approved" ? "success" : "warning"}">${item.status === "approved" ? "Approvato" : "Rifiutato"}</span>`}
+              </div>
             `).join("")}
           </div>
+        </section>
+        <section class="panel admin-event-control">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Calendario</p>
+              <h2>Evento in evidenza</h2>
+            </div>
+            <span class="pill success">${featuredEvent?.title || "Nessuno"}</span>
+          </div>
+          <label class="admin-field" for="adminFeaturedEvent">
+            <span>Seleziona evento</span>
+            <select id="adminFeaturedEvent">
+              ${calendarEvents.map((item) => `<option value="${item.id}" ${item.id === adminControl.featuredEvent ? "selected" : ""}>${item.title}</option>`).join("")}
+            </select>
+          </label>
+          <button class="primary-action" data-admin-action="feature-event" type="button">Imposta in evidenza</button>
+          <small class="admin-sync-copy">Ultima sincronizzazione: ${adminControl.lastSync ? new Date(adminControl.lastSync).toLocaleString("it-IT") : "non ancora eseguita"}</small>
+        </section>
+        <section class="panel admin-broadcast-panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Comunicazioni</p>
+              <h2>Invia avviso</h2>
+            </div>
+            <span class="pill ${adminControl.push ? "success" : "warning"}">${adminControl.push ? "Push attive" : "Push sospese"}</span>
+          </div>
+          <label class="admin-field" for="adminBroadcastTarget">
+            <span>Destinatari</span>
+            <select id="adminBroadcastTarget">
+              <option value="Tutti gli utenti">Tutti gli utenti</option>
+              <option value="Commercianti">Commercianti</option>
+              <option value="Partecipanti agli eventi">Partecipanti agli eventi</option>
+            </select>
+          </label>
+          <label class="admin-field" for="adminBroadcastMessage">
+            <span>Messaggio</span>
+            <textarea id="adminBroadcastMessage" rows="3" maxlength="180" placeholder="Scrivi un avviso breve e utile"></textarea>
+          </label>
+          <button class="primary-action" data-admin-action="send-broadcast" type="button" ${adminControl.push ? "" : "disabled"}>Invia comunicazione</button>
         </section>
         <section class="panel">
           <h2>Analytics città</h2>
@@ -1556,6 +1695,20 @@ function renderAdminDashboard() {
             <div class="profile-row"><div><strong>Password hash</strong><span>SHA-256 con salt per MVP statico</span></div><span class="pill success">Attivo</span></div>
             <div class="profile-row"><div><strong>Admin protetto</strong><span>Accesso solo ruolo admin</span></div><span class="pill success">Attivo</span></div>
             <div class="profile-row"><div><strong>Database locale</strong><span>localStorage, pronto per migrazione API</span></div><span class="pill warning">MVP</span></div>
+          </div>
+        </section>
+        <section class="panel admin-audit-panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Tracciamento</p>
+              <h2>Registro attività</h2>
+            </div>
+            <button class="ghost compact-button" data-admin-action="clear-audit" type="button">Pulisci</button>
+          </div>
+          <div class="admin-audit-list">
+            ${adminControl.audit.length ? adminControl.audit.slice(0, 6).map((item) => `
+              <div><strong>${item.message}</strong><span>${new Date(item.at).toLocaleString("it-IT")}</span></div>
+            `).join("") : `<p class="admin-empty-copy">Nessuna azione registrata.</p>`}
           </div>
         </section>
       </div>
@@ -1583,10 +1736,97 @@ function handleAdminAction(button) {
       users: getUsers().map(publicUser),
       demoState: getDemoState(),
       merchant: getMerchantSubscription(),
+      adminControl: getAdminControl(),
       exportedAt: new Date().toISOString()
     };
-    console.info("MyAvezzano admin export", payload);
-    showToast("Export admin generato nella console del browser.", "success");
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `myavezzano-export-${new Date().toISOString().slice(0, 10)}.json`;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 500);
+    const control = getAdminControl();
+    addAdminAudit(control, "Esportazione dati completata");
+    renderAdminDashboard();
+    showToast("Export admin scaricato in formato JSON.", "success");
+    return;
+  }
+
+  if (button.dataset.adminAction === "toggle-control") {
+    const control = getAdminControl();
+    const key = button.dataset.controlKey;
+    if (!Object.prototype.hasOwnProperty.call(control, key) || typeof control[key] !== "boolean") return;
+    control[key] = !control[key];
+    const controlLabels = {
+      maintenance: "Modalità manutenzione",
+      registrations: "Nuove registrazioni",
+      moderation: "Moderazione preventiva",
+      push: "Notifiche push"
+    };
+    addAdminAudit(control, `${controlLabels[key] || key}: ${control[key] ? "attivo" : "disattivo"}`);
+    renderAdminDashboard();
+    showToast("Controllo piattaforma aggiornato.", "success");
+    return;
+  }
+
+  if (button.dataset.adminAction === "moderate-content") {
+    const control = getAdminControl();
+    const item = control.moderationQueue.find((entry) => entry.id === button.dataset.contentId);
+    if (!item) return;
+    item.status = button.dataset.decision;
+    addAdminAudit(control, `${item.title}: ${item.status === "approved" ? "approvato" : "rifiutato"}`);
+    renderAdminDashboard();
+    showToast("Contenuto moderato.", "success");
+    return;
+  }
+
+  if (button.dataset.adminAction === "feature-event") {
+    const select = document.querySelector("#adminFeaturedEvent");
+    const eventItem = calendarEvents.find((item) => item.id === select?.value);
+    if (!eventItem) return;
+    const control = getAdminControl();
+    control.featuredEvent = eventItem.id;
+    addAdminAudit(control, `Evento in evidenza: ${eventItem.title}`);
+    renderAdminDashboard();
+    showToast("Evento principale aggiornato.", "success");
+    return;
+  }
+
+  if (button.dataset.adminAction === "send-broadcast") {
+    const message = document.querySelector("#adminBroadcastMessage")?.value.trim();
+    const target = document.querySelector("#adminBroadcastTarget")?.value;
+    if (!message) {
+      showToast("Scrivi il messaggio da inviare.", "error");
+      return;
+    }
+    const control = getAdminControl();
+    if (!control.push) {
+      showToast("Le notifiche push sono sospese.", "error");
+      return;
+    }
+    control.broadcasts = [{ message, target, at: new Date().toISOString() }, ...control.broadcasts].slice(0, 20);
+    addAdminAudit(control, `Comunicazione inviata a: ${target}`);
+    renderAdminDashboard();
+    showToast("Comunicazione registrata e inviata nella demo.", "success");
+    return;
+  }
+
+  if (button.dataset.adminAction === "sync-content") {
+    const control = getAdminControl();
+    control.lastSync = new Date().toISOString();
+    addAdminAudit(control, "Eventi, mappa e coupon sincronizzati");
+    renderAdminDashboard();
+    showToast("Contenuti sincronizzati.", "success");
+    return;
+  }
+
+  if (button.dataset.adminAction === "clear-audit") {
+    const control = getAdminControl();
+    control.audit = [];
+    saveAdminControl(control);
+    renderAdminDashboard();
+    showToast("Registro attività pulito.", "success");
     return;
   }
 
@@ -2533,9 +2773,17 @@ function handleAction(button) {
   }
 
   if (action === "save-event") {
+    const wasAlreadySaved = button.classList.contains("is-saved");
     addDemoItem("events", { title: button.dataset.title });
-    button.textContent = "Salvato";
-    button.classList.add("is-saved");
+    document.querySelectorAll(`[data-action="save-event"][data-event-id="${button.dataset.eventId}"]`).forEach((eventButton) => {
+      eventButton.textContent = "Salvato";
+      eventButton.classList.add("is-saved");
+    });
+    if (!wasAlreadySaved) {
+      document.querySelectorAll(`[data-event-attendance="${button.dataset.eventId}"] strong`).forEach((counter) => {
+        counter.textContent = String(Number(counter.textContent) + 1);
+      });
+    }
     renderDayPlan();
     showToast(`Evento salvato: ${button.dataset.title}.`, "success");
     return;

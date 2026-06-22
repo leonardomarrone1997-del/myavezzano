@@ -1,0 +1,20 @@
+# MyAvezzano
+
+> MyAvezzano is a local city guide for Avezzano, Italy. It helps people discover events, local businesses, maps, coupons and practical city information.
+
+## Main pages
+
+- [Home and PWA](https://myavezzano.vercel.app/): Main application with local shortcuts and saved items.
+- [Events](https://myavezzano.vercel.app/eventi.html): Updated calendar for Avezzano and the immediate area.
+- [Interactive map](https://myavezzano.vercel.app/mappa.html): Local places and navigation links.
+- [Coupons](https://myavezzano.vercel.app/coupon.html): Local offers and digital coupons.
+- [Summer 2026](https://myavezzano.vercel.app/estate-2026.html): Seasonal program and highlights.
+- [Local businesses](https://myavezzano.vercel.app/attivita-locali.html): Directory of businesses and services.
+
+## Event data
+
+The events calendar links to individual event pages under `/eventi/`. Each page includes a unique canonical URL and Schema.org Event data with date, location and description.
+
+## Access
+
+Public pages can be read without an account. Saving, reminders and administrative tools are interactive demo features of the static PWA.

@@ -7434,3 +7434,307 @@ body.theme-dark .agenda-price {
     flex: 1;
   }
 }
+
+/* Compact event header and participation signal */
+@media (min-width: 921px) {
+  body.view-events .topbar {
+    min-height: 238px;
+    padding: 22px 26px;
+    grid-template-columns: minmax(0, 1.2fr) minmax(420px, .8fr);
+    background-position: center 58% !important;
+  }
+
+  body.view-events .topbar h1 {
+    max-width: 660px;
+    font-size: clamp(38px, 4vw, 56px);
+  }
+}
+
+.agenda-attendance {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 9px 0 0 !important;
+  color: var(--muted) !important;
+  font-size: 11px !important;
+  line-height: 1.3;
+}
+
+.agenda-attendance::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  flex: 0 0 6px;
+  border-radius: 50%;
+  background: #0e7490;
+  box-shadow: 0 0 0 3px rgba(14,116,144,.10);
+}
+
+.agenda-attendance strong {
+  color: var(--ink);
+  font-size: inherit;
+}
+
+.agenda-details {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 11px;
+  text-decoration: none;
+}
+
+body.theme-dark .agenda-attendance::before {
+  background: #67e8f9;
+  box-shadow: 0 0 0 3px rgba(103,232,249,.10);
+}
+
+body.theme-dark .agenda-attendance strong {
+  color: #e6f8fc;
+}
+
+/* GOD console */
+.admin-metrics {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.admin-metrics div {
+  border: 1px solid var(--line);
+}
+
+.admin-control-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.admin-control-toggle {
+  min-height: 68px;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 11px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
+  text-align: left;
+}
+
+.admin-control-toggle:hover {
+  border-color: rgba(14,116,144,.42);
+}
+
+.admin-control-toggle > span:nth-child(2) {
+  display: grid;
+  gap: 2px;
+}
+
+.admin-control-toggle small {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.25;
+}
+
+.admin-control-toggle b {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.admin-control-indicator {
+  width: 34px;
+  height: 20px;
+  position: relative;
+  border-radius: 999px;
+  background: #cbd5e1;
+}
+
+.admin-control-indicator::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(15,23,42,.20);
+  transition: transform .2s ease;
+}
+
+.admin-control-toggle.is-on .admin-control-indicator {
+  background: #0e7490;
+}
+
+.admin-control-toggle.is-on .admin-control-indicator::after {
+  transform: translateX(14px);
+}
+
+.admin-control-toggle.is-on b {
+  color: #0e7490;
+}
+
+.admin-list,
+.admin-audit-list {
+  display: grid;
+  gap: 0;
+}
+
+.admin-list-row,
+.admin-audit-list > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-list-row:last-child,
+.admin-audit-list > div:last-child {
+  border-bottom: 0;
+}
+
+.admin-list-row > div:first-child,
+.admin-audit-list > div {
+  min-width: 0;
+}
+
+.admin-list-row span,
+.admin-audit-list span,
+.admin-sync-copy,
+.admin-empty-copy {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.admin-row-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.admin-field {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.admin-field > span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.admin-field select,
+.admin-field textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 11px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+}
+
+.admin-sync-copy {
+  margin-top: 10px;
+}
+
+body.theme-dark .admin-control-toggle,
+body.theme-dark .admin-field select,
+body.theme-dark .admin-field textarea,
+body.theme-dark .admin-metrics div {
+  border-color: rgba(148,163,184,.18);
+  background: #101c2b;
+  color: #f8fafc;
+}
+
+body.theme-dark .admin-control-toggle.is-on b {
+  color: #67e8f9;
+}
+
+/* Individual event pages generated at build time */
+.seo-event-detail {
+  max-width: 840px;
+  margin: 0 auto;
+}
+
+.seo-card h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.seo-card h3 a:hover {
+  color: #0e7490;
+}
+
+.seo-event-detail .seo-hero {
+  min-height: 0;
+}
+
+.seo-event-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  margin: 20px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.seo-event-summary div {
+  padding: 14px 0;
+}
+
+.seo-event-summary span,
+.seo-event-attendance {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.seo-event-summary strong {
+  display: block;
+  margin-top: 3px;
+}
+
+.seo-event-attendance {
+  margin-top: 16px;
+}
+
+.seo-event-attendance strong {
+  color: var(--ink);
+}
+
+@media (max-width: 1100px) {
+  .admin-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .agenda-event-actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .agenda-event-actions button,
+  .agenda-event-actions .agenda-details {
+    width: 100%;
+    min-width: 0;
+    padding-inline: 6px;
+    font-size: 11px;
+  }
+
+  .admin-metrics,
+  .admin-control-grid,
+  .seo-event-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-list-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
