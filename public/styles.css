@@ -2268,8 +2268,12 @@ th { color: var(--muted); font-size: 12px; }
   will-change: transform, opacity, filter;
 }
 
-.motion-ready .motion-item {
+.motion-item.motion-ready {
   opacity: 1;
+  transform: none;
+  filter: none;
+  animation: none;
+  will-change: auto;
 }
 
 .topbar,
@@ -7325,6 +7329,16 @@ body.theme-dark .event-ticket-note {
   color: #e6f8fc;
 }
 
+body.theme-dark #eventsView .tonight-panel {
+  border-color: rgba(34, 211, 238, .2);
+  background: #132538;
+  color: #f8fafc;
+}
+
+body.theme-dark #eventsView .tonight-panel p {
+  color: #cbd5e1;
+}
+
 body.theme-dark .agenda-event {
   border-color: rgba(148, 163, 184, .18);
   background: #101c2b;
@@ -7364,6 +7378,19 @@ body.theme-dark .agenda-price {
     gap: 8px;
     margin-top: 14px;
     padding: 14px;
+  }
+
+  #eventsView > .section-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  #eventsView > .section-head h2 {
+    max-width: 100%;
+    font-size: 22px;
+    line-height: 1.12;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 
   .agenda-month-head {

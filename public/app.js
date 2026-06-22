@@ -828,7 +828,8 @@ function intelligenceInsights() {
 function smartHomeCards() {
   const topFood = intelligentPlaces("ristorante aperto", 1)[0];
   const topShopping = intelligentPlaces("shopping coupon", 1)[0];
-  const liveEvent = tonightEvents[0];
+  const today = new Date().toISOString().slice(0, 10);
+  const liveEvent = calendarEvents.find((item) => (item.endDate || item.date) >= today) || calendarEvents[0];
   return [
     {
       label: "Consiglio ora",
@@ -841,7 +842,7 @@ function smartHomeCards() {
     {
       label: "Da non perdere",
       title: liveEvent?.title || "Eventi stasera",
-      text: liveEvent ? `${liveEvent.place} - ${liveEvent.time}` : "Musica, aperitivi e serate in un solo elenco.",
+      text: liveEvent ? `${eventRangeLabel(liveEvent)} - ${liveEvent.time}` : "Musica, teatro, sport e appuntamenti in un solo elenco.",
       view: "events",
       cta: "Vedi eventi"
     },
