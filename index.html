@@ -60,7 +60,7 @@
         ]
       }
     </script>
-    <link rel="stylesheet" href="styles.css?v=81" />
+    <link rel="stylesheet" href="styles.css?v=83" />
   </head>
 <body class="view-feed">
     <a class="skip-link" href="#mainContent">Vai al contenuto</a>
@@ -160,6 +160,17 @@
         <section class="view active" id="feedView" aria-label="Home">
           <section class="home-quick-actions" aria-label="Azioni rapide">
             <div class="stories" id="stories"></div>
+          </section>
+          <section class="summer-home-band" id="summerHomeBand" aria-label="Programma Estate 2026">
+            <div class="summer-home-copy">
+              <span class="summer-home-mark" aria-hidden="true">26</span>
+              <div>
+                <p class="eyebrow">Estate 2026</p>
+                <strong id="summerHomeTitle">Il programma estivo di Avezzano</strong>
+                <span id="summerHomeMeta">Calendario in aggiornamento</span>
+              </div>
+            </div>
+            <button class="summer-home-action" data-view-target="summer" type="button">Apri programma</button>
           </section>
           <section class="home-command-center" aria-label="Dashboard locale">
             <div class="command-copy">
@@ -281,14 +292,40 @@
 
         <section class="view" id="summerView">
           <div class="summer-hero">
-            <div>
-              <p class="eyebrow">☀ Estate 2026</p>
-              <h2>Estate Avezzanese 2026</h2>
-              <p>Musica live, cabaret, teatro e festival tra Pinguino Village, Castello Orsini e Alba Fucens.</p>
+            <div class="summer-hero-copy">
+              <p class="eyebrow">Estate 2026</p>
+              <h2>Il programma estivo, tutto in un posto</h2>
+              <p>Eventi, musica, teatro, sport e cultura tra Avezzano e Alba Fucens, ordinati per data e senza contenuti ripetuti.</p>
             </div>
-            <button class="primary-action" data-action="summer-plan" type="button">Crea itinerario</button>
+            <div class="summer-hero-actions">
+              <button class="primary-action" data-action="summer-next" type="button">Prossimo evento</button>
+              <button class="ghost" data-action="summer-plan" type="button">Salva programma</button>
+            </div>
           </div>
-          <div class="summer-grid" id="summerGrid"></div>
+          <section class="summer-metrics" aria-label="Riepilogo programma estivo">
+            <div><span>Appuntamenti</span><strong id="summerEventCount">0</strong></div>
+            <div><span>Avezzano</span><strong id="summerAvezzanoCount">0</strong></div>
+            <div><span>Alba Fucens</span><strong id="summerAlbaCount">0</strong></div>
+          </section>
+          <div class="summer-filters" id="summerFilters" aria-label="Filtra il programma estivo"></div>
+          <section class="summer-next-panel" id="summerNextPanel" aria-label="Prossimo evento estivo"></section>
+          <section class="summer-program" aria-labelledby="summerProgramTitle">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Calendario completo</p>
+                <h2 id="summerProgramTitle">Tutti gli appuntamenti estivi</h2>
+              </div>
+              <button class="ghost" data-view-target="coupons" type="button">Coupon e vantaggi</button>
+            </div>
+            <div class="event-agenda summer-grid" id="summerGrid" aria-live="polite"></div>
+          </section>
+          <aside class="event-ticket-note summer-ticket-note" aria-label="Informazioni utili sul programma estivo">
+            <div>
+              <p class="eyebrow">Info utili</p>
+              <strong>Biglietti e sedi</strong>
+            </div>
+            <p>Per gli appuntamenti delle rassegne consulta la scheda evento. Le sedi principali sono Castello Orsini, Aia dei Musei, Pinguino Village e Alba Fucens.</p>
+          </aside>
         </section>
 
         <section class="view" id="couponsView">
@@ -773,7 +810,7 @@
 
     <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
-    <script defer src="events-data.js?v=81"></script>
-    <script defer src="app.js?v=81"></script>
+    <script defer src="events-data.js?v=83"></script>
+    <script defer src="app.js?v=83"></script>
   </body>
 </html>

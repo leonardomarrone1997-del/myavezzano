@@ -327,6 +327,7 @@ let searchPlaceholderTimer = 0;
 let heroParallaxFrame = 0;
 let scrollAtmosphereFrame = 0;
 let eventsViewRendered = false;
+let summerViewRendered = false;
 let mapViewRendered = false;
 let webglAuraInitialized = false;
 const searchPlaceholders = [
@@ -368,24 +369,6 @@ const quickActions = [
 ];
 
 const cityHighlights = [
-  {
-    type: "Estate Avezzanese 2026",
-    title: "School of Rock al Pinguino Village",
-    place: "Pinguino Village",
-    when: "Sab 27 giugno 2026",
-    detail: "La notte rock dell'estate con Walter Cianciusi, Andrea Di Pietro ed Enrico Cianciusi.",
-    image: "https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1000&q=80",
-    cta: "Salva evento"
-  },
-  {
-    type: "Festival",
-    title: "Festiv'Alba 2026 ad Alba Fucens",
-    place: "Anfiteatro Romano di Alba Fucens",
-    when: "1 luglio - 7 agosto 2026",
-    detail: "Musica, teatro classico e grandi appuntamenti nella cornice archeologica vicino ad Avezzano.",
-    image: "https://images.unsplash.com/photo-1531572753322-ad063cecc140?auto=format&fit=crop&w=1000&q=80",
-    cta: "Vedi date"
-  },
   {
     type: "Evento stasera",
     title: "Aperitivo lungo in centro",
@@ -449,44 +432,23 @@ const eventCategories = [
   ["Teatro", "Spettacoli e classici", "teatro"],
   ["Musica", "Concerti e tribute", "musica"],
   ["Sport", "Gare e attività", "sport"],
+  ["Estate 2026", "Programma completo", "summer"],
   ["Archivio", "Eventi già svolti", "archivio"]
 ];
 
 let activeEventCategory = "all";
 
-const summerHighlights = [
-  {
-    title: "School of Rock 2026",
-    type: "Musica live",
-    place: "Pinguino Village",
-    text: "Sabato 27 giugno: notte rock con Walter Cianciusi, Andrea Di Pietro ed Enrico Cianciusi.",
-    cta: "Apri sede"
-  },
-  {
-    title: "Teatro Off al Castello",
-    type: "Cabaret e teatro",
-    place: "Castello Orsini",
-    text: "Giovedi 9 luglio alle 21:00: il monologo comico Dopo Cristo di Tiziano La Bella.",
-    cta: "Apri sede"
-  },
-  {
-    title: "Festiv'Alba 2026",
-    type: "Festival",
-    place: "Anfiteatro Romano di Alba Fucens",
-    text: "Dal 1 luglio al 7 agosto: musica, teatro classico e spettacoli nella cornice archeologica.",
-    cta: "Apri sede"
-  },
-  {
-    title: "Biglietti e prevendite",
-    type: "Info utili",
-    place: "Libreria Ubik",
-    text: "Prevendite in Libreria Ubik, online su DIY Ticket o al numero 06-0406.",
-    cta: "Apri punto"
-  }
-];
-
 const calendarEvents = window.MYAVEZZANO_EVENTS || [];
 const archivedEvents = window.MYAVEZZANO_ARCHIVED_EVENTS || [];
+const summerEvents = calendarEvents.filter((item) => item.date >= "2026-06-21" && item.date <= "2026-09-22");
+const summerCategories = [
+  ["Tutti", "Intero cartellone", "all"],
+  ["Avezzano", "In città", "avezzano"],
+  ["Alba Fucens", "Area archeologica", "alba"],
+  ["Musica", "Live e concerti", "musica"],
+  ["Teatro", "Spettacoli", "teatro"]
+];
+let activeSummerCategory = "all";
 
 const coupons = [
   ["Aperitivo 2x1", "Caffè Risorgimento", "Scade oggi alle 20:00", "35 punti", "assets/coupons/aperitivo-2x1.svg", "AVZ-APERITIVO-2X1"],
@@ -561,9 +523,9 @@ const pageMeta = {
     copy: "Utenti, contenuti, insight invisibili e strumenti di controllo raccolti in una cabina di comando essenziale."
   },
   summer: {
-    eyebrow: "Estate 2026",
-    title: "La stagione come percorso",
-    copy: "Serate, negozi, ristoranti e tappe leggere organizzati come un itinerario estivo, non come una lista."
+    eyebrow: "Programma estivo",
+    title: "Estate 2026, senza perdere un appuntamento",
+    copy: "Calendario completo tra Avezzano e Alba Fucens, con date, filtri, reminder, dettagli e salvataggi."
   },
   legal: {
     eyebrow: "Fiducia e regole",
@@ -936,6 +898,38 @@ function eventRangeLabel(item) {
   return `${startLabel} - ${endLabel}`;
 }
 
+function currentDateKey() {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+}
+
+function groupEventsByMonth(items) {
+  return items.reduce((months, item) => {
+    const date = eventDate(item.date);
+    const key = `${date.getFullYear()}-${date.getMonth()}`;
+    if (!months[key]) {
+      months[key] = {
+        title: new Intl.DateTimeFormat("it-IT", { month: "long", year: "numeric" }).format(date),
+        items: []
+      };
+    }
+    months[key].items.push(item);
+    return months;
+  }, {});
+}
+
+function eventAgendaMarkup(items, { idPrefix = "event" } = {}) {
+  return Object.values(groupEventsByMonth(items)).map((group) => `
+    <section class="agenda-month">
+      <div class="agenda-month-head">
+        <h3>${group.title}</h3>
+        <span>${group.items.length} ${group.items.length === 1 ? "appuntamento" : "appuntamenti"}</span>
+      </div>
+      <div class="agenda-month-list">${group.items.map((item) => eventCardMarkup(item, { idPrefix })).join("")}</div>
+    </section>
+  `).join("");
+}
+
 function eventMatchesFilter(item, filter) {
   if (filter === "all") return !item.past;
   if (filter === "archivio") return Boolean(item.past);
@@ -957,11 +951,11 @@ function eventAttendanceCount(item) {
   return categoryBase + (hash % 137);
 }
 
-function eventCardMarkup(item, { compact = false } = {}) {
+function eventCardMarkup(item, { compact = false, idPrefix = "event" } = {}) {
   const parts = eventDayParts(item);
   const search = [item.title, item.place, item.area, item.category, item.detail, item.price].join(" ").toLowerCase();
   return `
-    <article class="agenda-event${compact ? " agenda-event-featured" : ""}${item.past ? " is-past" : ""}" id="event-${item.id}" data-search="${search}">
+    <article class="agenda-event${compact ? " agenda-event-featured" : ""}${item.past ? " is-past" : ""}" id="${idPrefix}-${item.id}" data-search="${search}">
       <time class="agenda-date" datetime="${item.date}">
         <span>${parts.weekday}</span>
         <strong>${parts.day}</strong>
@@ -1010,8 +1004,7 @@ function renderTonightAgenda() {
   const copy = document.querySelector("#tonightCopy");
   if (!grid || !heading || !copy) return;
 
-  const now = new Date();
-  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  const today = currentDateKey();
   const todayEvents = calendarEvents.filter((item) => item.date <= today && (item.endDate || item.date) >= today);
   const visible = todayEvents.length ? todayEvents : calendarEvents.filter((item) => (item.endDate || item.date) >= today).slice(0, 1);
 
@@ -1026,7 +1019,7 @@ function renderTonightAgenda() {
   copy.textContent = todayEvents.length
     ? `${todayEvents.length} ${todayEvents.length === 1 ? "evento" : "eventi"} in agenda oggi.`
     : `Nessun evento oggi: il prossimo è ${eventRangeLabel(visible[0])}.`;
-  grid.innerHTML = visible.map((item) => eventCardMarkup(item, { compact: true })).join("");
+  grid.innerHTML = visible.map((item) => eventCardMarkup(item, { compact: true, idPrefix: "tonight-event" })).join("");
 }
 
 function renderEventAgenda(filter = activeEventCategory) {
@@ -1042,28 +1035,7 @@ function renderEventAgenda(filter = activeEventCategory) {
     return;
   }
 
-  const groups = filtered.reduce((months, item) => {
-    const date = eventDate(item.date);
-    const key = `${date.getFullYear()}-${date.getMonth()}`;
-    if (!months[key]) {
-      months[key] = {
-        title: new Intl.DateTimeFormat("it-IT", { month: "long", year: "numeric" }).format(date),
-        items: []
-      };
-    }
-    months[key].items.push(item);
-    return months;
-  }, {});
-
-  grid.innerHTML = Object.values(groups).map((group) => `
-    <section class="agenda-month">
-      <div class="agenda-month-head">
-        <h3>${group.title}</h3>
-        <span>${group.items.length} ${group.items.length === 1 ? "appuntamento" : "appuntamenti"}</span>
-      </div>
-      <div class="agenda-month-list">${group.items.map((item) => eventCardMarkup(item)).join("")}</div>
-    </section>
-  `).join("");
+  grid.innerHTML = eventAgendaMarkup(filtered);
 }
 
 function ensureEventsViewRendered() {
@@ -1071,6 +1043,83 @@ function ensureEventsViewRendered() {
   renderTonightAgenda();
   renderEventAgenda();
   eventsViewRendered = true;
+}
+
+function summerEventMatchesFilter(item, filter) {
+  if (filter === "all") return true;
+  if (filter === "avezzano") return item.area === "Avezzano";
+  if (filter === "alba") return item.area === "Alba Fucens";
+  return item.category.toLowerCase() === filter;
+}
+
+function nextSummerEvent() {
+  const today = currentDateKey();
+  return summerEvents.find((item) => (item.endDate || item.date) >= today) || summerEvents[0];
+}
+
+function renderSummerHomeBand() {
+  const title = document.querySelector("#summerHomeTitle");
+  const meta = document.querySelector("#summerHomeMeta");
+  const next = nextSummerEvent();
+  if (!title || !meta) return;
+  title.textContent = next?.title || "Il programma estivo di Avezzano";
+  meta.textContent = next
+    ? `${summerEvents.length} appuntamenti · prossimo ${eventRangeLabel(next)} alle ${next.time}`
+    : "Il calendario stagionale sarà aggiornato qui.";
+}
+
+function renderSummerMetrics() {
+  document.querySelector("#summerEventCount").textContent = summerEvents.length;
+  document.querySelector("#summerAvezzanoCount").textContent = summerEvents.filter((item) => item.area === "Avezzano").length;
+  document.querySelector("#summerAlbaCount").textContent = summerEvents.filter((item) => item.area === "Alba Fucens").length;
+}
+
+function renderSummerFilters() {
+  const filters = document.querySelector("#summerFilters");
+  if (!filters) return;
+  filters.innerHTML = summerCategories.map(([title, text, filter]) => `
+    <button class="summer-filter ${filter === activeSummerCategory ? "active" : ""}" data-action="summer-category" data-summer-filter="${filter}" aria-pressed="${filter === activeSummerCategory}" type="button">
+      <strong>${title}</strong>
+      <span>${text}</span>
+    </button>
+  `).join("");
+}
+
+function renderSummerNext() {
+  const panel = document.querySelector("#summerNextPanel");
+  const next = nextSummerEvent();
+  if (!panel) return;
+  if (!next) {
+    panel.innerHTML = `<div><span>Programma stagionale</span><strong>Nessun appuntamento disponibile</strong></div>`;
+    return;
+  }
+  panel.innerHTML = `
+    <div>
+      <span>Prossimo appuntamento</span>
+      <strong>${next.title}</strong>
+      <small>${eventRangeLabel(next)} · ${next.time} · ${next.place}</small>
+    </div>
+    <button class="ghost" data-action="summer-next" type="button">Mostra nel calendario</button>
+  `;
+}
+
+function renderSummerProgram(filter = activeSummerCategory) {
+  activeSummerCategory = filter;
+  renderSummerFilters();
+  const grid = document.querySelector("#summerGrid");
+  if (!grid) return;
+  const filtered = summerEvents.filter((item) => summerEventMatchesFilter(item, filter));
+  grid.innerHTML = filtered.length
+    ? eventAgendaMarkup(filtered, { idPrefix: "summer-event" })
+    : `<div class="agenda-empty"><strong>Nessun evento in questo filtro.</strong><span>Apri l'intero cartellone Estate 2026.</span></div>`;
+}
+
+function ensureSummerViewRendered() {
+  if (summerViewRendered) return;
+  renderSummerMetrics();
+  renderSummerNext();
+  renderSummerProgram();
+  summerViewRendered = true;
 }
 
 function render() {
@@ -1082,6 +1131,7 @@ function render() {
     </button>
   `).join("");
 
+  renderSummerHomeBand();
   renderSmartStrip();
   renderDayPlan();
   document.querySelector("#feedList").innerHTML = cityHighlights.slice(0, 4).map((item) => {
@@ -1107,27 +1157,6 @@ function render() {
       </div>
     </article>
   `;
-  }).join("");
-
-  document.querySelector("#summerGrid").innerHTML = summerHighlights.map((item) => {
-    const place = findPlaceByName(item.place);
-    return `
-      <article class="summer-card" data-search="${[item.title, item.type, item.place, item.text, place?.category].filter(Boolean).join(" ").toLowerCase()}">
-        <div class="summer-icon">☀</div>
-        <div>
-          <p class="eyebrow">${item.type}</p>
-          <h2>${item.title}</h2>
-          <p>${item.text}</p>
-          <div class="summer-meta">
-            <span>${item.place}</span>
-          </div>
-          <div class="post-actions">
-            <button data-action="open-map-place" data-place="${item.place}" type="button">${item.cta}</button>
-            <button class="save-action" data-action="save-highlight" data-title="${item.title}" data-type="Estate 2026" type="button">Salva</button>
-          </div>
-        </div>
-      </article>
-    `;
   }).join("");
 
   document.querySelector("#couponsGrid").innerHTML = coupons.map(([title, place, expires, meta, qrSrc, couponCode]) => `
@@ -2340,6 +2369,10 @@ function switchView(view, updateHash = true) {
     ensureEventsViewRendered();
   }
 
+  if (view === "summer") {
+    ensureSummerViewRendered();
+  }
+
   if (view === "profile") {
     renderUserProfile();
   }
@@ -2355,6 +2388,7 @@ function switchView(view, updateHash = true) {
   stampCityArtifacts(targetView);
   animateActiveView(targetView);
   closeMobileMenu();
+  if (window.scrollY > 0) window.scrollTo({ top: 0, behavior: "auto" });
 }
 
 function animateActiveView(scope = document.querySelector(".view.active")) {
@@ -2808,8 +2842,29 @@ function handleAction(button) {
   }
 
   if (action === "event-category") {
+    if (button.dataset.eventFilter === "summer") {
+      activeSummerCategory = "all";
+      if (summerViewRendered) renderSummerProgram("all");
+      switchView("summer");
+      return;
+    }
     renderEventAgenda(button.dataset.eventFilter || "all");
     showToast(`Filtro eventi attivo: ${button.dataset.category}.`);
+    return;
+  }
+
+  if (action === "summer-category") {
+    renderSummerProgram(button.dataset.summerFilter || "all");
+    showToast(`Programma Estate 2026: ${button.textContent.trim()}.`);
+    return;
+  }
+
+  if (action === "summer-next") {
+    ensureSummerViewRendered();
+    const next = nextSummerEvent();
+    if (!next) return;
+    if (activeSummerCategory !== "all") renderSummerProgram("all");
+    requestAnimationFrame(() => document.querySelector(`#summer-event-${next.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" }));
     return;
   }
 
@@ -2879,9 +2934,11 @@ function handleAction(button) {
   }
 
   if (action === "summer-plan") {
-    const total = addDemoItem("summerPlans", { title: "Itinerario Estate 2026" });
-    showToast(`Itinerario Estate 2026 creato. Totale: ${total}.`, "success");
-    switchView("map");
+    const total = addDemoItem("summerPlans", { title: "Programma Estate 2026" });
+    button.textContent = "Programma salvato";
+    button.classList.add("is-saved");
+    showToast(`Programma Estate 2026 salvato. Totale: ${total}.`, "success");
+    return;
   }
 }
 
