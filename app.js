@@ -289,6 +289,8 @@ const AVEZZANO_CENTER = { lat: 42.0326, lng: 13.4256 };
 let interactiveMap;
 let routeLine;
 let leafletLoadPromise;
+let cityPulseLayer;
+let cityPulseMarkers = new Map();
 
 function loadLeaflet() {
   if (window.L) return Promise.resolve(window.L);
@@ -330,6 +332,7 @@ let eventsViewRendered = false;
 let summerViewRendered = false;
 let mapViewRendered = false;
 let webglAuraInitialized = false;
+let lastMinuteCountdownTimer = 0;
 const searchPlaceholders = [
   "Cerca locali, eventi, servizi...",
   "Dove vuoi andare oggi?",
@@ -455,6 +458,21 @@ const coupons = [
   ["-20% nuova collezione", "Atelier Marsica", "Valido fino a domenica", "80 usi rimasti", "assets/coupons/atelier-marsica-20.svg", "AVZ-MARSICA-20"],
   ["Ingresso prova gratuito", "FitLab Avezzano", "Prenota entro 48 ore", "50 punti", "assets/coupons/fitlab-prova-gratis.svg", "AVZ-FITLAB-PROVA"]
 ];
+
+const cityPulseZones = [
+  { id: "centro", name: "Centro", status: "Vivace", kind: "live", base: 68, lat: 42.0329, lng: 13.4252, reason: "Aperitivi, passeggio ed eventi vicini" },
+  { id: "torlonia", name: "Piazza Torlonia", status: "In movimento", kind: "live", base: 60, lat: 42.0345, lng: 13.4255, reason: "Attività diurne e appuntamenti urbani" },
+  { id: "castello", name: "Castello Orsini", status: "Tranquilla", kind: "calm", base: 34, lat: 42.0288, lng: 13.4267, reason: "Cultura, giardini e ritmo più calmo" },
+  { id: "corradini", name: "Via Corradini", status: "Conveniente", kind: "value", base: 58, lat: 42.0316, lng: 13.4218, reason: "Negozi e vantaggi attivi nelle vicinanze" }
+];
+
+const lastMinuteDeals = [
+  { id: "aperitivo-tavoli", title: "2 tavoli aperitivo", place: "Caffè Risorgimento", category: "Aperitivo", value: "-20%", availability: "2 tavoli", durationMinutes: 95, detail: "Prenotazione per oggi entro esaurimento." },
+  { id: "bakery-box", title: "Box serale Bakery", place: "Bakery Marsica", category: "Food", value: "-40%", availability: "6 box", durationMinutes: 140, detail: "Ritiro serale di prodotti freschi disponibili." },
+  { id: "fitlab-ingressi", title: "Ingresso prova FitLab", place: "FitLab Avezzano", category: "Sport", value: "Gratis", availability: "3 ingressi", durationMinutes: 180, detail: "Ultimi ingressi prova prenotabili oggi." }
+];
+
+const LAST_MINUTE_STATE_KEY = "myavezzano_last_minute_v1";
 
 const rewards = [
   ["Cena locale", "1.500 punti", "Premio presso i ristoranti aderenti."],
@@ -838,6 +856,139 @@ function renderSmartStrip() {
   `).join("");
 }
 
+function cityPulseSnapshot() {
+  const hour = new Date().getHours();
+  return cityPulseZones.map((zone) => {
+    let adjustment = 0;
+    if (zone.id === "centro") adjustment = hour >= 18 && hour <= 23 ? 18 : hour >= 12 && hour <= 15 ? 8 : 0;
+    if (zone.id === "torlonia") adjustment = hour >= 9 && hour <= 20 ? 12 : -4;
+    if (zone.id === "castello") adjustment = hour >= 18 && hour <= 22 ? 8 : -2;
+    if (zone.id === "corradini") adjustment = hour >= 9 && hour <= 20 ? 10 : 0;
+    return { ...zone, score: Math.max(18, Math.min(94, zone.base + adjustment)) };
+  });
+}
+
+function pulseZoneMarkup(zone, compact = false) {
+  return `
+    <button class="city-pulse-item city-pulse-${zone.kind}${compact ? " is-compact" : ""}" data-action="open-pulse-zone" data-zone-id="${zone.id}" type="button">
+      <span class="city-pulse-signal" aria-hidden="true"></span>
+      <span class="city-pulse-copy">
+        <strong>${zone.name}</strong>
+        <small>${zone.reason}</small>
+      </span>
+      <span class="city-pulse-state">
+        <b>${zone.status}</b>
+        <i><span style="width:${zone.score}%"></span></i>
+      </span>
+    </button>
+  `;
+}
+
+function pulseColor(kind) {
+  if (kind === "calm") return "#2563eb";
+  if (kind === "value") return "#0f9f76";
+  return "#ef5b5e";
+}
+
+function renderCityPulseLayer() {
+  if (!interactiveMap || !window.L) return;
+  if (cityPulseLayer) cityPulseLayer.remove();
+  cityPulseMarkers.clear();
+  cityPulseLayer = L.layerGroup().addTo(interactiveMap);
+  cityPulseSnapshot().forEach((zone) => {
+    const color = pulseColor(zone.kind);
+    const marker = L.circle([zone.lat, zone.lng], {
+      radius: 90 + zone.score * 1.2,
+      color,
+      weight: 2,
+      opacity: .72,
+      fillColor: color,
+      fillOpacity: .13
+    }).bindPopup(`<strong>${zone.name}</strong><br>${zone.status} · ${zone.reason}`);
+    marker.addTo(cityPulseLayer);
+    cityPulseMarkers.set(zone.id, marker);
+  });
+}
+
+function renderCityPulse() {
+  const snapshot = cityPulseSnapshot();
+  const strongestLive = [...snapshot].filter((zone) => zone.kind === "live").sort((a, b) => b.score - a.score)[0];
+  const bestValue = snapshot.find((zone) => zone.kind === "value");
+  const home = document.querySelector("#cityPulseHome");
+  const map = document.querySelector("#cityPulseMap");
+  const updated = document.querySelector("#cityPulseTime");
+  if (home) home.innerHTML = [strongestLive, bestValue].filter(Boolean).map((zone) => pulseZoneMarkup(zone, true)).join("");
+  if (map) map.innerHTML = snapshot.map((zone) => pulseZoneMarkup(zone)).join("");
+  if (updated) updated.textContent = `Aggiornato ${new Intl.DateTimeFormat("it-IT", { hour: "2-digit", minute: "2-digit" }).format(new Date())}`;
+  renderCityPulseLayer();
+}
+
+function getLastMinuteState() {
+  const today = currentDateKey();
+  let state;
+  try {
+    state = JSON.parse(localStorage.getItem(LAST_MINUTE_STATE_KEY) || "null");
+  } catch {
+    state = null;
+  }
+  if (!state || state.day !== today) {
+    state = {
+      day: today,
+      deadlines: Object.fromEntries(lastMinuteDeals.map((deal) => [deal.id, Date.now() + deal.durationMinutes * 60000]))
+    };
+    localStorage.setItem(LAST_MINUTE_STATE_KEY, JSON.stringify(state));
+  }
+  return state;
+}
+
+function formatLastMinuteCountdown(milliseconds) {
+  if (milliseconds <= 0) return "Scaduta";
+  const totalMinutes = Math.ceil(milliseconds / 60000);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return hours ? `${hours}h ${String(minutes).padStart(2, "0")}m` : `${minutes} min`;
+}
+
+function lastMinuteCardMarkup(deal, deadline, compact = false) {
+  return `
+    <article class="last-minute-card${compact ? " is-compact" : ""}" data-deal-id="${deal.id}">
+      <div class="last-minute-value">${deal.value}</div>
+      <div class="last-minute-copy">
+        <span>${deal.category} · ${deal.availability}</span>
+        <strong>${deal.title}</strong>
+        <small>${deal.place}${compact ? "" : ` · ${deal.detail}`}</small>
+      </div>
+      <div class="last-minute-actions">
+        <span class="last-minute-countdown" data-deal-countdown="${deal.id}">${formatLastMinuteCountdown(deadline - Date.now())}</span>
+        ${compact ? "" : `<button class="ghost" data-action="open-map-place" data-place="${deal.place}" type="button">Mappa</button>`}
+        <button class="save-action" data-action="claim-last-minute" data-deal-id="${deal.id}" data-title="${deal.title}" type="button">Salva</button>
+      </div>
+    </article>
+  `;
+}
+
+function updateLastMinuteCountdowns() {
+  const state = getLastMinuteState();
+  document.querySelectorAll("[data-deal-countdown]").forEach((counter) => {
+    const remaining = (state.deadlines[counter.dataset.dealCountdown] || 0) - Date.now();
+    counter.textContent = formatLastMinuteCountdown(remaining);
+    const card = counter.closest("[data-deal-id]");
+    const claim = card?.querySelector('[data-action="claim-last-minute"]');
+    if (claim) claim.disabled = remaining <= 0;
+    card?.classList.toggle("is-expired", remaining <= 0);
+  });
+}
+
+function renderLastMinuteDeals() {
+  const state = getLastMinuteState();
+  const home = document.querySelector("#lastMinuteHome");
+  const grid = document.querySelector("#lastMinuteGrid");
+  if (home) home.innerHTML = lastMinuteDeals.slice(0, 2).map((deal) => lastMinuteCardMarkup(deal, state.deadlines[deal.id], true)).join("");
+  if (grid) grid.innerHTML = lastMinuteDeals.map((deal) => lastMinuteCardMarkup(deal, state.deadlines[deal.id])).join("");
+  updateLastMinuteCountdowns();
+  if (!lastMinuteCountdownTimer) lastMinuteCountdownTimer = window.setInterval(updateLastMinuteCountdowns, 60000);
+}
+
 function renderDayPlan() {
   const grid = document.querySelector("#dayPlanGrid");
   if (!grid) return;
@@ -1132,6 +1283,8 @@ function render() {
   `).join("");
 
   renderSummerHomeBand();
+  renderCityPulse();
+  renderLastMinuteDeals();
   renderSmartStrip();
   renderDayPlan();
   document.querySelector("#feedList").innerHTML = cityHighlights.slice(0, 4).map((item) => {
@@ -2261,6 +2414,23 @@ function refreshInteractiveMapLayout() {
   });
 }
 
+async function focusCityPulseZone(zoneId) {
+  const zone = cityPulseZones.find((item) => item.id === zoneId);
+  if (!zone) return;
+  switchView("map");
+  try {
+    await loadLeaflet();
+    initInteractiveMap();
+    renderCityPulseLayer();
+    interactiveMap?.setView([zone.lat, zone.lng], 16);
+    cityPulseMarkers.get(zone.id)?.openPopup();
+    const status = document.querySelector("#mapStatus");
+    if (status) status.textContent = `${zone.name}: ${zone.status.toLowerCase()}. ${zone.reason}.`;
+  } catch {
+    showToast("Mappa online non disponibile. Riprova con una connessione attiva.", "error");
+  }
+}
+
 function initInteractiveMap() {
   const mapElement = document.querySelector("#realMap");
   const status = document.querySelector("#mapStatus");
@@ -2297,6 +2467,7 @@ function initInteractiveMap() {
 
   L.control.zoom({ position: "topright" }).addTo(interactiveMap);
 
+  renderCityPulseLayer();
   rebuildMapMarkers();
 
   selectMapPlace(selectedPlace.id, false);
@@ -2838,6 +3009,29 @@ function handleAction(button) {
       if (place) selectMapPlace(place.id);
       showToast(place ? `Mappa aperta su ${place.name}.` : "Mappa aperta. Seleziona una destinazione.");
     }, 120);
+    return;
+  }
+
+  if (action === "open-pulse-zone") {
+    focusCityPulseZone(button.dataset.zoneId);
+    return;
+  }
+
+  if (action === "claim-last-minute") {
+    const deal = lastMinuteDeals.find((item) => item.id === button.dataset.dealId);
+    const deadline = getLastMinuteState().deadlines[button.dataset.dealId] || 0;
+    if (!deal || deadline <= Date.now()) {
+      showToast("Questa occasione è appena scaduta.", "error");
+      updateLastMinuteCountdowns();
+      return;
+    }
+    const total = addDemoItem("coupons", { title: deal.title, place: deal.place, type: "Ultimo momento" });
+    document.querySelectorAll(`[data-action="claim-last-minute"][data-deal-id="${deal.id}"]`).forEach((dealButton) => {
+      dealButton.textContent = "Salvato";
+      dealButton.classList.add("is-saved");
+    });
+    renderDayPlan();
+    showToast(`Occasione salvata: ${deal.title}. Coupon totali: ${total}.`, "success");
     return;
   }
 

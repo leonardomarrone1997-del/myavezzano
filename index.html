@@ -60,7 +60,7 @@
         ]
       }
     </script>
-    <link rel="stylesheet" href="styles.css?v=83" />
+    <link rel="stylesheet" href="styles.css?v=84" />
   </head>
 <body class="view-feed">
     <a class="skip-link" href="#mainContent">Vai al contenuto</a>
@@ -172,6 +172,29 @@
             </div>
             <button class="summer-home-action" data-view-target="summer" type="button">Apri programma</button>
           </section>
+          <section class="city-now-grid" aria-label="Avezzano ora e opportunità last minute">
+            <article class="city-pulse-panel">
+              <div class="city-now-head">
+                <div>
+                  <p class="eyebrow">Avezzano ora</p>
+                  <h2>Il ritmo della città</h2>
+                </div>
+                <button class="ghost compact-button" data-view-target="map" type="button">Apri mappa</button>
+              </div>
+              <div class="city-pulse-home" id="cityPulseHome"></div>
+              <p class="city-now-note">Stima da eventi, orari e offerte attive.</p>
+            </article>
+            <article class="last-minute-panel">
+              <div class="city-now-head">
+                <div>
+                  <p class="eyebrow">Ultimo momento</p>
+                  <h2>Occasioni disponibili ora</h2>
+                </div>
+                <button class="ghost compact-button" data-view-target="coupons" type="button">Vedi tutte</button>
+              </div>
+              <div class="last-minute-home" id="lastMinuteHome"></div>
+            </article>
+          </section>
           <section class="home-command-center" aria-label="Dashboard locale">
             <div class="command-copy">
               <p class="eyebrow">Dashboard locale</p>
@@ -224,6 +247,16 @@
         </section>
 
         <section class="view" id="mapView">
+          <section class="map-pulse-panel" aria-labelledby="mapPulseTitle">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Avezzano ora</p>
+                <h2 id="mapPulseTitle">Zone vive, tranquille e convenienti</h2>
+              </div>
+              <span class="pill" id="cityPulseTime">Aggiornato ora</span>
+            </div>
+            <div class="city-pulse-map" id="cityPulseMap"></div>
+          </section>
           <div class="map-layout">
             <div class="map-surface real-map-shell" aria-label="Mappa reale attività vicine">
               <div class="map-toolbar">
@@ -335,6 +368,22 @@
               <h2>Coupon QR e conversioni</h2>
             </div>
             <button class="primary-action" data-action="scan-qr" type="button">Scansiona QR</button>
+          </div>
+          <section class="last-minute-section" aria-labelledby="lastMinuteTitle">
+            <div class="section-head compact-section-head">
+              <div>
+                <p class="eyebrow">Valide per poche ore</p>
+                <h2 id="lastMinuteTitle">Ultimo momento</h2>
+              </div>
+              <span class="pill warning">Disponibilità limitata</span>
+            </div>
+            <div class="last-minute-grid" id="lastMinuteGrid"></div>
+          </section>
+          <div class="section-head coupon-library-head">
+            <div>
+              <p class="eyebrow">Sempre disponibili</p>
+              <h2>I tuoi coupon</h2>
+            </div>
           </div>
           <div id="couponsGrid" class="cards-grid"></div>
         </section>
@@ -810,7 +859,7 @@
 
     <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
-    <script defer src="events-data.js?v=83"></script>
-    <script defer src="app.js?v=83"></script>
+    <script defer src="events-data.js?v=84"></script>
+    <script defer src="app.js?v=84"></script>
   </body>
 </html>
