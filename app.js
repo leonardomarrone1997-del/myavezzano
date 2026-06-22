@@ -2073,7 +2073,12 @@ function switchView(view, updateHash = true) {
   }
 
   if (view === "map") {
-    setTimeout(() => {
+    setTimeout(async () => {
+      try {
+        await loadLeaflet();
+      } catch {
+        // The map keeps its Google Maps fallback when the CDN is unavailable.
+      }
       initInteractiveMap();
       refreshInteractiveMapLayout();
     }, 80);
@@ -2107,6 +2112,9 @@ function animateActiveView(scope = document.querySelector(".view.active")) {
     .tonight-card,
     .event-chip,
     .event-card,
+    .event-ticket-note,
+    .agenda-month-head,
+    .agenda-event,
     .coupon-card,
     .reward-card,
     .summer-card,
@@ -2119,11 +2127,6 @@ function animateActiveView(scope = document.querySelector(".view.active")) {
     .legal-tab,
     .merchant-pricing-hero,
     .pricing-card,
-    .campaign-hero,
-    .campaign-metrics article,
-    .campaign-feature,
-    .campaign-playbook,
-    .campaign-gallery article,
     .admin-hero,
     .signup-panel,
     .demo-panel

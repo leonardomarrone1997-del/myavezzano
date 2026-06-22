@@ -7112,3 +7112,293 @@ body.theme-dark .campaign-steps article {
     height: auto;
   }
 }
+
+/* Agenda eventi 2026 */
+.event-ticket-note {
+  display: grid;
+  grid-template-columns: minmax(180px, .42fr) 1fr;
+  align-items: center;
+  gap: 18px;
+  margin: 18px 0 4px;
+  padding: 16px 18px;
+  border: 1px solid rgba(14, 116, 144, .2);
+  border-left: 4px solid #0891b2;
+  border-radius: 8px;
+  background: rgba(236, 254, 255, .82);
+  color: #123047;
+}
+
+.event-ticket-note strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 16px;
+}
+
+.event-ticket-note p {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.event-agenda,
+.agenda-month,
+.agenda-month-list {
+  display: grid;
+  gap: 14px;
+}
+
+.event-agenda {
+  gap: 26px;
+  padding-bottom: 20px;
+}
+
+.agenda-month-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.agenda-month-head h3 {
+  margin: 0;
+  font-size: 20px;
+  text-transform: capitalize;
+}
+
+.agenda-month-head span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.agenda-event {
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr);
+  gap: 16px;
+  min-height: 158px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  box-shadow: 0 8px 22px rgba(18, 48, 71, .07);
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+.agenda-event:hover {
+  transform: translateY(-2px);
+  border-color: rgba(8, 145, 178, .35);
+  box-shadow: 0 12px 28px rgba(18, 48, 71, .11);
+}
+
+.agenda-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  min-height: 112px;
+  padding: 8px 5px;
+  border-radius: 7px;
+  background: #082f49;
+  color: #fff;
+  text-align: center;
+}
+
+.agenda-date span,
+.agenda-date small {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.agenda-date strong {
+  margin: 3px 0;
+  font-size: 30px;
+  line-height: 1;
+}
+
+.agenda-event-copy {
+  min-width: 0;
+}
+
+.agenda-event-copy h3 {
+  margin: 6px 0 4px;
+  color: var(--text);
+  font-size: 18px;
+  line-height: 1.18;
+}
+
+.agenda-event-copy > p {
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.agenda-event-copy .agenda-place {
+  color: #0e7490;
+  font-weight: 800;
+}
+
+.agenda-event-meta,
+.agenda-event-footer,
+.agenda-event-actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.agenda-event-meta {
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.agenda-tag,
+.agenda-price {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.agenda-tag {
+  background: #ecfeff;
+  color: #0e7490;
+}
+
+.agenda-event-footer {
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.agenda-price {
+  background: #fff4e8;
+  color: #b45309;
+}
+
+.agenda-event-actions button {
+  min-height: 36px;
+  padding: 7px 11px;
+}
+
+.agenda-event.is-past {
+  opacity: .78;
+  box-shadow: none;
+}
+
+.agenda-event.is-past .agenda-date {
+  background: #64748b;
+}
+
+.agenda-event-featured {
+  width: 100%;
+  min-height: 0;
+  border-color: rgba(255, 255, 255, .42);
+  box-shadow: none;
+}
+
+.tonight-grid:has(.agenda-event-featured) {
+  grid-template-columns: 1fr;
+  margin-top: 0;
+}
+
+.agenda-empty {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 24px;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  text-align: center;
+}
+
+body.theme-dark .event-ticket-note {
+  border-color: rgba(34, 211, 238, .2);
+  border-left-color: #22d3ee;
+  background: rgba(8, 47, 73, .74);
+  color: #e6f8fc;
+}
+
+body.theme-dark .agenda-event {
+  border-color: rgba(148, 163, 184, .18);
+  background: #101c2b;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, .18);
+}
+
+body.theme-dark .agenda-event:hover {
+  border-color: rgba(34, 211, 238, .45);
+}
+
+body.theme-dark .agenda-date {
+  background: #0e7490;
+}
+
+body.theme-dark .agenda-event-copy .agenda-place {
+  color: #67e8f9;
+}
+
+body.theme-dark .agenda-tag {
+  background: rgba(34, 211, 238, .12);
+  color: #67e8f9;
+}
+
+body.theme-dark .agenda-price {
+  background: rgba(251, 146, 60, .12);
+  color: #fdba74;
+}
+
+@media (max-width: 760px) {
+  .event-ticket-note {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 14px;
+    padding: 14px;
+  }
+
+  .agenda-month-head {
+    align-items: center;
+  }
+
+  .agenda-event {
+    grid-template-columns: 58px minmax(0, 1fr);
+    gap: 11px;
+    min-height: 0;
+    padding: 10px;
+  }
+
+  .agenda-date {
+    min-height: 96px;
+    padding: 6px 3px;
+  }
+
+  .agenda-date strong {
+    font-size: 25px;
+  }
+
+  .agenda-event-copy h3 {
+    font-size: 16px;
+  }
+
+  .agenda-event-copy > p {
+    font-size: 12px;
+  }
+
+  .agenda-event-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .agenda-event-actions {
+    width: 100%;
+  }
+
+  .agenda-event-actions button {
+    flex: 1;
+  }
+}
