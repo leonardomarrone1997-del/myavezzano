@@ -247,20 +247,27 @@
           <div class="tonight-panel">
             <div>
               <p class="eyebrow">Cosa c'è questa sera?</p>
-              <h2>Serate consigliate vicino a te</h2>
-              <p>Una selezione rapida per decidere dove andare stasera: aperitivi, feste, musica live e discoteca.</p>
+              <h2 id="tonightHeading">Agenda aggiornata di oggi</h2>
+              <p id="tonightCopy">Controlliamo gli appuntamenti in programma ad Avezzano e nell'area immediata.</p>
             </div>
             <button class="light-action" data-action="create-reminder" type="button">Attiva reminder</button>
           </div>
           <div id="tonightGrid" class="tonight-grid"></div>
+          <aside class="event-ticket-note" aria-label="Informazioni biglietteria Dal Tramonto all'Alba OFF">
+            <div>
+              <p class="eyebrow">Dal Tramonto all'Alba OFF</p>
+              <strong>Biglietti e sedi</strong>
+            </div>
+            <p>Borgo medievale <b>10 euro</b> · Giardini Castello Orsini e Aia dei Musei <b>15/22 euro</b> · Anfiteatro Romano <b>25 euro</b>.</p>
+          </aside>
           <div class="section-head calendar-head">
             <div>
               <p class="eyebrow">Calendario</p>
-              <h2>Prossimi eventi</h2>
+              <h2>Eventi da fare</h2>
             </div>
-            <button class="ghost" data-action="calendar-month" type="button">Vedi mese</button>
+            <button class="ghost" data-action="calendar-month" type="button">Vai al prossimo</button>
           </div>
-          <div id="eventsGrid" class="cards-grid"></div>
+          <div id="eventsGrid" class="event-agenda" aria-live="polite"></div>
         </section>
 
         <section class="view" id="summerView">

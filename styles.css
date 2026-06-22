@@ -7068,17 +7068,32 @@ body.theme-dark .campaign-steps article {
 }
 
 @media (max-width: 760px) {
+  #campaignView {
+    padding-bottom: 112px;
+  }
+
   .campaign-hero {
     min-height: 0;
     padding: 16px;
+    gap: 14px;
   }
 
   .campaign-copy h2 {
-    font-size: clamp(34px, 12vw, 48px);
+    font-size: clamp(31px, 10vw, 42px);
+    line-height: .96;
+  }
+
+  .campaign-copy p {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .campaign-actions {
+    margin-bottom: 8px;
   }
 
   .campaign-visual {
-    min-height: 230px;
+    min-height: 210px;
   }
 
   .campaign-metrics,
