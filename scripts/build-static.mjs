@@ -12,6 +12,7 @@ const entries = [
   "estate-2026.html",
   "attivita-locali.html",
   "styles.css",
+  "events-data.js",
   "app.js",
   "manifest.json",
   "service-worker.js",

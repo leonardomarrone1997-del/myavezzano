@@ -17,7 +17,6 @@
     <link rel="canonical" href="https://myavezzano.vercel.app/" />
     <link rel="preconnect" href="https://unpkg.com" crossorigin />
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <meta property="og:locale" content="it_IT" />
     <meta property="og:site_name" content="MyAvezzano" />
     <meta property="og:title" content="MyAvezzano | Eventi, coupon e attività ad Avezzano" />
@@ -57,7 +56,7 @@
         ]
       }
     </script>
-    <link rel="stylesheet" href="styles.css?v=73" />
+    <link rel="stylesheet" href="styles.css?v=77" />
   </head>
   <body>
     <a class="skip-link" href="#mainContent">Vai al contenuto</a>
@@ -98,6 +97,7 @@
           <button class="nav-item" data-view="loyalty" type="button">Punti e premi</button>
           <button class="nav-item" data-view="profile" type="button">Profilo</button>
           <button class="nav-item" data-view="merchant" type="button">Area commercianti</button>
+          <button class="nav-item" data-view="campaign" type="button">Campagna</button>
           <button class="nav-item" data-view="legal" type="button">Privacy e termini</button>
         </nav>
 
@@ -192,6 +192,12 @@
                 <p>Inaugurazione con degustazione gratuita e coupon benvenuto in app.</p>
                 <button class="light-action" data-view-target="coupons" type="button">Vedi vantaggi</button>
               </div>
+              <div class="panel campaign-mini-panel">
+                <p class="eyebrow">Campagna città</p>
+                <h2>QR, vetrine e materiali locali</h2>
+                <p>Un sistema di touchpoint fisici per portare MyAvezzano nei negozi, negli eventi e nelle strade.</p>
+                <button class="light-action" data-view-target="campaign" type="button">Apri campagna</button>
+              </div>
             </aside>
           </div>
         </section>
@@ -232,7 +238,7 @@
           <div class="section-head">
             <div>
               <p class="eyebrow">Eventi Avezzano</p>
-              <h2>Divertimento, feste, serate e disco</h2>
+              <h2>Calendario di Avezzano e area immediata</h2>
             </div>
             <button class="primary-action" data-action="create-reminder" type="button">Crea reminder</button>
           </div>
@@ -240,20 +246,27 @@
           <div class="tonight-panel">
             <div>
               <p class="eyebrow">Cosa c'è questa sera?</p>
-              <h2>Serate consigliate vicino a te</h2>
-              <p>Una selezione rapida per decidere dove andare stasera: aperitivi, feste, musica live e discoteca.</p>
+              <h2 id="tonightHeading">Agenda aggiornata di oggi</h2>
+              <p id="tonightCopy">Controlliamo gli appuntamenti in programma ad Avezzano e nell'area immediata.</p>
             </div>
             <button class="light-action" data-action="create-reminder" type="button">Attiva reminder</button>
           </div>
           <div id="tonightGrid" class="tonight-grid"></div>
+          <aside class="event-ticket-note" aria-label="Informazioni biglietteria Dal Tramonto all'Alba OFF">
+            <div>
+              <p class="eyebrow">Dal Tramonto all'Alba OFF</p>
+              <strong>Biglietti e sedi</strong>
+            </div>
+            <p>Borgo medievale <b>10 euro</b> · Giardini Castello Orsini e Aia dei Musei <b>15/22 euro</b> · Anfiteatro Romano <b>25 euro</b>.</p>
+          </aside>
           <div class="section-head calendar-head">
             <div>
               <p class="eyebrow">Calendario</p>
-              <h2>Prossimi eventi</h2>
+              <h2>Eventi da fare</h2>
             </div>
-            <button class="ghost" data-action="calendar-month" type="button">Vedi mese</button>
+            <button class="ghost" data-action="calendar-month" type="button">Vai al prossimo</button>
           </div>
-          <div id="eventsGrid" class="cards-grid"></div>
+          <div id="eventsGrid" class="event-agenda" aria-live="polite"></div>
         </section>
 
         <section class="view" id="summerView">
@@ -519,6 +532,99 @@
           </div>
         </section>
 
+        <section class="view" id="campaignView">
+          <section class="campaign-hero">
+            <div class="campaign-copy">
+              <p class="eyebrow">Piano pubblicitario</p>
+              <h2>MyAvezzano fuori dallo schermo</h2>
+              <p>Una sezione dedicata alla campagna fisica: QR in città, espositori da banco, vetrofanie, manifesti, materiali per eventi e pacchetti per commercianti.</p>
+              <div class="campaign-actions">
+                <a class="primary-action" href="assets/marketing/iavezzano-piano-pubblicitario.pptx" download>Scarica piano</a>
+                <button class="ghost" data-view-target="merchant" type="button">Area commercianti</button>
+              </div>
+            </div>
+            <figure class="campaign-visual">
+              <img src="assets/marketing/citta-live.png" alt="Concept Città Live MyAvezzano con app, QR e materiali pubblicitari" loading="lazy" decoding="async" />
+            </figure>
+          </section>
+
+          <section class="campaign-metrics" aria-label="Sintesi campagna">
+            <article>
+              <span>Touchpoint</span>
+              <strong>8+</strong>
+              <p>Banco, vetrina, manifesti, vela, flyer, sticker, card e stand.</p>
+            </article>
+            <article>
+              <span>Meccanica</span>
+              <strong>QR</strong>
+              <p>Scansiona, apri la PWA, salva coupon, eventi e punti.</p>
+            </article>
+            <article>
+              <span>Commercianti</span>
+              <strong>12,99</strong>
+              <p>Piano di ingresso per creare una presenza locale attiva.</p>
+            </article>
+          </section>
+
+          <section class="campaign-feature-grid">
+            <article class="campaign-feature is-large">
+              <img src="assets/marketing/touchpoint-kit.png" alt="Kit touchpoint MyAvezzano con espositori, vetrofanie, manifesti e stand" loading="lazy" decoding="async" />
+              <div>
+                <p class="eyebrow">Kit città</p>
+                <h3>Un’unica piattaforma, tanti punti di contatto</h3>
+                <p>La campagna collega app, mappa, eventi, coupon QR e area commercianti con materiali riconoscibili e coerenti.</p>
+              </div>
+            </article>
+            <article class="campaign-feature">
+              <img src="assets/marketing/trova-il-qr.png" alt="Concept Trova il QR con premi, coupon e punti" loading="lazy" decoding="async" />
+              <div>
+                <p class="eyebrow">Gamification</p>
+                <h3>Trova il QR</h3>
+                <p>Una caccia urbana leggera: i QR nei locali diventano scoperta, punti e vantaggi.</p>
+              </div>
+            </article>
+            <article class="campaign-feature">
+              <img src="assets/marketing/estate-avezzano-2026.png" alt="Campagna Estate Avezzano 2026 con calendario eventi e coupon" loading="lazy" decoding="async" />
+              <div>
+                <p class="eyebrow">Estate 2026</p>
+                <h3>Eventi, cultura e promozioni</h3>
+                <p>Un tema stagionale già pronto per calendario eventi, coupon, stand e comunicazione cittadina.</p>
+              </div>
+            </article>
+          </section>
+
+          <section class="panel campaign-playbook">
+            <div class="panel-head">
+              <div>
+                <p class="eyebrow">Come si usa</p>
+                <h2>Dal materiale fisico all’app</h2>
+              </div>
+              <a class="ghost" href="assets/marketing/iavezzano-piano-pubblicitario.pptx" download>Scarica PPT</a>
+            </div>
+            <div class="campaign-steps">
+              <article><strong>1</strong><span>Installa QR in vetrina, banco o locandina evento.</span></article>
+              <article><strong>2</strong><span>L’utente scansiona e apre MyAvezzano senza cercare nulla.</span></article>
+              <article><strong>3</strong><span>Trova eventi, coupon, mappa e attività vicino a sé.</span></article>
+              <article><strong>4</strong><span>Salva vantaggi, raccoglie punti e torna nei locali aderenti.</span></article>
+            </div>
+          </section>
+
+          <section class="campaign-gallery" aria-label="Concept grafici campagna">
+            <article>
+              <img src="assets/marketing/campagna-alternative.png" alt="Alternative grafiche MyAvezzano per materiali pubblicitari" loading="lazy" decoding="async" />
+              <div><strong>Alternative visuali</strong><span>Palette, espositori, vetrofanie, vele e materiali da banco.</span></div>
+            </article>
+            <article>
+              <img src="assets/marketing/citta-live.png" alt="Concept Città Live per app urbana MyAvezzano" loading="lazy" decoding="async" />
+              <div><strong>Città Live</strong><span>Concept elegante per una guida cittadina quotidiana.</span></div>
+            </article>
+            <article>
+              <img src="assets/marketing/trova-il-qr.png" alt="Concept Trova il QR per caccia urbana MyAvezzano" loading="lazy" decoding="async" />
+              <div><strong>Trova il QR</strong><span>Concept più giocoso per coinvolgere utenti e attività.</span></div>
+            </article>
+          </section>
+        </section>
+
         <section class="view" id="adminView">
           <div id="adminDashboard"></div>
         </section>
@@ -549,6 +655,7 @@
             <a href="mappa.html">Mappa</a>
             <a href="estate-2026.html">Estate 2026</a>
             <a href="attivita-locali.html">Attività locali</a>
+            <button data-view-target="campaign" type="button">Campagna</button>
           </nav>
         </footer>
       </main>
@@ -656,7 +763,7 @@
 
     <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
-    <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script defer src="app.js?v=75"></script>
+    <script defer src="events-data.js?v=77"></script>
+    <script defer src="app.js?v=77"></script>
   </body>
 </html>

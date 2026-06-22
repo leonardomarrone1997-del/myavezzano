@@ -47,6 +47,13 @@
       "description": "Apri la pagina estiva di MyAvezzano",
       "url": "./index.html#summer",
       "icons": [{ "src": "assets/app-icon.svg", "sizes": "1024x1024", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Campagna MyAvezzano",
+      "short_name": "Campagna",
+      "description": "Apri materiali pubblicitari, QR e touchpoint",
+      "url": "./index.html#campaign",
+      "icons": [{ "src": "assets/app-icon.svg", "sizes": "1024x1024", "type": "image/svg+xml" }]
     }
   ]
 }
