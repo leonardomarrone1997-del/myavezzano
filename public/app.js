@@ -289,6 +289,8 @@ const AVEZZANO_CENTER = { lat: 42.0326, lng: 13.4256 };
 let interactiveMap;
 let routeLine;
 let leafletLoadPromise;
+let cityPulseLayer;
+let cityPulseMarkers = new Map();
 
 function loadLeaflet() {
   if (window.L) return Promise.resolve(window.L);
@@ -324,6 +326,13 @@ let installPromptEvent = null;
 const atmosphereTimers = new Set();
 let atmospherePaused = false;
 let searchPlaceholderTimer = 0;
+let heroParallaxFrame = 0;
+let scrollAtmosphereFrame = 0;
+let eventsViewRendered = false;
+let summerViewRendered = false;
+let mapViewRendered = false;
+let webglAuraInitialized = false;
+let lastMinuteCountdownTimer = 0;
 const searchPlaceholders = [
   "Cerca locali, eventi, servizi...",
   "Dove vuoi andare oggi?",
@@ -336,6 +345,8 @@ const wikidataImageCache = new Map();
 const DEMO_STATE_KEY = "myavezzano_demo_state";
 const ONBOARDING_KEY = "myavezzano_onboarding_seen";
 const THEME_STORAGE_KEY = "myavezzano_theme";
+const FX_MODE_STORAGE_KEY = "myavezzano_fx_mode";
+const ADMIN_CONTROL_KEY = "myavezzano_admin_control_v1";
 
 const categoryImages = {
   "Ristorante": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80",
@@ -361,24 +372,6 @@ const quickActions = [
 ];
 
 const cityHighlights = [
-  {
-    type: "Estate Avezzanese 2026",
-    title: "School of Rock al Pinguino Village",
-    place: "Pinguino Village",
-    when: "Sab 27 giugno 2026",
-    detail: "La notte rock dell'estate con Walter Cianciusi, Andrea Di Pietro ed Enrico Cianciusi.",
-    image: "https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1000&q=80",
-    cta: "Salva evento"
-  },
-  {
-    type: "Festival",
-    title: "Festiv'Alba 2026 ad Alba Fucens",
-    place: "Anfiteatro Romano di Alba Fucens",
-    when: "1 luglio - 7 agosto 2026",
-    detail: "Musica, teatro classico e grandi appuntamenti nella cornice archeologica vicino ad Avezzano.",
-    image: "https://images.unsplash.com/photo-1531572753322-ad063cecc140?auto=format&fit=crop&w=1000&q=80",
-    cta: "Vedi date"
-  },
   {
     type: "Evento stasera",
     title: "Aperitivo lungo in centro",
@@ -442,50 +435,44 @@ const eventCategories = [
   ["Teatro", "Spettacoli e classici", "teatro"],
   ["Musica", "Concerti e tribute", "musica"],
   ["Sport", "Gare e attività", "sport"],
+  ["Estate 2026", "Programma completo", "summer"],
   ["Archivio", "Eventi già svolti", "archivio"]
 ];
 
 let activeEventCategory = "all";
 
-const summerHighlights = [
-  {
-    title: "School of Rock 2026",
-    type: "Musica live",
-    place: "Pinguino Village",
-    text: "Sabato 27 giugno: notte rock con Walter Cianciusi, Andrea Di Pietro ed Enrico Cianciusi.",
-    cta: "Apri sede"
-  },
-  {
-    title: "Teatro Off al Castello",
-    type: "Cabaret e teatro",
-    place: "Castello Orsini",
-    text: "Giovedi 9 luglio alle 21:00: il monologo comico Dopo Cristo di Tiziano La Bella.",
-    cta: "Apri sede"
-  },
-  {
-    title: "Festiv'Alba 2026",
-    type: "Festival",
-    place: "Anfiteatro Romano di Alba Fucens",
-    text: "Dal 1 luglio al 7 agosto: musica, teatro classico e spettacoli nella cornice archeologica.",
-    cta: "Apri sede"
-  },
-  {
-    title: "Biglietti e prevendite",
-    type: "Info utili",
-    place: "Libreria Ubik",
-    text: "Prevendite in Libreria Ubik, online su DIY Ticket o al numero 06-0406.",
-    cta: "Apri punto"
-  }
-];
-
 const calendarEvents = window.MYAVEZZANO_EVENTS || [];
 const archivedEvents = window.MYAVEZZANO_ARCHIVED_EVENTS || [];
+const summerEvents = calendarEvents.filter((item) => item.date >= "2026-06-21" && item.date <= "2026-09-22");
+const summerCategories = [
+  ["Tutti", "Intero cartellone", "all"],
+  ["Avezzano", "In città", "avezzano"],
+  ["Alba Fucens", "Area archeologica", "alba"],
+  ["Musica", "Live e concerti", "musica"],
+  ["Teatro", "Spettacoli", "teatro"]
+];
+let activeSummerCategory = "all";
 
 const coupons = [
   ["Aperitivo 2x1", "Caffè Risorgimento", "Scade oggi alle 20:00", "35 punti", "assets/coupons/aperitivo-2x1.svg", "AVZ-APERITIVO-2X1"],
   ["-20% nuova collezione", "Atelier Marsica", "Valido fino a domenica", "80 usi rimasti", "assets/coupons/atelier-marsica-20.svg", "AVZ-MARSICA-20"],
   ["Ingresso prova gratuito", "FitLab Avezzano", "Prenota entro 48 ore", "50 punti", "assets/coupons/fitlab-prova-gratis.svg", "AVZ-FITLAB-PROVA"]
 ];
+
+const cityPulseZones = [
+  { id: "centro", name: "Centro", status: "Vivace", kind: "live", base: 68, lat: 42.0329, lng: 13.4252, reason: "Aperitivi, passeggio ed eventi vicini" },
+  { id: "torlonia", name: "Piazza Torlonia", status: "In movimento", kind: "live", base: 60, lat: 42.0345, lng: 13.4255, reason: "Attività diurne e appuntamenti urbani" },
+  { id: "castello", name: "Castello Orsini", status: "Tranquilla", kind: "calm", base: 34, lat: 42.0288, lng: 13.4267, reason: "Cultura, giardini e ritmo più calmo" },
+  { id: "corradini", name: "Via Corradini", status: "Conveniente", kind: "value", base: 58, lat: 42.0316, lng: 13.4218, reason: "Negozi e vantaggi attivi nelle vicinanze" }
+];
+
+const lastMinuteDeals = [
+  { id: "aperitivo-tavoli", title: "2 tavoli aperitivo", place: "Caffè Risorgimento", category: "Aperitivo", value: "-20%", availability: "2 tavoli", durationMinutes: 95, detail: "Prenotazione per oggi entro esaurimento." },
+  { id: "bakery-box", title: "Box serale Bakery", place: "Bakery Marsica", category: "Food", value: "-40%", availability: "6 box", durationMinutes: 140, detail: "Ritiro serale di prodotti freschi disponibili." },
+  { id: "fitlab-ingressi", title: "Ingresso prova FitLab", place: "FitLab Avezzano", category: "Sport", value: "Gratis", availability: "3 ingressi", durationMinutes: 180, detail: "Ultimi ingressi prova prenotabili oggi." }
+];
+
+const LAST_MINUTE_STATE_KEY = "myavezzano_last_minute_v1";
 
 const rewards = [
   ["Cena locale", "1.500 punti", "Premio presso i ristoranti aderenti."],
@@ -554,9 +541,9 @@ const pageMeta = {
     copy: "Utenti, contenuti, insight invisibili e strumenti di controllo raccolti in una cabina di comando essenziale."
   },
   summer: {
-    eyebrow: "Estate 2026",
-    title: "La stagione come percorso",
-    copy: "Serate, negozi, ristoranti e tappe leggere organizzati come un itinerario estivo, non come una lista."
+    eyebrow: "Programma estivo",
+    title: "Estate 2026, senza perdere un appuntamento",
+    copy: "Calendario completo tra Avezzano e Alba Fucens, con date, filtri, reminder, dettagli e salvataggi."
   },
   legal: {
     eyebrow: "Fiducia e regole",
@@ -869,6 +856,139 @@ function renderSmartStrip() {
   `).join("");
 }
 
+function cityPulseSnapshot() {
+  const hour = new Date().getHours();
+  return cityPulseZones.map((zone) => {
+    let adjustment = 0;
+    if (zone.id === "centro") adjustment = hour >= 18 && hour <= 23 ? 18 : hour >= 12 && hour <= 15 ? 8 : 0;
+    if (zone.id === "torlonia") adjustment = hour >= 9 && hour <= 20 ? 12 : -4;
+    if (zone.id === "castello") adjustment = hour >= 18 && hour <= 22 ? 8 : -2;
+    if (zone.id === "corradini") adjustment = hour >= 9 && hour <= 20 ? 10 : 0;
+    return { ...zone, score: Math.max(18, Math.min(94, zone.base + adjustment)) };
+  });
+}
+
+function pulseZoneMarkup(zone, compact = false) {
+  return `
+    <button class="city-pulse-item city-pulse-${zone.kind}${compact ? " is-compact" : ""}" data-action="open-pulse-zone" data-zone-id="${zone.id}" type="button">
+      <span class="city-pulse-signal" aria-hidden="true"></span>
+      <span class="city-pulse-copy">
+        <strong>${zone.name}</strong>
+        <small>${zone.reason}</small>
+      </span>
+      <span class="city-pulse-state">
+        <b>${zone.status}</b>
+        <i><span style="width:${zone.score}%"></span></i>
+      </span>
+    </button>
+  `;
+}
+
+function pulseColor(kind) {
+  if (kind === "calm") return "#2563eb";
+  if (kind === "value") return "#0f9f76";
+  return "#ef5b5e";
+}
+
+function renderCityPulseLayer() {
+  if (!interactiveMap || !window.L) return;
+  if (cityPulseLayer) cityPulseLayer.remove();
+  cityPulseMarkers.clear();
+  cityPulseLayer = L.layerGroup().addTo(interactiveMap);
+  cityPulseSnapshot().forEach((zone) => {
+    const color = pulseColor(zone.kind);
+    const marker = L.circle([zone.lat, zone.lng], {
+      radius: 90 + zone.score * 1.2,
+      color,
+      weight: 2,
+      opacity: .72,
+      fillColor: color,
+      fillOpacity: .13
+    }).bindPopup(`<strong>${zone.name}</strong><br>${zone.status} · ${zone.reason}`);
+    marker.addTo(cityPulseLayer);
+    cityPulseMarkers.set(zone.id, marker);
+  });
+}
+
+function renderCityPulse() {
+  const snapshot = cityPulseSnapshot();
+  const strongestLive = [...snapshot].filter((zone) => zone.kind === "live").sort((a, b) => b.score - a.score)[0];
+  const bestValue = snapshot.find((zone) => zone.kind === "value");
+  const home = document.querySelector("#cityPulseHome");
+  const map = document.querySelector("#cityPulseMap");
+  const updated = document.querySelector("#cityPulseTime");
+  if (home) home.innerHTML = [strongestLive, bestValue].filter(Boolean).map((zone) => pulseZoneMarkup(zone, true)).join("");
+  if (map) map.innerHTML = snapshot.map((zone) => pulseZoneMarkup(zone)).join("");
+  if (updated) updated.textContent = `Aggiornato ${new Intl.DateTimeFormat("it-IT", { hour: "2-digit", minute: "2-digit" }).format(new Date())}`;
+  renderCityPulseLayer();
+}
+
+function getLastMinuteState() {
+  const today = currentDateKey();
+  let state;
+  try {
+    state = JSON.parse(localStorage.getItem(LAST_MINUTE_STATE_KEY) || "null");
+  } catch {
+    state = null;
+  }
+  if (!state || state.day !== today) {
+    state = {
+      day: today,
+      deadlines: Object.fromEntries(lastMinuteDeals.map((deal) => [deal.id, Date.now() + deal.durationMinutes * 60000]))
+    };
+    localStorage.setItem(LAST_MINUTE_STATE_KEY, JSON.stringify(state));
+  }
+  return state;
+}
+
+function formatLastMinuteCountdown(milliseconds) {
+  if (milliseconds <= 0) return "Scaduta";
+  const totalMinutes = Math.ceil(milliseconds / 60000);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return hours ? `${hours}h ${String(minutes).padStart(2, "0")}m` : `${minutes} min`;
+}
+
+function lastMinuteCardMarkup(deal, deadline, compact = false) {
+  return `
+    <article class="last-minute-card${compact ? " is-compact" : ""}" data-deal-id="${deal.id}">
+      <div class="last-minute-value">${deal.value}</div>
+      <div class="last-minute-copy">
+        <span>${deal.category} · ${deal.availability}</span>
+        <strong>${deal.title}</strong>
+        <small>${deal.place}${compact ? "" : ` · ${deal.detail}`}</small>
+      </div>
+      <div class="last-minute-actions">
+        <span class="last-minute-countdown" data-deal-countdown="${deal.id}">${formatLastMinuteCountdown(deadline - Date.now())}</span>
+        ${compact ? "" : `<button class="ghost" data-action="open-map-place" data-place="${deal.place}" type="button">Mappa</button>`}
+        <button class="save-action" data-action="claim-last-minute" data-deal-id="${deal.id}" data-title="${deal.title}" type="button">Salva</button>
+      </div>
+    </article>
+  `;
+}
+
+function updateLastMinuteCountdowns() {
+  const state = getLastMinuteState();
+  document.querySelectorAll("[data-deal-countdown]").forEach((counter) => {
+    const remaining = (state.deadlines[counter.dataset.dealCountdown] || 0) - Date.now();
+    counter.textContent = formatLastMinuteCountdown(remaining);
+    const card = counter.closest("[data-deal-id]");
+    const claim = card?.querySelector('[data-action="claim-last-minute"]');
+    if (claim) claim.disabled = remaining <= 0;
+    card?.classList.toggle("is-expired", remaining <= 0);
+  });
+}
+
+function renderLastMinuteDeals() {
+  const state = getLastMinuteState();
+  const home = document.querySelector("#lastMinuteHome");
+  const grid = document.querySelector("#lastMinuteGrid");
+  if (home) home.innerHTML = lastMinuteDeals.slice(0, 2).map((deal) => lastMinuteCardMarkup(deal, state.deadlines[deal.id], true)).join("");
+  if (grid) grid.innerHTML = lastMinuteDeals.map((deal) => lastMinuteCardMarkup(deal, state.deadlines[deal.id])).join("");
+  updateLastMinuteCountdowns();
+  if (!lastMinuteCountdownTimer) lastMinuteCountdownTimer = window.setInterval(updateLastMinuteCountdowns, 60000);
+}
+
 function renderDayPlan() {
   const grid = document.querySelector("#dayPlanGrid");
   if (!grid) return;
@@ -880,13 +1000,13 @@ function renderDayPlan() {
     {
       label: "Coupon salvati",
       value: coupons.length,
-      text: coupons.length ? coupons[0].title : "Salva un vantaggio dalla home.",
+      text: coupons.length ? coupons[0][0] : "Salva un vantaggio dalla home.",
       view: "coupons"
     },
     {
       label: "Eventi in agenda",
       value: events.length,
-      text: events.length ? events[0].title : "Prenota o salva una serata.",
+      text: events.length ? events[0][0] : "Prenota o salva una serata.",
       view: "events"
     },
     {
@@ -929,6 +1049,38 @@ function eventRangeLabel(item) {
   return `${startLabel} - ${endLabel}`;
 }
 
+function currentDateKey() {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+}
+
+function groupEventsByMonth(items) {
+  return items.reduce((months, item) => {
+    const date = eventDate(item.date);
+    const key = `${date.getFullYear()}-${date.getMonth()}`;
+    if (!months[key]) {
+      months[key] = {
+        title: new Intl.DateTimeFormat("it-IT", { month: "long", year: "numeric" }).format(date),
+        items: []
+      };
+    }
+    months[key].items.push(item);
+    return months;
+  }, {});
+}
+
+function eventAgendaMarkup(items, { idPrefix = "event" } = {}) {
+  return Object.values(groupEventsByMonth(items)).map((group) => `
+    <section class="agenda-month">
+      <div class="agenda-month-head">
+        <h3>${group.title}</h3>
+        <span>${group.items.length} ${group.items.length === 1 ? "appuntamento" : "appuntamenti"}</span>
+      </div>
+      <div class="agenda-month-list">${group.items.map((item) => eventCardMarkup(item, { idPrefix })).join("")}</div>
+    </section>
+  `).join("");
+}
+
 function eventMatchesFilter(item, filter) {
   if (filter === "all") return !item.past;
   if (filter === "archivio") return Boolean(item.past);
@@ -938,11 +1090,23 @@ function eventMatchesFilter(item, filter) {
   return item.category.toLowerCase() === filter;
 }
 
-function eventCardMarkup(item, { compact = false } = {}) {
+function eventAttendanceCount(item) {
+  const categoryBase = {
+    Ambiente: 92,
+    Motori: 168,
+    Musica: 184,
+    Sport: 226,
+    Teatro: 74
+  }[item.category] || 68;
+  const hash = [...item.id].reduce((total, character) => total + character.charCodeAt(0), 0);
+  return categoryBase + (hash % 137);
+}
+
+function eventCardMarkup(item, { compact = false, idPrefix = "event" } = {}) {
   const parts = eventDayParts(item);
   const search = [item.title, item.place, item.area, item.category, item.detail, item.price].join(" ").toLowerCase();
   return `
-    <article class="agenda-event${compact ? " agenda-event-featured" : ""}${item.past ? " is-past" : ""}" id="event-${item.id}" data-search="${search}">
+    <article class="agenda-event${compact ? " agenda-event-featured" : ""}${item.past ? " is-past" : ""}" id="${idPrefix}-${item.id}" data-search="${search}">
       <time class="agenda-date" datetime="${item.date}">
         <span>${parts.weekday}</span>
         <strong>${parts.day}</strong>
@@ -956,12 +1120,18 @@ function eventCardMarkup(item, { compact = false } = {}) {
         <h3>${item.title}</h3>
         <p class="agenda-place">${item.place}</p>
         <p>${item.detail}</p>
+        ${item.past ? "" : `
+          <p class="agenda-attendance" data-event-attendance="${item.id}">
+            <strong>${eventAttendanceCount(item)}</strong> persone parteciperanno a questo evento
+          </p>
+        `}
         <div class="agenda-event-footer">
           <span class="agenda-price">${item.price}</span>
           ${item.past ? "" : `
             <div class="agenda-event-actions">
               <button class="ghost" data-action="event-reminder" data-title="${item.title}" type="button">Reminder</button>
-              <button class="save-action" data-action="save-event" data-title="${item.title}" type="button">Salva</button>
+              <a class="ghost agenda-details" href="eventi/${item.id}.html">Dettagli</a>
+              <button class="save-action" data-action="save-event" data-event-id="${item.id}" data-title="${item.title}" type="button">Salva</button>
             </div>
           `}
         </div>
@@ -985,8 +1155,7 @@ function renderTonightAgenda() {
   const copy = document.querySelector("#tonightCopy");
   if (!grid || !heading || !copy) return;
 
-  const now = new Date();
-  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  const today = currentDateKey();
   const todayEvents = calendarEvents.filter((item) => item.date <= today && (item.endDate || item.date) >= today);
   const visible = todayEvents.length ? todayEvents : calendarEvents.filter((item) => (item.endDate || item.date) >= today).slice(0, 1);
 
@@ -1001,7 +1170,7 @@ function renderTonightAgenda() {
   copy.textContent = todayEvents.length
     ? `${todayEvents.length} ${todayEvents.length === 1 ? "evento" : "eventi"} in agenda oggi.`
     : `Nessun evento oggi: il prossimo è ${eventRangeLabel(visible[0])}.`;
-  grid.innerHTML = visible.map((item) => eventCardMarkup(item, { compact: true })).join("");
+  grid.innerHTML = visible.map((item) => eventCardMarkup(item, { compact: true, idPrefix: "tonight-event" })).join("");
 }
 
 function renderEventAgenda(filter = activeEventCategory) {
@@ -1017,28 +1186,91 @@ function renderEventAgenda(filter = activeEventCategory) {
     return;
   }
 
-  const groups = filtered.reduce((months, item) => {
-    const date = eventDate(item.date);
-    const key = `${date.getFullYear()}-${date.getMonth()}`;
-    if (!months[key]) {
-      months[key] = {
-        title: new Intl.DateTimeFormat("it-IT", { month: "long", year: "numeric" }).format(date),
-        items: []
-      };
-    }
-    months[key].items.push(item);
-    return months;
-  }, {});
+  grid.innerHTML = eventAgendaMarkup(filtered);
+}
 
-  grid.innerHTML = Object.values(groups).map((group) => `
-    <section class="agenda-month">
-      <div class="agenda-month-head">
-        <h3>${group.title}</h3>
-        <span>${group.items.length} ${group.items.length === 1 ? "appuntamento" : "appuntamenti"}</span>
-      </div>
-      <div class="agenda-month-list">${group.items.map((item) => eventCardMarkup(item)).join("")}</div>
-    </section>
+function ensureEventsViewRendered() {
+  if (eventsViewRendered) return;
+  renderTonightAgenda();
+  renderEventAgenda();
+  eventsViewRendered = true;
+}
+
+function summerEventMatchesFilter(item, filter) {
+  if (filter === "all") return true;
+  if (filter === "avezzano") return item.area === "Avezzano";
+  if (filter === "alba") return item.area === "Alba Fucens";
+  return item.category.toLowerCase() === filter;
+}
+
+function nextSummerEvent() {
+  const today = currentDateKey();
+  return summerEvents.find((item) => (item.endDate || item.date) >= today) || summerEvents[0];
+}
+
+function renderSummerHomeBand() {
+  const title = document.querySelector("#summerHomeTitle");
+  const meta = document.querySelector("#summerHomeMeta");
+  const next = nextSummerEvent();
+  if (!title || !meta) return;
+  title.textContent = next?.title || "Il programma estivo di Avezzano";
+  meta.textContent = next
+    ? `${summerEvents.length} appuntamenti · prossimo ${eventRangeLabel(next)} alle ${next.time}`
+    : "Il calendario stagionale sarà aggiornato qui.";
+}
+
+function renderSummerMetrics() {
+  document.querySelector("#summerEventCount").textContent = summerEvents.length;
+  document.querySelector("#summerAvezzanoCount").textContent = summerEvents.filter((item) => item.area === "Avezzano").length;
+  document.querySelector("#summerAlbaCount").textContent = summerEvents.filter((item) => item.area === "Alba Fucens").length;
+}
+
+function renderSummerFilters() {
+  const filters = document.querySelector("#summerFilters");
+  if (!filters) return;
+  filters.innerHTML = summerCategories.map(([title, text, filter]) => `
+    <button class="summer-filter ${filter === activeSummerCategory ? "active" : ""}" data-action="summer-category" data-summer-filter="${filter}" aria-pressed="${filter === activeSummerCategory}" type="button">
+      <strong>${title}</strong>
+      <span>${text}</span>
+    </button>
   `).join("");
+}
+
+function renderSummerNext() {
+  const panel = document.querySelector("#summerNextPanel");
+  const next = nextSummerEvent();
+  if (!panel) return;
+  if (!next) {
+    panel.innerHTML = `<div><span>Programma stagionale</span><strong>Nessun appuntamento disponibile</strong></div>`;
+    return;
+  }
+  panel.innerHTML = `
+    <div>
+      <span>Prossimo appuntamento</span>
+      <strong>${next.title}</strong>
+      <small>${eventRangeLabel(next)} · ${next.time} · ${next.place}</small>
+    </div>
+    <button class="ghost" data-action="summer-next" type="button">Mostra nel calendario</button>
+  `;
+}
+
+function renderSummerProgram(filter = activeSummerCategory) {
+  activeSummerCategory = filter;
+  renderSummerFilters();
+  const grid = document.querySelector("#summerGrid");
+  if (!grid) return;
+  const filtered = summerEvents.filter((item) => summerEventMatchesFilter(item, filter));
+  grid.innerHTML = filtered.length
+    ? eventAgendaMarkup(filtered, { idPrefix: "summer-event" })
+    : `<div class="agenda-empty"><strong>Nessun evento in questo filtro.</strong><span>Apri l'intero cartellone Estate 2026.</span></div>`;
+}
+
+function ensureSummerViewRendered() {
+  if (summerViewRendered) return;
+  renderSummerMetrics();
+  renderSummerNext();
+  renderSummerProgram();
+  summerViewRendered = true;
 }
 
 function render() {
@@ -1050,6 +1282,9 @@ function render() {
     </button>
   `).join("");
 
+  renderSummerHomeBand();
+  renderCityPulse();
+  renderLastMinuteDeals();
   renderSmartStrip();
   renderDayPlan();
   document.querySelector("#feedList").innerHTML = cityHighlights.slice(0, 4).map((item) => {
@@ -1075,32 +1310,6 @@ function render() {
       </div>
     </article>
   `;
-  }).join("");
-
-  renderMapBusinessList();
-
-  renderTonightAgenda();
-  renderEventAgenda();
-
-  document.querySelector("#summerGrid").innerHTML = summerHighlights.map((item) => {
-    const place = findPlaceByName(item.place);
-    return `
-      <article class="summer-card" data-search="${[item.title, item.type, item.place, item.text, place?.category].filter(Boolean).join(" ").toLowerCase()}">
-        <div class="summer-icon">☀</div>
-        <div>
-          <p class="eyebrow">${item.type}</p>
-          <h2>${item.title}</h2>
-          <p>${item.text}</p>
-          <div class="summer-meta">
-            <span>${item.place}</span>
-          </div>
-          <div class="post-actions">
-            <button data-action="open-map-place" data-place="${item.place}" type="button">${item.cta}</button>
-            <button class="save-action" data-action="save-highlight" data-title="${item.title}" data-type="Estate 2026" type="button">Salva</button>
-          </div>
-        </div>
-      </article>
-    `;
   }).join("");
 
   document.querySelector("#couponsGrid").innerHTML = coupons.map(([title, place, expires, meta, qrSrc, couponCode]) => `
@@ -1134,7 +1343,7 @@ function render() {
   renderUserProfile("settings");
   renderMerchantArea();
   applySearchFilter();
-  hydrateLazyMedia(document.querySelector(".view.active") || document, true);
+  hydrateLazyMedia(document.querySelector(".view.active") || document);
   stampCityArtifacts(document);
   animateGlobalSurfaces();
 }
@@ -1312,17 +1521,17 @@ function renderProfilePanel(panel = "settings") {
   if (accountButton) accountButton.addEventListener("click", openSignup);
 }
 
-function prestigeState(user = getStoredUser()) {
-  if (!user) return { level: "Base", progress: 18, points: 0 };
-  if (user.role === "admin") return { level: "Admin", progress: 96, points: 9990 };
+function citizenLevelState(user = getStoredUser()) {
+  if (!user) return { level: "Esploratore", progress: 18, points: 0 };
+  if (user.role === "admin") return { level: "Amministratore", progress: 96, points: 9990 };
   const basePoints = 1240 + profileCouponRows().length * 110 + profileEventRows().length * 90;
   const progress = Math.min(92, 42 + Math.round((basePoints % 900) / 18));
-  return { level: basePoints > 1600 ? "Gold" : "Silver", progress, points: basePoints };
+  return { level: basePoints > 1600 ? "Insider locale" : "Cittadino", progress, points: basePoints };
 }
 
 function renderTopProfileStatus() {
   const user = getStoredUser();
-  const state = prestigeState(user);
+  const state = citizenLevelState(user);
   const status = document.querySelector("#topProfileStatus");
   if (!status) return;
   document.querySelector("#topProfileAvatar").src = user?.avatar || "assets/app-icon.svg";
@@ -1344,7 +1553,7 @@ function notificationItems() {
     { title: "Coupon in scadenza", text: "2x1 aperitivo valido fino alle 20:00.", tone: "coupon" },
     {
       title: user ? `Ciao ${user.name}` : "Profilo non attivo",
-      text: user ? "Il tuo livello prestigio e aggiornato." : "Accedi per salvare notifiche e preferenze.",
+      text: user ? "Il tuo livello cittadino risulta aggiornato." : "Accedi per salvare notifiche e preferenze.",
       tone: user ? "profile" : "quiet"
     },
     ...merchantItems
@@ -1386,7 +1595,7 @@ function toggleNotificationMenu() {
 
 function renderUserProfile(panel = "settings") {
   const user = getStoredUser();
-  const prestige = prestigeState(user);
+  const citizenLevel = citizenLevelState(user);
   const avatar = user?.avatar || "assets/app-icon.svg";
   document.querySelector("#profileAvatar").src = avatar;
   document.querySelector("#profileName").textContent = user ? user.name : "Accedi a MyAvezzano";
@@ -1395,8 +1604,8 @@ function renderUserProfile(panel = "settings") {
     : "Crea un account per salvare coupon, eventi e preferenze.";
   document.querySelector("#profileCouponCount").textContent = user ? profileCouponRows().length : 0;
   document.querySelector("#profileEventCount").textContent = user ? profileEventRows().length : 0;
-  document.querySelector("#profilePointCount").textContent = user ? prestige.points.toLocaleString("it-IT") : 0;
-  document.querySelector("#profileLevel").textContent = prestige.level;
+  document.querySelector("#profilePointCount").textContent = user ? citizenLevel.points.toLocaleString("it-IT") : 0;
+  document.querySelector("#profileLevel").textContent = citizenLevel.level;
   document.querySelector("#profileSignupButton").hidden = Boolean(user);
   renderProfileActions();
   renderProfilePanel(panel);
@@ -1437,6 +1646,58 @@ function isAdmin(user = getStoredUser()) {
   return user?.role === "admin";
 }
 
+function defaultAdminControl() {
+  return {
+    maintenance: false,
+    registrations: true,
+    moderation: true,
+    push: true,
+    featuredEvent: "street-green-fest",
+    lastSync: null,
+    broadcasts: [],
+    audit: [],
+    moderationQueue: [
+      { id: "venue-moon-club", type: "Attivita", title: "Moon Club", status: "pending" },
+      { id: "comment-report", type: "Segnalazione", title: "Commento segnalato", status: "pending" },
+      { id: "coupon-fitlab", type: "Coupon", title: "Prova gratuita FitLab", status: "pending" }
+    ]
+  };
+}
+
+function getAdminControl() {
+  const defaults = defaultAdminControl();
+  const stored = readJson(ADMIN_CONTROL_KEY, {});
+  return {
+    ...defaults,
+    ...stored,
+    broadcasts: Array.isArray(stored.broadcasts) ? stored.broadcasts : defaults.broadcasts,
+    audit: Array.isArray(stored.audit) ? stored.audit : defaults.audit,
+    moderationQueue: Array.isArray(stored.moderationQueue) ? stored.moderationQueue : defaults.moderationQueue
+  };
+}
+
+function saveAdminControl(control) {
+  writeJson(ADMIN_CONTROL_KEY, control);
+}
+
+function addAdminAudit(control, message) {
+  control.audit = [
+    { message, at: new Date().toISOString() },
+    ...(control.audit || [])
+  ].slice(0, 20);
+  saveAdminControl(control);
+}
+
+function adminControlButton(key, label, description, value) {
+  return `
+    <button class="admin-control-toggle ${value ? "is-on" : ""}" data-admin-action="toggle-control" data-control-key="${key}" aria-pressed="${value}" type="button">
+      <span class="admin-control-indicator" aria-hidden="true"></span>
+      <span><strong>${label}</strong><small>${description}</small></span>
+      <b>${value ? "Attivo" : "Disattivo"}</b>
+    </button>
+  `;
+}
+
 function renderAdminDashboard() {
   const root = document.querySelector("#adminDashboard");
   if (!root) return;
@@ -1461,22 +1722,42 @@ function renderAdminDashboard() {
     ...(state.campaigns || []).map((item) => ["Campagna", item.title, "Demo"])
   ];
   const aiInsights = intelligenceInsights();
+  const adminControl = getAdminControl();
+  const pendingModeration = adminControl.moderationQueue.filter((item) => item.status === "pending").length;
+  const featuredEvent = calendarEvents.find((item) => item.id === adminControl.featuredEvent) || calendarEvents[0];
 
   root.innerHTML = `
     <div class="admin-shell">
       <section class="panel admin-hero god-hero">
         <div>
-          <p class="eyebrow">Area admin</p>
-          <h2>Pannello admin MyAvezzano</h2>
-          <p>Controllo riservato all'account admin: utenti, ruoli, contenuti, richieste, sicurezza e dati locali.</p>
+          <p class="eyebrow">Console GOD</p>
+          <h2>Regia completa MyAvezzano</h2>
+          <p>Utenti, contenuti, eventi, comunicazioni e stato della piattaforma in un unico pannello operativo.</p>
         </div>
         <button class="ghost" data-admin-action="logout" type="button">Logout</button>
       </section>
-      <section class="metrics">
+      <section class="metrics admin-metrics">
         <div><span>Utenti</span><strong>${users.filter((user) => user.status !== "deleted").length}</strong></div>
-        <div><span>Admin</span><strong>${users.filter((user) => user.role === "admin").length}</strong></div>
-        <div><span>Richieste</span><strong>${requests.length}</strong></div>
         <div><span>Attività</span><strong>${mapPlaces.length}</strong></div>
+        <div><span>Eventi</span><strong>${calendarEvents.length}</strong></div>
+        <div><span>Da moderare</span><strong>${pendingModeration}</strong></div>
+        <div><span>Salvataggi</span><strong>${requests.length}</strong></div>
+        <div><span>Comunicazioni</span><strong>${adminControl.broadcasts.length}</strong></div>
+      </section>
+      <section class="panel admin-platform-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Piattaforma</p>
+            <h2>Controlli operativi</h2>
+          </div>
+          <span class="pill ${adminControl.maintenance ? "warning" : "success"}">${adminControl.maintenance ? "Manutenzione" : "Online"}</span>
+        </div>
+        <div class="admin-control-grid">
+          ${adminControlButton("maintenance", "Modalità manutenzione", "Sospende temporaneamente le funzioni pubbliche", adminControl.maintenance)}
+          ${adminControlButton("registrations", "Nuove registrazioni", "Consenti la creazione di nuovi account", adminControl.registrations)}
+          ${adminControlButton("moderation", "Moderazione preventiva", "Controlla i contenuti prima della pubblicazione", adminControl.moderation)}
+          ${adminControlButton("push", "Notifiche push", "Abilita le comunicazioni agli utenti", adminControl.push)}
+        </div>
       </section>
       <section class="panel intelligence-panel">
         <div class="panel-head">
@@ -1497,6 +1778,7 @@ function renderAdminDashboard() {
         </div>
         <div class="composer-actions">
           <button class="ghost" data-admin-action="export-data" type="button">Esporta dati</button>
+          <button class="ghost" data-admin-action="sync-content" type="button">Sincronizza contenuti</button>
           <button class="ghost" data-admin-action="seed-demo" type="button">Ripristina demo</button>
           <button class="ghost" data-admin-action="clear-demo-state" type="button">Pulisci azioni demo</button>
           <button class="ghost" data-admin-action="refresh-ai" type="button">Ricalcola IA</button>
@@ -1530,14 +1812,61 @@ function renderAdminDashboard() {
         </section>
         <section class="panel">
           <div class="panel-head">
-            <h2>Richieste e contenuti</h2>
-            <span class="pill warning">${requests.length || 3} in coda</span>
+            <h2>Coda moderazione</h2>
+            <span class="pill ${pendingModeration ? "warning" : "success"}">${pendingModeration} in attesa</span>
           </div>
-          <div class="campaign-list">
-            ${(requests.length ? requests : [["Moderazione", "Moon Club", "Da verificare"], ["Contenuto", "Commento segnalato", "Urgente"], ["Offerta", "Coupon palestra", "Ok"]]).map(([type, title, status]) => `
-              <div><strong>${title}</strong><span>${type} - ${status}</span></div>
+          <div class="admin-list">
+            ${adminControl.moderationQueue.map((item) => `
+              <div class="admin-list-row">
+                <div><strong>${item.title}</strong><span>${item.type}</span></div>
+                ${item.status === "pending" ? `
+                  <div class="admin-row-actions">
+                    <button class="ghost compact-button" data-admin-action="moderate-content" data-content-id="${item.id}" data-decision="rejected" type="button">Rifiuta</button>
+                    <button class="primary-action compact-button" data-admin-action="moderate-content" data-content-id="${item.id}" data-decision="approved" type="button">Approva</button>
+                  </div>
+                ` : `<span class="pill ${item.status === "approved" ? "success" : "warning"}">${item.status === "approved" ? "Approvato" : "Rifiutato"}</span>`}
+              </div>
             `).join("")}
           </div>
+        </section>
+        <section class="panel admin-event-control">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Calendario</p>
+              <h2>Evento in evidenza</h2>
+            </div>
+            <span class="pill success">${featuredEvent?.title || "Nessuno"}</span>
+          </div>
+          <label class="admin-field" for="adminFeaturedEvent">
+            <span>Seleziona evento</span>
+            <select id="adminFeaturedEvent">
+              ${calendarEvents.map((item) => `<option value="${item.id}" ${item.id === adminControl.featuredEvent ? "selected" : ""}>${item.title}</option>`).join("")}
+            </select>
+          </label>
+          <button class="primary-action" data-admin-action="feature-event" type="button">Imposta in evidenza</button>
+          <small class="admin-sync-copy">Ultima sincronizzazione: ${adminControl.lastSync ? new Date(adminControl.lastSync).toLocaleString("it-IT") : "non ancora eseguita"}</small>
+        </section>
+        <section class="panel admin-broadcast-panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Comunicazioni</p>
+              <h2>Invia avviso</h2>
+            </div>
+            <span class="pill ${adminControl.push ? "success" : "warning"}">${adminControl.push ? "Push attive" : "Push sospese"}</span>
+          </div>
+          <label class="admin-field" for="adminBroadcastTarget">
+            <span>Destinatari</span>
+            <select id="adminBroadcastTarget">
+              <option value="Tutti gli utenti">Tutti gli utenti</option>
+              <option value="Commercianti">Commercianti</option>
+              <option value="Partecipanti agli eventi">Partecipanti agli eventi</option>
+            </select>
+          </label>
+          <label class="admin-field" for="adminBroadcastMessage">
+            <span>Messaggio</span>
+            <textarea id="adminBroadcastMessage" rows="3" maxlength="180" placeholder="Scrivi un avviso breve e utile"></textarea>
+          </label>
+          <button class="primary-action" data-admin-action="send-broadcast" type="button" ${adminControl.push ? "" : "disabled"}>Invia comunicazione</button>
         </section>
         <section class="panel">
           <h2>Analytics città</h2>
@@ -1556,6 +1885,20 @@ function renderAdminDashboard() {
             <div class="profile-row"><div><strong>Password hash</strong><span>SHA-256 con salt per MVP statico</span></div><span class="pill success">Attivo</span></div>
             <div class="profile-row"><div><strong>Admin protetto</strong><span>Accesso solo ruolo admin</span></div><span class="pill success">Attivo</span></div>
             <div class="profile-row"><div><strong>Database locale</strong><span>localStorage, pronto per migrazione API</span></div><span class="pill warning">MVP</span></div>
+          </div>
+        </section>
+        <section class="panel admin-audit-panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Tracciamento</p>
+              <h2>Registro attività</h2>
+            </div>
+            <button class="ghost compact-button" data-admin-action="clear-audit" type="button">Pulisci</button>
+          </div>
+          <div class="admin-audit-list">
+            ${adminControl.audit.length ? adminControl.audit.slice(0, 6).map((item) => `
+              <div><strong>${item.message}</strong><span>${new Date(item.at).toLocaleString("it-IT")}</span></div>
+            `).join("") : `<p class="admin-empty-copy">Nessuna azione registrata.</p>`}
           </div>
         </section>
       </div>
@@ -1583,10 +1926,97 @@ function handleAdminAction(button) {
       users: getUsers().map(publicUser),
       demoState: getDemoState(),
       merchant: getMerchantSubscription(),
+      adminControl: getAdminControl(),
       exportedAt: new Date().toISOString()
     };
-    console.info("MyAvezzano admin export", payload);
-    showToast("Export admin generato nella console del browser.", "success");
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `myavezzano-export-${new Date().toISOString().slice(0, 10)}.json`;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 500);
+    const control = getAdminControl();
+    addAdminAudit(control, "Esportazione dati completata");
+    renderAdminDashboard();
+    showToast("Export admin scaricato in formato JSON.", "success");
+    return;
+  }
+
+  if (button.dataset.adminAction === "toggle-control") {
+    const control = getAdminControl();
+    const key = button.dataset.controlKey;
+    if (!Object.prototype.hasOwnProperty.call(control, key) || typeof control[key] !== "boolean") return;
+    control[key] = !control[key];
+    const controlLabels = {
+      maintenance: "Modalità manutenzione",
+      registrations: "Nuove registrazioni",
+      moderation: "Moderazione preventiva",
+      push: "Notifiche push"
+    };
+    addAdminAudit(control, `${controlLabels[key] || key}: ${control[key] ? "attivo" : "disattivo"}`);
+    renderAdminDashboard();
+    showToast("Controllo piattaforma aggiornato.", "success");
+    return;
+  }
+
+  if (button.dataset.adminAction === "moderate-content") {
+    const control = getAdminControl();
+    const item = control.moderationQueue.find((entry) => entry.id === button.dataset.contentId);
+    if (!item) return;
+    item.status = button.dataset.decision;
+    addAdminAudit(control, `${item.title}: ${item.status === "approved" ? "approvato" : "rifiutato"}`);
+    renderAdminDashboard();
+    showToast("Contenuto moderato.", "success");
+    return;
+  }
+
+  if (button.dataset.adminAction === "feature-event") {
+    const select = document.querySelector("#adminFeaturedEvent");
+    const eventItem = calendarEvents.find((item) => item.id === select?.value);
+    if (!eventItem) return;
+    const control = getAdminControl();
+    control.featuredEvent = eventItem.id;
+    addAdminAudit(control, `Evento in evidenza: ${eventItem.title}`);
+    renderAdminDashboard();
+    showToast("Evento principale aggiornato.", "success");
+    return;
+  }
+
+  if (button.dataset.adminAction === "send-broadcast") {
+    const message = document.querySelector("#adminBroadcastMessage")?.value.trim();
+    const target = document.querySelector("#adminBroadcastTarget")?.value;
+    if (!message) {
+      showToast("Scrivi il messaggio da inviare.", "error");
+      return;
+    }
+    const control = getAdminControl();
+    if (!control.push) {
+      showToast("Le notifiche push sono sospese.", "error");
+      return;
+    }
+    control.broadcasts = [{ message, target, at: new Date().toISOString() }, ...control.broadcasts].slice(0, 20);
+    addAdminAudit(control, `Comunicazione inviata a: ${target}`);
+    renderAdminDashboard();
+    showToast("Comunicazione registrata e inviata nella demo.", "success");
+    return;
+  }
+
+  if (button.dataset.adminAction === "sync-content") {
+    const control = getAdminControl();
+    control.lastSync = new Date().toISOString();
+    addAdminAudit(control, "Eventi, mappa e coupon sincronizzati");
+    renderAdminDashboard();
+    showToast("Contenuti sincronizzati.", "success");
+    return;
+  }
+
+  if (button.dataset.adminAction === "clear-audit") {
+    const control = getAdminControl();
+    control.audit = [];
+    saveAdminControl(control);
+    renderAdminDashboard();
+    showToast("Registro attività pulito.", "success");
     return;
   }
 
@@ -1792,6 +2222,7 @@ function createMapIcon(place) {
 }
 
 function renderMapBusinessList() {
+  if (!mapViewRendered && !document.body.classList.contains("view-map")) return;
   const term = document.querySelector("#searchInput")?.value.trim() || "";
   const places = term ? intelligentPlaces(term) : mapPlaces;
   document.querySelector("#mapBusinessList").innerHTML = places.map((place) => `
@@ -1983,6 +2414,23 @@ function refreshInteractiveMapLayout() {
   });
 }
 
+async function focusCityPulseZone(zoneId) {
+  const zone = cityPulseZones.find((item) => item.id === zoneId);
+  if (!zone) return;
+  switchView("map");
+  try {
+    await loadLeaflet();
+    initInteractiveMap();
+    renderCityPulseLayer();
+    interactiveMap?.setView([zone.lat, zone.lng], 16);
+    cityPulseMarkers.get(zone.id)?.openPopup();
+    const status = document.querySelector("#mapStatus");
+    if (status) status.textContent = `${zone.name}: ${zone.status.toLowerCase()}. ${zone.reason}.`;
+  } catch {
+    showToast("Mappa online non disponibile. Riprova con una connessione attiva.", "error");
+  }
+}
+
 function initInteractiveMap() {
   const mapElement = document.querySelector("#realMap");
   const status = document.querySelector("#mapStatus");
@@ -2019,6 +2467,7 @@ function initInteractiveMap() {
 
   L.control.zoom({ position: "topright" }).addTo(interactiveMap);
 
+  renderCityPulseLayer();
   rebuildMapMarkers();
 
   selectMapPlace(selectedPlace.id, false);
@@ -2066,7 +2515,7 @@ function switchView(view, updateHash = true) {
   document.querySelector("#pageCoords").textContent = signature[1];
   document.querySelector("#pageArtifact").textContent = signature[2];
   document.querySelector("#pagePulse").textContent = signature[3];
-  hydrateLazyMedia(targetView, true);
+  hydrateLazyMedia(targetView);
   applySearchFilter();
 
   if (updateHash && window.location.hash !== `#${view}`) {
@@ -2074,6 +2523,8 @@ function switchView(view, updateHash = true) {
   }
 
   if (view === "map") {
+    mapViewRendered = true;
+    renderMapBusinessList();
     setTimeout(async () => {
       try {
         await loadLeaflet();
@@ -2083,6 +2534,14 @@ function switchView(view, updateHash = true) {
       initInteractiveMap();
       refreshInteractiveMapLayout();
     }, 80);
+  }
+
+  if (view === "events") {
+    ensureEventsViewRendered();
+  }
+
+  if (view === "summer") {
+    ensureSummerViewRendered();
   }
 
   if (view === "profile") {
@@ -2100,12 +2559,12 @@ function switchView(view, updateHash = true) {
   stampCityArtifacts(targetView);
   animateActiveView(targetView);
   closeMobileMenu();
+  if (window.scrollY > 0) window.scrollTo({ top: 0, behavior: "auto" });
 }
 
 function animateActiveView(scope = document.querySelector(".view.active")) {
   if (!scope || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   const animatedItems = scope.querySelectorAll(`
-    .topbar,
     .shortcut-card,
     .post,
     .panel,
@@ -2132,9 +2591,14 @@ function animateActiveView(scope = document.querySelector(".view.active")) {
     .signup-panel,
     .demo-panel
   `);
+  const animationLimit = isCompactViewport() ? 8 : 16;
 
   animatedItems.forEach((item, index) => {
     item.classList.remove("motion-ready", "motion-item");
+    if (index >= animationLimit) {
+      item.style.removeProperty("--stagger");
+      return;
+    }
     item.style.setProperty("--stagger", Math.min(index, 16));
     window.requestAnimationFrame(() => {
       item.classList.add("motion-item");
@@ -2145,12 +2609,6 @@ function animateActiveView(scope = document.querySelector(".view.active")) {
 
 function animateGlobalSurfaces() {
   animateActiveView();
-  const topbar = document.querySelector(".topbar");
-  if (topbar) {
-    topbar.classList.remove("motion-ready", "motion-item");
-    topbar.style.setProperty("--stagger", 0);
-    window.requestAnimationFrame(() => topbar.classList.add("motion-item"));
-  }
 }
 
 function preferredTheme() {
@@ -2177,7 +2635,7 @@ function toggleTheme() {
   const nextTheme = document.body.classList.contains("theme-dark") ? "light" : "dark";
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
-  if (!prefersReducedMotion) {
+  if (!prefersReducedMotion && !document.body.classList.contains("fx-light")) {
     clearTimeout(themeTransitionTimer);
     document.body.classList.remove("theme-transition", "theme-to-dark", "theme-to-light", "theme-transitioning", "sunset-transition", "sunrise-transition", "night-entering", "day-entering");
     document.body.offsetHeight;
@@ -2197,6 +2655,36 @@ function toggleTheme() {
   showToast(nextTheme === "dark" ? "Tema notturno attivato." : "Tema giorno attivato.", "success");
 }
 
+function preferredFxMode() {
+  return localStorage.getItem(FX_MODE_STORAGE_KEY) === "light" ? "light" : "full";
+}
+
+function applyFxMode(mode = preferredFxMode(), syncEffects = true) {
+  const isLight = mode === "light";
+  document.body.classList.toggle("fx-light", isLight);
+  const toggle = document.querySelector("#fxModeToggle");
+  const label = document.querySelector("#fxModeLabel");
+  if (toggle) {
+    toggle.setAttribute("aria-pressed", String(isLight));
+    toggle.setAttribute("aria-label", isLight ? "Riattiva gli effetti visivi" : "Attiva modalità Light senza effetti");
+    toggle.title = isLight ? "Riattiva gli effetti visivi" : "Modalità Light senza effetti";
+  }
+  if (label) label.textContent = isLight ? "FX" : "Light";
+  if (!syncEffects) return;
+
+  document.querySelectorAll(".fx-swallow, .fx-shooting-star").forEach((item) => item.remove());
+  updateAtmosphereForTheme();
+  window.dispatchEvent(new CustomEvent("myavezzano:fxchange"));
+  if (!isLight) initWebglAura();
+}
+
+function toggleFxMode() {
+  const nextMode = document.body.classList.contains("fx-light") ? "full" : "light";
+  localStorage.setItem(FX_MODE_STORAGE_KEY, nextMode);
+  applyFxMode(nextMode);
+  showToast(nextMode === "light" ? "Modalità Light attivata." : "Effetti visivi riattivati.", "success");
+}
+
 function respectsReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
@@ -2211,7 +2699,7 @@ function clearAtmosphereTimers() {
 }
 
 function scheduleAtmosphere(callback, minDelay = 18000, maxDelay = 36000) {
-  if (atmospherePaused || respectsReducedMotion()) return;
+  if (atmospherePaused || respectsReducedMotion() || isCompactViewport() || document.body.classList.contains("fx-light")) return;
   const delay = minDelay + Math.random() * (maxDelay - minDelay);
   const timer = window.setTimeout(() => {
     atmosphereTimers.delete(timer);
@@ -2308,7 +2796,7 @@ function scheduleShootingStar(initial = false) {
 
 function updateAtmosphereForTheme() {
   clearAtmosphereTimers();
-  if (atmospherePaused || respectsReducedMotion()) {
+  if (atmospherePaused || respectsReducedMotion() || isCompactViewport() || document.body.classList.contains("fx-light")) {
     document.body.classList.add("fx-paused");
     return;
   }
@@ -2345,19 +2833,35 @@ function initHeroMicroParallax() {
   const canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
   if (!canHover) return;
   window.addEventListener("pointermove", (event) => {
-    const x = ((event.clientX / window.innerWidth) - 0.5) * 8;
-    const y = ((event.clientY / window.innerHeight) - 0.5) * 5;
-    topbar.style.setProperty("--hero-parallax-x", `${x.toFixed(2)}px`);
-    topbar.style.setProperty("--hero-parallax-y", `${y.toFixed(2)}px`);
+    if (heroParallaxFrame || document.body.classList.contains("fx-light")) return;
+    const { clientX, clientY } = event;
+    heroParallaxFrame = window.requestAnimationFrame(() => {
+      const x = ((clientX / window.innerWidth) - 0.5) * 8;
+      const y = ((clientY / window.innerHeight) - 0.5) * 5;
+      topbar.style.setProperty("--hero-parallax-x", `${x.toFixed(2)}px`);
+      topbar.style.setProperty("--hero-parallax-y", `${y.toFixed(2)}px`);
+      heroParallaxFrame = 0;
+    });
   }, { passive: true });
 }
 
 function initScrollAtmosphere() {
+  let wasScrolled = null;
   const update = () => {
-    document.body.classList.toggle("is-scrolled", window.scrollY > 18);
+    const isScrolled = window.scrollY > 18;
+    if (isScrolled !== wasScrolled) {
+      document.body.classList.toggle("is-scrolled", isScrolled);
+      wasScrolled = isScrolled;
+    }
   };
   update();
-  window.addEventListener("scroll", update, { passive: true });
+  window.addEventListener("scroll", () => {
+    if (scrollAtmosphereFrame) return;
+    scrollAtmosphereFrame = window.requestAnimationFrame(() => {
+      update();
+      scrollAtmosphereFrame = 0;
+    });
+  }, { passive: true });
 }
 
 function initSearchPlaceholderCycle() {
@@ -2508,9 +3012,53 @@ function handleAction(button) {
     return;
   }
 
+  if (action === "open-pulse-zone") {
+    focusCityPulseZone(button.dataset.zoneId);
+    return;
+  }
+
+  if (action === "claim-last-minute") {
+    const deal = lastMinuteDeals.find((item) => item.id === button.dataset.dealId);
+    const deadline = getLastMinuteState().deadlines[button.dataset.dealId] || 0;
+    if (!deal || deadline <= Date.now()) {
+      showToast("Questa occasione è appena scaduta.", "error");
+      updateLastMinuteCountdowns();
+      return;
+    }
+    const total = addDemoItem("coupons", { title: deal.title, place: deal.place, type: "Ultimo momento" });
+    document.querySelectorAll(`[data-action="claim-last-minute"][data-deal-id="${deal.id}"]`).forEach((dealButton) => {
+      dealButton.textContent = "Salvato";
+      dealButton.classList.add("is-saved");
+    });
+    renderDayPlan();
+    showToast(`Occasione salvata: ${deal.title}. Coupon totali: ${total}.`, "success");
+    return;
+  }
+
   if (action === "event-category") {
+    if (button.dataset.eventFilter === "summer") {
+      activeSummerCategory = "all";
+      if (summerViewRendered) renderSummerProgram("all");
+      switchView("summer");
+      return;
+    }
     renderEventAgenda(button.dataset.eventFilter || "all");
     showToast(`Filtro eventi attivo: ${button.dataset.category}.`);
+    return;
+  }
+
+  if (action === "summer-category") {
+    renderSummerProgram(button.dataset.summerFilter || "all");
+    showToast(`Programma Estate 2026: ${button.textContent.trim()}.`);
+    return;
+  }
+
+  if (action === "summer-next") {
+    ensureSummerViewRendered();
+    const next = nextSummerEvent();
+    if (!next) return;
+    if (activeSummerCategory !== "all") renderSummerProgram("all");
+    requestAnimationFrame(() => document.querySelector(`#summer-event-${next.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" }));
     return;
   }
 
@@ -2533,9 +3081,17 @@ function handleAction(button) {
   }
 
   if (action === "save-event") {
+    const wasAlreadySaved = button.classList.contains("is-saved");
     addDemoItem("events", { title: button.dataset.title });
-    button.textContent = "Salvato";
-    button.classList.add("is-saved");
+    document.querySelectorAll(`[data-action="save-event"][data-event-id="${button.dataset.eventId}"]`).forEach((eventButton) => {
+      eventButton.textContent = "Salvato";
+      eventButton.classList.add("is-saved");
+    });
+    if (!wasAlreadySaved) {
+      document.querySelectorAll(`[data-event-attendance="${button.dataset.eventId}"] strong`).forEach((counter) => {
+        counter.textContent = String(Number(counter.textContent) + 1);
+      });
+    }
     renderDayPlan();
     showToast(`Evento salvato: ${button.dataset.title}.`, "success");
     return;
@@ -2572,9 +3128,11 @@ function handleAction(button) {
   }
 
   if (action === "summer-plan") {
-    const total = addDemoItem("summerPlans", { title: "Itinerario Estate 2026" });
-    showToast(`Itinerario Estate 2026 creato. Totale: ${total}.`, "success");
-    switchView("map");
+    const total = addDemoItem("summerPlans", { title: "Programma Estate 2026" });
+    button.textContent = "Programma salvato";
+    button.classList.add("is-saved");
+    showToast(`Programma Estate 2026 salvato. Totale: ${total}.`, "success");
+    return;
   }
 }
 
@@ -3511,7 +4069,8 @@ document.querySelector("#cancelMerchantPlan").addEventListener("click", () => {
 function initWebglAura() {
   const canvas = document.querySelector("#webglAura");
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (!canvas || reduceMotion) return;
+  const saveData = Boolean(navigator.connection?.saveData);
+  if (webglAuraInitialized || !canvas || reduceMotion || saveData || isCompactViewport() || document.body.classList.contains("fx-light")) return;
 
   const gl = canvas.getContext("webgl", {
     alpha: true,
@@ -3636,6 +4195,7 @@ function initWebglAura() {
     console.warn(gl.getProgramInfoLog(program));
     return;
   }
+  webglAuraInitialized = true;
 
   const buffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -3649,9 +4209,10 @@ function initWebglAura() {
   let animationFrame = 0;
   let startTime = performance.now();
   let isVisible = true;
+  let lastFrameTime = 0;
 
   function resize() {
-    const ratio = Math.min(window.devicePixelRatio || 1, window.innerWidth < 760 ? 1.15 : 1.55);
+    const ratio = Math.min(window.devicePixelRatio || 1, 1.25);
     const width = Math.max(1, Math.floor(window.innerWidth * ratio));
     const height = Math.max(1, Math.floor(window.innerHeight * ratio));
     if (canvas.width !== width || canvas.height !== height) {
@@ -3662,7 +4223,15 @@ function initWebglAura() {
   }
 
   function render(now) {
-    if (!isVisible) return;
+    if (!isVisible || document.body.classList.contains("fx-light")) {
+      animationFrame = 0;
+      return;
+    }
+    if (now - lastFrameTime < 33) {
+      animationFrame = requestAnimationFrame(render);
+      return;
+    }
+    lastFrameTime = now;
     resize();
     gl.useProgram(program);
     gl.enable(gl.BLEND);
@@ -3686,22 +4255,29 @@ function initWebglAura() {
 
   window.addEventListener("pointermove", (event) => updatePointer(event.clientX, event.clientY), { passive: true });
   window.addEventListener("resize", resize, { passive: true });
-  document.addEventListener("visibilitychange", () => {
-    isVisible = !document.hidden;
-    if (isVisible) {
+  const syncAnimation = () => {
+    isVisible = !document.hidden && !document.body.classList.contains("fx-light");
+    canvas.hidden = !isVisible;
+    document.body.classList.toggle("webgl-ready", isVisible);
+    if (isVisible && !animationFrame) {
       startTime = performance.now();
+      lastFrameTime = 0;
       animationFrame = requestAnimationFrame(render);
-    } else {
+    } else if (!isVisible && animationFrame) {
       cancelAnimationFrame(animationFrame);
+      animationFrame = 0;
     }
-  });
+  };
 
-  document.body.classList.add("webgl-ready");
-  animationFrame = requestAnimationFrame(render);
+  document.addEventListener("visibilitychange", syncAnimation);
+  window.addEventListener("myavezzano:fxchange", syncAnimation);
+
+  syncAnimation();
 }
 
 async function bootApp() {
   applyTheme();
+  applyFxMode(preferredFxMode(), false);
   initAtmosphereFX();
   initHeroMicroParallax();
   initScrollAtmosphere();
@@ -3742,5 +4318,6 @@ async function bootApp() {
 }
 
 document.querySelector("#themeToggle")?.addEventListener("click", toggleTheme);
+document.querySelector("#fxModeToggle")?.addEventListener("click", toggleFxMode);
 
 bootApp();
