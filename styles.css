@@ -8412,7 +8412,8 @@ body.theme-dark .notification-badge {
     grid-column: 1 / -1;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
+    gap: 12px;
     border-top: 1px solid var(--line);
     border-right: 0;
   }
