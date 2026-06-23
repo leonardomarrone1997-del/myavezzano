@@ -60,7 +60,7 @@
         ]
       }
     </script>
-    <link rel="stylesheet" href="styles.css?v=85" />
+    <link rel="stylesheet" href="styles.css?v=86" />
   </head>
 <body class="view-feed">
     <a class="skip-link" href="#mainContent">Vai al contenuto</a>
@@ -152,7 +152,10 @@
                 <small id="topProfileLevel">Esploratore - 18%</small>
               </span>
             </button>
-            <button class="icon-button notification-button" id="notificationButton" data-action="notifications" type="button" title="Notifiche" aria-label="Notifiche" aria-expanded="false">&#128276;</button>
+            <button class="icon-button notification-button" id="notificationButton" data-action="notifications" type="button" title="Notifiche" aria-label="Apri notifiche" aria-expanded="false">
+              <span class="notification-glyph" aria-hidden="true"></span>
+              <span class="notification-badge" id="notificationBadge" aria-label="0 notifiche non lette" hidden>0</span>
+            </button>
             <button class="primary-action" id="openSignup" type="button">Entra</button>
           </div>
         </header>
@@ -424,33 +427,43 @@
                 <div><span>Punti</span><strong id="profilePointCount">0</strong></div>
                 <div><span>Livello cittadino</span><strong id="profileLevel">Esploratore</strong></div>
               </div>
+              <div class="profile-progress" aria-label="Avanzamento livello cittadino">
+                <div><span id="profileProgressLabel">Prossimo livello</span><strong id="profileProgressValue">18%</strong></div>
+                <span class="profile-progress-track"><i id="profileProgressBar"></i></span>
+              </div>
               <button class="primary-action full-button" id="profileSignupButton" type="button">Registrati o accedi</button>
             </section>
 
             <section class="profile-actions-grid">
               <button class="profile-action-card active" data-profile-panel="settings" type="button">
-                <strong>Impostazioni</strong>
-                <span>Account, privacy e notifiche</span>
+                <span class="profile-action-icon icon-settings" aria-hidden="true"></span>
+                <span class="profile-action-copy"><strong>Impostazioni</strong><small>Account, privacy e notifiche</small></span>
+                <span class="profile-action-arrow" aria-hidden="true"></span>
               </button>
               <button class="profile-action-card" data-view-target="merchant" type="button">
-                <strong>Crea il tuo negozio</strong>
-                <span>Piani da 12,99 EUR/mese</span>
+                <span class="profile-action-icon icon-store" aria-hidden="true"></span>
+                <span class="profile-action-copy"><strong>Crea il tuo negozio</strong><small>Piani da 12,99 EUR/mese</small></span>
+                <span class="profile-action-arrow" aria-hidden="true"></span>
               </button>
               <button class="profile-action-card" data-profile-panel="coupons" type="button">
-                <strong>I miei coupon</strong>
-                <span>Sconti salvati e QR</span>
+                <span class="profile-action-icon icon-ticket" aria-hidden="true"></span>
+                <span class="profile-action-copy"><strong>I miei coupon</strong><small>Sconti salvati e QR</small></span>
+                <span class="profile-action-arrow" aria-hidden="true"></span>
               </button>
               <button class="profile-action-card" data-profile-panel="events" type="button">
-                <strong>I miei eventi</strong>
-                <span>Prenotazioni e reminder</span>
+                <span class="profile-action-icon icon-calendar" aria-hidden="true"></span>
+                <span class="profile-action-copy"><strong>I miei eventi</strong><small>Prenotazioni e reminder</small></span>
+                <span class="profile-action-arrow" aria-hidden="true"></span>
               </button>
               <button class="profile-action-card" data-profile-panel="preferences" type="button">
-                <strong>Preferenze</strong>
-                <span>Categorie e interessi</span>
+                <span class="profile-action-icon icon-heart" aria-hidden="true"></span>
+                <span class="profile-action-copy"><strong>Preferenze</strong><small>Categorie e interessi</small></span>
+                <span class="profile-action-arrow" aria-hidden="true"></span>
               </button>
               <button class="profile-action-card" data-view-target="map" type="button">
-                <strong>Luoghi salvati</strong>
-                <span>Attività e percorsi</span>
+                <span class="profile-action-icon icon-map" aria-hidden="true"></span>
+                <span class="profile-action-copy"><strong>Luoghi salvati</strong><small>Attività e percorsi</small></span>
+                <span class="profile-action-arrow" aria-hidden="true"></span>
               </button>
             </section>
 
@@ -768,9 +781,13 @@
       <div class="notification-menu-head">
         <div>
           <p class="eyebrow">Notifiche</p>
-          <h2>Centro rapido</h2>
+          <h2>Centro aggiornamenti</h2>
+          <span id="notificationSummary">Tutto sotto controllo</span>
         </div>
-        <button class="close-button" id="closeNotificationMenu" type="button" aria-label="Chiudi notifiche">x</button>
+        <div class="notification-head-actions">
+          <button class="notification-read-all" id="markAllNotificationsRead" type="button">Segna lette</button>
+          <button class="close-button" id="closeNotificationMenu" type="button" aria-label="Chiudi notifiche">x</button>
+        </div>
       </div>
       <div class="notification-menu-list" id="notificationMenuList"></div>
     </section>
@@ -859,7 +876,7 @@
 
     <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
-    <script defer src="events-data.js?v=85"></script>
-    <script defer src="app.js?v=85"></script>
+    <script defer src="events-data.js?v=86"></script>
+    <script defer src="app.js?v=86"></script>
   </body>
 </html>
