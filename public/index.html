@@ -17,6 +17,10 @@
     <link rel="canonical" href="https://myavezzano.vercel.app/" />
     <link rel="preconnect" href="https://unpkg.com" crossorigin />
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
+    <link rel="preload" as="image" href="assets/avezzano-hero-day-mobile.jpg" media="(max-width: 760px) and (prefers-color-scheme: light)" fetchpriority="high" />
+    <link rel="preload" as="image" href="assets/avezzano-hero-night-mobile.jpg" media="(max-width: 760px) and (prefers-color-scheme: dark)" fetchpriority="high" />
+    <link rel="preload" as="image" href="assets/avezzano-hero-day.jpg" media="(min-width: 761px) and (prefers-color-scheme: light)" fetchpriority="high" />
+    <link rel="preload" as="image" href="assets/avezzano-hero-night.jpg" media="(min-width: 761px) and (prefers-color-scheme: dark)" fetchpriority="high" />
     <meta property="og:locale" content="it_IT" />
     <meta property="og:site_name" content="MyAvezzano" />
     <meta property="og:title" content="MyAvezzano | Eventi, coupon e attività ad Avezzano" />
@@ -56,9 +60,9 @@
         ]
       }
     </script>
-    <link rel="stylesheet" href="styles.css?v=77" />
+    <link rel="stylesheet" href="styles.css?v=84" />
   </head>
-  <body>
+<body class="view-feed">
     <a class="skip-link" href="#mainContent">Vai al contenuto</a>
     <canvas class="webgl-aura" id="webglAura" aria-hidden="true"></canvas>
     <div class="theme-sky-transition" id="themeSkyTransition" aria-hidden="true"></div>
@@ -128,10 +132,16 @@
                 <span>Avezzano</span>
               </div>
             </div>
-            <button class="theme-toggle" id="themeToggle" type="button" aria-label="Attiva tema notturno" aria-pressed="false">
-              <span aria-hidden="true"></span>
-              <strong id="themeToggleLabel">Notte</strong>
-            </button>
+            <div class="theme-mode-group" aria-label="Tema e prestazioni">
+              <button class="theme-toggle" id="themeToggle" type="button" aria-label="Attiva tema notturno" aria-pressed="false">
+                <span aria-hidden="true"></span>
+                <strong id="themeToggleLabel">Notte</strong>
+              </button>
+              <button class="fx-mode-toggle" id="fxModeToggle" type="button" aria-label="Attiva modalità Light senza effetti" aria-pressed="false" title="Modalità Light senza effetti">
+                <span aria-hidden="true"></span>
+                <strong id="fxModeLabel">Light</strong>
+              </button>
+            </div>
             <button class="ghost guide-button" data-action="open-onboarding" type="button">Guida</button>
             <button class="top-profile-status" id="topProfileStatus" type="button" aria-label="Apri profilo">
               <span class="prestige-ring" aria-hidden="true">
@@ -139,7 +149,7 @@
               </span>
               <span class="top-profile-copy">
                 <strong id="topProfileName">Ospite</strong>
-                <small id="topProfileLevel">Prestigio Base</small>
+                <small id="topProfileLevel">Esploratore - 18%</small>
               </span>
             </button>
             <button class="icon-button notification-button" id="notificationButton" data-action="notifications" type="button" title="Notifiche" aria-label="Notifiche" aria-expanded="false">&#128276;</button>
@@ -150,6 +160,40 @@
         <section class="view active" id="feedView" aria-label="Home">
           <section class="home-quick-actions" aria-label="Azioni rapide">
             <div class="stories" id="stories"></div>
+          </section>
+          <section class="summer-home-band" id="summerHomeBand" aria-label="Programma Estate 2026">
+            <div class="summer-home-copy">
+              <span class="summer-home-mark" aria-hidden="true">26</span>
+              <div>
+                <p class="eyebrow">Estate 2026</p>
+                <strong id="summerHomeTitle">Il programma estivo di Avezzano</strong>
+                <span id="summerHomeMeta">Calendario in aggiornamento</span>
+              </div>
+            </div>
+            <button class="summer-home-action" data-view-target="summer" type="button">Apri programma</button>
+          </section>
+          <section class="city-now-grid" aria-label="Avezzano ora e opportunità last minute">
+            <article class="city-pulse-panel">
+              <div class="city-now-head">
+                <div>
+                  <p class="eyebrow">Avezzano ora</p>
+                  <h2>Il ritmo della città</h2>
+                </div>
+                <button class="ghost compact-button" data-view-target="map" type="button">Apri mappa</button>
+              </div>
+              <div class="city-pulse-home" id="cityPulseHome"></div>
+              <p class="city-now-note">Stima da eventi, orari e offerte attive.</p>
+            </article>
+            <article class="last-minute-panel">
+              <div class="city-now-head">
+                <div>
+                  <p class="eyebrow">Ultimo momento</p>
+                  <h2>Occasioni disponibili ora</h2>
+                </div>
+                <button class="ghost compact-button" data-view-target="coupons" type="button">Vedi tutte</button>
+              </div>
+              <div class="last-minute-home" id="lastMinuteHome"></div>
+            </article>
           </section>
           <section class="home-command-center" aria-label="Dashboard locale">
             <div class="command-copy">
@@ -203,6 +247,16 @@
         </section>
 
         <section class="view" id="mapView">
+          <section class="map-pulse-panel" aria-labelledby="mapPulseTitle">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Avezzano ora</p>
+                <h2 id="mapPulseTitle">Zone vive, tranquille e convenienti</h2>
+              </div>
+              <span class="pill" id="cityPulseTime">Aggiornato ora</span>
+            </div>
+            <div class="city-pulse-map" id="cityPulseMap"></div>
+          </section>
           <div class="map-layout">
             <div class="map-surface real-map-shell" aria-label="Mappa reale attività vicine">
               <div class="map-toolbar">
@@ -271,14 +325,40 @@
 
         <section class="view" id="summerView">
           <div class="summer-hero">
-            <div>
-              <p class="eyebrow">☀ Estate 2026</p>
-              <h2>Estate Avezzanese 2026</h2>
-              <p>Musica live, cabaret, teatro e festival tra Pinguino Village, Castello Orsini e Alba Fucens.</p>
+            <div class="summer-hero-copy">
+              <p class="eyebrow">Estate 2026</p>
+              <h2>Il programma estivo, tutto in un posto</h2>
+              <p>Eventi, musica, teatro, sport e cultura tra Avezzano e Alba Fucens, ordinati per data e senza contenuti ripetuti.</p>
             </div>
-            <button class="primary-action" data-action="summer-plan" type="button">Crea itinerario</button>
+            <div class="summer-hero-actions">
+              <button class="primary-action" data-action="summer-next" type="button">Prossimo evento</button>
+              <button class="ghost" data-action="summer-plan" type="button">Salva programma</button>
+            </div>
           </div>
-          <div class="summer-grid" id="summerGrid"></div>
+          <section class="summer-metrics" aria-label="Riepilogo programma estivo">
+            <div><span>Appuntamenti</span><strong id="summerEventCount">0</strong></div>
+            <div><span>Avezzano</span><strong id="summerAvezzanoCount">0</strong></div>
+            <div><span>Alba Fucens</span><strong id="summerAlbaCount">0</strong></div>
+          </section>
+          <div class="summer-filters" id="summerFilters" aria-label="Filtra il programma estivo"></div>
+          <section class="summer-next-panel" id="summerNextPanel" aria-label="Prossimo evento estivo"></section>
+          <section class="summer-program" aria-labelledby="summerProgramTitle">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Calendario completo</p>
+                <h2 id="summerProgramTitle">Tutti gli appuntamenti estivi</h2>
+              </div>
+              <button class="ghost" data-view-target="coupons" type="button">Coupon e vantaggi</button>
+            </div>
+            <div class="event-agenda summer-grid" id="summerGrid" aria-live="polite"></div>
+          </section>
+          <aside class="event-ticket-note summer-ticket-note" aria-label="Informazioni utili sul programma estivo">
+            <div>
+              <p class="eyebrow">Info utili</p>
+              <strong>Biglietti e sedi</strong>
+            </div>
+            <p>Per gli appuntamenti delle rassegne consulta la scheda evento. Le sedi principali sono Castello Orsini, Aia dei Musei, Pinguino Village e Alba Fucens.</p>
+          </aside>
         </section>
 
         <section class="view" id="couponsView">
@@ -289,6 +369,22 @@
             </div>
             <button class="primary-action" data-action="scan-qr" type="button">Scansiona QR</button>
           </div>
+          <section class="last-minute-section" aria-labelledby="lastMinuteTitle">
+            <div class="section-head compact-section-head">
+              <div>
+                <p class="eyebrow">Valide per poche ore</p>
+                <h2 id="lastMinuteTitle">Ultimo momento</h2>
+              </div>
+              <span class="pill warning">Disponibilità limitata</span>
+            </div>
+            <div class="last-minute-grid" id="lastMinuteGrid"></div>
+          </section>
+          <div class="section-head coupon-library-head">
+            <div>
+              <p class="eyebrow">Sempre disponibili</p>
+              <h2>I tuoi coupon</h2>
+            </div>
+          </div>
           <div id="couponsGrid" class="cards-grid"></div>
         </section>
 
@@ -296,7 +392,7 @@
           <div class="loyalty-hero">
             <div>
               <p class="eyebrow">Sistema fedeltà</p>
-              <h2>Livello Gold</h2>
+              <h2>Livello fedelt&agrave; Gold</h2>
               <p>Hai 1.240 punti. Mancano 260 punti al premio "Cena locale".</p>
             </div>
             <div class="progress-ring">
@@ -326,7 +422,7 @@
                 <div><span>Coupon</span><strong id="profileCouponCount">0</strong></div>
                 <div><span>Eventi</span><strong id="profileEventCount">0</strong></div>
                 <div><span>Punti</span><strong id="profilePointCount">0</strong></div>
-                <div><span>Livello</span><strong id="profileLevel">Base</strong></div>
+                <div><span>Livello cittadino</span><strong id="profileLevel">Esploratore</strong></div>
               </div>
               <button class="primary-action full-button" id="profileSignupButton" type="button">Registrati o accedi</button>
             </section>
@@ -544,7 +640,7 @@
               </div>
             </div>
             <figure class="campaign-visual">
-              <img src="assets/marketing/citta-live.png" alt="Concept Città Live MyAvezzano con app, QR e materiali pubblicitari" loading="lazy" decoding="async" />
+              <img src="assets/marketing/citta-live.webp" width="1672" height="941" alt="Concept Città Live MyAvezzano con app, QR e materiali pubblicitari" loading="lazy" decoding="async" />
             </figure>
           </section>
 
@@ -568,7 +664,7 @@
 
           <section class="campaign-feature-grid">
             <article class="campaign-feature is-large">
-              <img src="assets/marketing/touchpoint-kit.png" alt="Kit touchpoint MyAvezzano con espositori, vetrofanie, manifesti e stand" loading="lazy" decoding="async" />
+              <img src="assets/marketing/touchpoint-kit.webp" width="1672" height="941" alt="Kit touchpoint MyAvezzano con espositori, vetrofanie, manifesti e stand" loading="lazy" decoding="async" />
               <div>
                 <p class="eyebrow">Kit città</p>
                 <h3>Un’unica piattaforma, tanti punti di contatto</h3>
@@ -576,7 +672,7 @@
               </div>
             </article>
             <article class="campaign-feature">
-              <img src="assets/marketing/trova-il-qr.png" alt="Concept Trova il QR con premi, coupon e punti" loading="lazy" decoding="async" />
+              <img src="assets/marketing/trova-il-qr.webp" width="1672" height="941" alt="Concept Trova il QR con premi, coupon e punti" loading="lazy" decoding="async" />
               <div>
                 <p class="eyebrow">Gamification</p>
                 <h3>Trova il QR</h3>
@@ -584,7 +680,7 @@
               </div>
             </article>
             <article class="campaign-feature">
-              <img src="assets/marketing/estate-avezzano-2026.png" alt="Campagna Estate Avezzano 2026 con calendario eventi e coupon" loading="lazy" decoding="async" />
+              <img src="assets/marketing/estate-avezzano-2026.webp" width="1672" height="941" alt="Campagna Estate Avezzano 2026 con calendario eventi e coupon" loading="lazy" decoding="async" />
               <div>
                 <p class="eyebrow">Estate 2026</p>
                 <h3>Eventi, cultura e promozioni</h3>
@@ -611,15 +707,15 @@
 
           <section class="campaign-gallery" aria-label="Concept grafici campagna">
             <article>
-              <img src="assets/marketing/campagna-alternative.png" alt="Alternative grafiche MyAvezzano per materiali pubblicitari" loading="lazy" decoding="async" />
+              <img src="assets/marketing/campagna-alternative.webp" width="1672" height="941" alt="Alternative grafiche MyAvezzano per materiali pubblicitari" loading="lazy" decoding="async" />
               <div><strong>Alternative visuali</strong><span>Palette, espositori, vetrofanie, vele e materiali da banco.</span></div>
             </article>
             <article>
-              <img src="assets/marketing/citta-live.png" alt="Concept Città Live per app urbana MyAvezzano" loading="lazy" decoding="async" />
+              <img src="assets/marketing/citta-live.webp" width="1672" height="941" alt="Concept Città Live per app urbana MyAvezzano" loading="lazy" decoding="async" />
               <div><strong>Città Live</strong><span>Concept elegante per una guida cittadina quotidiana.</span></div>
             </article>
             <article>
-              <img src="assets/marketing/trova-il-qr.png" alt="Concept Trova il QR per caccia urbana MyAvezzano" loading="lazy" decoding="async" />
+              <img src="assets/marketing/trova-il-qr.webp" width="1672" height="941" alt="Concept Trova il QR per caccia urbana MyAvezzano" loading="lazy" decoding="async" />
               <div><strong>Trova il QR</strong><span>Concept più giocoso per coinvolgere utenti e attività.</span></div>
             </article>
           </section>
@@ -763,7 +859,7 @@
 
     <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
-    <script defer src="events-data.js?v=77"></script>
-    <script defer src="app.js?v=77"></script>
+    <script defer src="events-data.js?v=84"></script>
+    <script defer src="app.js?v=84"></script>
   </body>
 </html>
