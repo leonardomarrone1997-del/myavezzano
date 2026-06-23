@@ -347,6 +347,7 @@ const ONBOARDING_KEY = "myavezzano_onboarding_seen";
 const THEME_STORAGE_KEY = "myavezzano_theme";
 const FX_MODE_STORAGE_KEY = "myavezzano_fx_mode";
 const ADMIN_CONTROL_KEY = "myavezzano_admin_control_v1";
+const NOTIFICATION_READ_KEY = "myavezzano_notification_reads_v1";
 
 const categoryImages = {
   "Ristorante": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80",
@@ -1293,16 +1294,17 @@ function ensureSummerViewRendered() {
 
 function render() {
   document.querySelector("#stories").innerHTML = quickActions.map(([title, text, view, icon]) => `
-    <button class="shortcut-card" data-view-target="${view}" type="button">
+    <button class="shortcut-card" data-view-target="${view}" data-shortcut="${icon}" type="button" aria-label="${title}: ${text}">
       <span class="shortcut-icon shortcut-icon-${icon}" aria-hidden="true"></span>
-      <strong>${title}</strong>
-      <span>${text}</span>
+      <span class="shortcut-copy"><strong>${title}</strong><small>${text}</small></span>
+      <span class="shortcut-arrow" aria-hidden="true"></span>
     </button>
   `).join("");
 
   renderSummerHomeBand();
   renderCityPulse();
   renderLastMinuteDeals();
+  renderNotificationState();
   renderSmartStrip();
   renderDayPlan();
   document.querySelector("#feedList").innerHTML = cityHighlights.slice(0, 4).map((item) => {
@@ -1475,37 +1477,44 @@ function renderProfileActions() {
   const adminAction = isAdmin(user)
     ? `
       <button class="profile-action-card god-action" data-view-target="admin" type="button">
-      <strong>Pannello admin</strong>
-        <span>Controllo admin completo</span>
+        <span class="profile-action-icon icon-admin" aria-hidden="true"></span>
+        <span class="profile-action-copy"><strong>Pannello admin</strong><small>Controllo admin completo</small></span>
+        <span class="profile-action-arrow" aria-hidden="true"></span>
       </button>
     `
     : "";
 
   document.querySelector(".profile-actions-grid").innerHTML = `
     <button class="profile-action-card active" data-profile-panel="settings" type="button">
-      <strong>Impostazioni</strong>
-      <span>Account, privacy e notifiche</span>
+      <span class="profile-action-icon icon-settings" aria-hidden="true"></span>
+      <span class="profile-action-copy"><strong>Impostazioni</strong><small>Account, privacy e notifiche</small></span>
+      <span class="profile-action-arrow" aria-hidden="true"></span>
     </button>
     ${adminAction}
     <button class="profile-action-card" data-view-target="merchant" type="button">
-      <strong>Crea il tuo negozio</strong>
-      <span>Piani da 12,99 EUR/mese</span>
+      <span class="profile-action-icon icon-store" aria-hidden="true"></span>
+      <span class="profile-action-copy"><strong>Crea il tuo negozio</strong><small>Piani da 12,99 EUR/mese</small></span>
+      <span class="profile-action-arrow" aria-hidden="true"></span>
     </button>
     <button class="profile-action-card" data-profile-panel="coupons" type="button">
-      <strong>I miei coupon</strong>
-      <span>Sconti salvati e QR</span>
+      <span class="profile-action-icon icon-ticket" aria-hidden="true"></span>
+      <span class="profile-action-copy"><strong>I miei coupon</strong><small>Sconti salvati e QR</small></span>
+      <span class="profile-action-arrow" aria-hidden="true"></span>
     </button>
     <button class="profile-action-card" data-profile-panel="events" type="button">
-      <strong>I miei eventi</strong>
-      <span>Prenotazioni e reminder</span>
+      <span class="profile-action-icon icon-calendar" aria-hidden="true"></span>
+      <span class="profile-action-copy"><strong>I miei eventi</strong><small>Prenotazioni e reminder</small></span>
+      <span class="profile-action-arrow" aria-hidden="true"></span>
     </button>
     <button class="profile-action-card" data-profile-panel="preferences" type="button">
-      <strong>Preferenze</strong>
-      <span>Categorie e interessi</span>
+      <span class="profile-action-icon icon-heart" aria-hidden="true"></span>
+      <span class="profile-action-copy"><strong>Preferenze</strong><small>Categorie e interessi</small></span>
+      <span class="profile-action-arrow" aria-hidden="true"></span>
     </button>
     <button class="profile-action-card" data-view-target="map" type="button">
-      <strong>Luoghi salvati</strong>
-      <span>Attività e percorsi</span>
+      <span class="profile-action-icon icon-map" aria-hidden="true"></span>
+      <span class="profile-action-copy"><strong>Luoghi salvati</strong><small>Attività e percorsi</small></span>
+      <span class="profile-action-arrow" aria-hidden="true"></span>
     </button>
   `;
 }
@@ -1559,32 +1568,69 @@ function renderTopProfileStatus() {
   status.classList.toggle("is-admin", user?.role === "admin");
 }
 
+function getReadNotifications() {
+  return readJson(NOTIFICATION_READ_KEY, []);
+}
+
+function saveReadNotifications(ids) {
+  writeJson(NOTIFICATION_READ_KEY, [...new Set(ids)].slice(-80));
+}
+
 function notificationItems() {
   const user = getStoredUser();
   const merchantItems = getMerchantNotifications().slice(-2).reverse().map((item) => ({
+    id: item.id,
     title: item.title,
     text: `${item.targetLabel} - ${item.status}`,
-    tone: "gold"
+    tone: "gold",
+    time: "Attività locale"
   }));
   return [
-    { title: "Aperitivo lungo in centro", text: "Inizia alle 19:30. Puoi salvarlo tra gli eventi.", tone: "event" },
-    { title: "Coupon in scadenza", text: "2x1 aperitivo valido fino alle 20:00.", tone: "coupon" },
+    { id: "event-aperitivo-centro", title: "Aperitivo lungo in centro", text: "Inizia alle 19:30. Puoi salvarlo tra gli eventi.", tone: "event", time: "Oggi" },
+    { id: "coupon-aperitivo-expiring", title: "Coupon in scadenza", text: "2x1 aperitivo valido fino alle 20:00.", tone: "coupon", time: "Tra poco" },
     {
+      id: user ? `profile-${user.id}` : "profile-guest",
       title: user ? `Ciao ${user.name}` : "Profilo non attivo",
       text: user ? "Il tuo livello cittadino risulta aggiornato." : "Accedi per salvare notifiche e preferenze.",
-      tone: user ? "profile" : "quiet"
+      tone: user ? "profile" : "quiet",
+      time: "Profilo"
     },
     ...merchantItems
   ];
 }
 
+function notificationUnreadCount() {
+  const read = new Set(getReadNotifications());
+  return notificationItems().filter((item) => !read.has(item.id)).length;
+}
+
+function renderNotificationState() {
+  const badge = document.querySelector("#notificationBadge");
+  const button = document.querySelector("#notificationButton");
+  const unread = notificationUnreadCount();
+  if (badge) {
+    badge.textContent = unread > 9 ? "9+" : String(unread);
+    badge.hidden = unread === 0;
+    badge.setAttribute("aria-label", `${unread} notifiche non lette`);
+  }
+  if (button) button.setAttribute("aria-label", unread ? `Apri notifiche, ${unread} non lette` : "Apri notifiche");
+}
+
 function renderNotificationMenu() {
   const list = document.querySelector("#notificationMenuList");
   if (!list) return;
-  list.innerHTML = notificationItems().map((item) => `
-    <button class="notification-menu-item ${item.tone}" data-notification-open type="button">
-      <span aria-hidden="true"></span>
+  const read = new Set(getReadNotifications());
+  const items = notificationItems();
+  const unread = items.filter((item) => !read.has(item.id)).length;
+  const summary = document.querySelector("#notificationSummary");
+  const markAll = document.querySelector("#markAllNotificationsRead");
+  if (summary) summary.textContent = unread ? `${unread} aggiornamenti da leggere` : "Tutto sotto controllo";
+  if (markAll) markAll.hidden = unread === 0;
+  list.innerHTML = items.map((item) => `
+    <button class="notification-menu-item ${item.tone} ${read.has(item.id) ? "is-read" : "is-unread"}" data-notification-open data-notification-id="${item.id}" type="button">
+      <span class="notification-item-icon" aria-hidden="true"></span>
       <div>
+        <span class="notification-item-meta"><em>${item.time}</em>${read.has(item.id) ? "" : "<i>Nuova</i>"}</span>
         <strong>${item.title}</strong>
         <small>${item.text}</small>
       </div>
@@ -1624,6 +1670,9 @@ function renderUserProfile(panel = "settings") {
   document.querySelector("#profileEventCount").textContent = user ? profileEventRows().length : 0;
   document.querySelector("#profilePointCount").textContent = user ? citizenLevel.points.toLocaleString("it-IT") : 0;
   document.querySelector("#profileLevel").textContent = citizenLevel.level;
+  document.querySelector("#profileProgressValue").textContent = `${citizenLevel.progress}%`;
+  document.querySelector("#profileProgressBar").style.width = `${citizenLevel.progress}%`;
+  document.querySelector("#profileProgressLabel").textContent = user ? `Avanzamento ${citizenLevel.level}` : "Inizia il tuo percorso";
   document.querySelector("#profileSignupButton").hidden = Boolean(user);
   renderProfileActions();
   renderProfilePanel(panel);
@@ -1749,6 +1798,9 @@ function renderAdminDashboard() {
   const adminControl = getAdminControl();
   const pendingModeration = adminControl.moderationQueue.filter((item) => item.status === "pending").length;
   const featuredEvent = calendarEvents.find((item) => item.id === adminControl.featuredEvent) || calendarEvents[0];
+  const pulseSnapshot = cityPulseSnapshot();
+  const lastMinuteState = getLastMinuteState();
+  const activeLastMinute = lastMinuteDeals.filter((deal) => adminControl.lastMinuteStatus[deal.id] !== "paused" && (lastMinuteState.deadlines[deal.id] || 0) > Date.now()).length;
 
   root.innerHTML = `
     <div class="admin-shell">
@@ -1767,6 +1819,8 @@ function renderAdminDashboard() {
         <div><span>Da moderare</span><strong>${pendingModeration}</strong></div>
         <div><span>Salvataggi</span><strong>${requests.length}</strong></div>
         <div><span>Comunicazioni</span><strong>${adminControl.broadcasts.length}</strong></div>
+        <div><span>Zone monitorate</span><strong>${pulseSnapshot.length}</strong></div>
+        <div><span>Ultimo momento</span><strong>${activeLastMinute}</strong></div>
       </section>
       <section class="panel admin-platform-panel">
         <div class="panel-head">
@@ -1811,6 +1865,58 @@ function renderAdminDashboard() {
         </div>
       </section>
       <div class="admin-grid">
+        <section class="panel admin-live-control">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Avezzano ora</p>
+              <h2>Regia zone cittadine</h2>
+            </div>
+            <span class="pill ${adminControl.pulseEnabled ? "success" : "warning"}">${adminControl.pulseEnabled ? "Pubblico" : "Sospeso"}</span>
+          </div>
+          <div class="admin-feature-list">
+            ${cityPulseZones.map((zone) => `
+              <div class="admin-feature-row">
+                <div><strong>${zone.name}</strong><span>${zone.reason}</span></div>
+                <label class="admin-inline-select">
+                  <span>Stato</span>
+                  <select data-admin-pulse-zone="${zone.id}">
+                    <option value="auto" ${adminControl.pulseOverrides[zone.id] === "auto" ? "selected" : ""}>Automatico</option>
+                    <option value="live" ${adminControl.pulseOverrides[zone.id] === "live" ? "selected" : ""}>Vivace</option>
+                    <option value="calm" ${adminControl.pulseOverrides[zone.id] === "calm" ? "selected" : ""}>Tranquilla</option>
+                    <option value="value" ${adminControl.pulseOverrides[zone.id] === "value" ? "selected" : ""}>Conveniente</option>
+                  </select>
+                </label>
+                <button class="ghost compact-button" data-admin-action="apply-pulse-zone" data-zone-id="${zone.id}" type="button">Applica</button>
+              </div>
+            `).join("")}
+          </div>
+        </section>
+        <section class="panel admin-last-minute-control">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Ultimo momento</p>
+              <h2>Disponibilita attive</h2>
+            </div>
+            <span class="pill ${adminControl.lastMinuteEnabled ? "success" : "warning"}">${adminControl.lastMinuteEnabled ? "Pubblico" : "Sospeso"}</span>
+          </div>
+          <div class="admin-feature-list">
+            ${lastMinuteDeals.map((deal) => {
+              const deadline = getLastMinuteState().deadlines[deal.id] || 0;
+              const paused = adminControl.lastMinuteStatus[deal.id] === "paused";
+              return `
+                <div class="admin-feature-row admin-deal-row">
+                  <div><strong>${deal.title}</strong><span>${deal.place} · ${formatLastMinuteCountdown(deadline - Date.now())}</span></div>
+                  <span class="pill ${paused ? "warning" : "success"}">${paused ? "In pausa" : "Attiva"}</span>
+                  <div class="admin-row-actions">
+                    <button class="ghost compact-button" data-admin-action="extend-last-minute" data-deal-id="${deal.id}" type="button">+30 min</button>
+                    <button class="ghost compact-button" data-admin-action="reset-last-minute" data-deal-id="${deal.id}" type="button">Ripristina</button>
+                    <button class="ghost compact-button" data-admin-action="toggle-last-minute" data-deal-id="${deal.id}" type="button">${paused ? "Pubblica" : "Pausa"}</button>
+                  </div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        </section>
         <section class="panel">
           <div class="panel-head">
             <h2>Utenti registrati</h2>
@@ -1978,9 +2084,13 @@ function handleAdminAction(button) {
       maintenance: "Modalità manutenzione",
       registrations: "Nuove registrazioni",
       moderation: "Moderazione preventiva",
-      push: "Notifiche push"
+      push: "Notifiche push",
+      pulseEnabled: "Avezzano ora",
+      lastMinuteEnabled: "Ultimo momento"
     };
     addAdminAudit(control, `${controlLabels[key] || key}: ${control[key] ? "attivo" : "disattivo"}`);
+    renderCityPulse();
+    renderLastMinuteDeals();
     renderAdminDashboard();
     showToast("Controllo piattaforma aggiornato.", "success");
     return;
@@ -1994,6 +2104,43 @@ function handleAdminAction(button) {
     addAdminAudit(control, `${item.title}: ${item.status === "approved" ? "approvato" : "rifiutato"}`);
     renderAdminDashboard();
     showToast("Contenuto moderato.", "success");
+    return;
+  }
+
+  if (button.dataset.adminAction === "apply-pulse-zone") {
+    const zone = cityPulseZones.find((item) => item.id === button.dataset.zoneId);
+    const select = document.querySelector(`[data-admin-pulse-zone="${button.dataset.zoneId}"]`);
+    if (!zone || !select) return;
+    const control = getAdminControl();
+    control.pulseOverrides[zone.id] = select.value;
+    addAdminAudit(control, `${zone.name}: stato ${select.options[select.selectedIndex].text.toLowerCase()}`);
+    renderCityPulse();
+    renderAdminDashboard();
+    showToast("Stato della zona aggiornato.", "success");
+    return;
+  }
+
+  if (["toggle-last-minute", "extend-last-minute", "reset-last-minute"].includes(button.dataset.adminAction)) {
+    const deal = lastMinuteDeals.find((item) => item.id === button.dataset.dealId);
+    if (!deal) return;
+    const control = getAdminControl();
+    const state = getLastMinuteState();
+    if (button.dataset.adminAction === "toggle-last-minute") {
+      const paused = control.lastMinuteStatus[deal.id] === "paused";
+      control.lastMinuteStatus[deal.id] = paused ? "active" : "paused";
+      addAdminAudit(control, `${deal.title}: ${paused ? "pubblicata" : "messa in pausa"}`);
+    } else if (button.dataset.adminAction === "extend-last-minute") {
+      state.deadlines[deal.id] = Math.max(Date.now(), state.deadlines[deal.id] || 0) + 30 * 60000;
+      localStorage.setItem(LAST_MINUTE_STATE_KEY, JSON.stringify(state));
+      addAdminAudit(control, `${deal.title}: prorogata di 30 minuti`);
+    } else {
+      state.deadlines[deal.id] = Date.now() + deal.durationMinutes * 60000;
+      localStorage.setItem(LAST_MINUTE_STATE_KEY, JSON.stringify(state));
+      addAdminAudit(control, `${deal.title}: disponibilita ripristinata`);
+    }
+    renderLastMinuteDeals();
+    renderAdminDashboard();
+    showToast("Disponibilita aggiornata.", "success");
     return;
   }
 
@@ -3794,9 +3941,18 @@ document.querySelector("#topProfileStatus")?.addEventListener("click", () => {
 
 document.querySelector("#closeNotificationMenu")?.addEventListener("click", closeNotificationMenu);
 
+document.querySelector("#markAllNotificationsRead")?.addEventListener("click", () => {
+  saveReadNotifications(notificationItems().map((item) => item.id));
+  renderNotificationMenu();
+  renderNotificationState();
+  showToast("Notifiche segnate come lette.", "success");
+});
+
 document.querySelector("#notificationMenu")?.addEventListener("click", (event) => {
   const item = event.target.closest("[data-notification-open]");
   if (!item) return;
+  saveReadNotifications([...getReadNotifications(), item.dataset.notificationId]);
+  renderNotificationState();
   closeNotificationMenu();
   if (item.classList.contains("coupon")) switchView("coupons");
   else if (item.classList.contains("event")) switchView("events");
