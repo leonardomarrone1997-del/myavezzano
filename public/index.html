@@ -60,7 +60,7 @@
         ]
       }
     </script>
-    <link rel="stylesheet" href="styles.css?v=84" />
+    <link rel="stylesheet" href="styles.css?v=88" />
   </head>
 <body class="view-feed">
     <a class="skip-link" href="#mainContent">Vai al contenuto</a>
@@ -132,14 +132,10 @@
                 <span>Avezzano</span>
               </div>
             </div>
-            <div class="theme-mode-group" aria-label="Tema e prestazioni">
+            <div class="theme-mode-group" aria-label="Tema">
               <button class="theme-toggle" id="themeToggle" type="button" aria-label="Attiva tema notturno" aria-pressed="false">
                 <span aria-hidden="true"></span>
                 <strong id="themeToggleLabel">Notte</strong>
-              </button>
-              <button class="fx-mode-toggle" id="fxModeToggle" type="button" aria-label="Attiva modalità Light senza effetti" aria-pressed="false" title="Modalità Light senza effetti">
-                <span aria-hidden="true"></span>
-                <strong id="fxModeLabel">Light</strong>
               </button>
             </div>
             <button class="ghost guide-button" data-action="open-onboarding" type="button">Guida</button>
@@ -152,7 +148,10 @@
                 <small id="topProfileLevel">Esploratore - 18%</small>
               </span>
             </button>
-            <button class="icon-button notification-button" id="notificationButton" data-action="notifications" type="button" title="Notifiche" aria-label="Notifiche" aria-expanded="false">&#128276;</button>
+            <button class="icon-button notification-button" id="notificationButton" data-action="notifications" type="button" title="Notifiche" aria-label="Apri notifiche" aria-expanded="false">
+              <span class="notification-glyph" aria-hidden="true"></span>
+              <span class="notification-badge" id="notificationBadge" aria-label="0 notifiche non lette" hidden>0</span>
+            </button>
             <button class="primary-action" id="openSignup" type="button">Entra</button>
           </div>
         </header>
@@ -160,6 +159,14 @@
         <section class="view active" id="feedView" aria-label="Home">
           <section class="home-quick-actions" aria-label="Azioni rapide">
             <div class="stories" id="stories"></div>
+          </section>
+          <section class="home-event-focus" id="homeEventFocus" aria-label="Evento del giorno"></section>
+          <section class="weekend-home" id="weekendHome" aria-label="Eventi di questo weekend" hidden>
+            <div class="weekend-home-head">
+              <div><p class="eyebrow">Questo weekend</p><strong id="weekendHomeMeta">Programma in aggiornamento</strong></div>
+              <button class="ghost compact-button" data-action="event-category" data-category="Questo weekend" data-event-filter="weekend" type="button">Vedi tutti</button>
+            </div>
+            <div class="weekend-home-list" id="weekendHomeList"></div>
           </section>
           <section class="summer-home-band" id="summerHomeBand" aria-label="Programma Estate 2026">
             <div class="summer-home-copy">
@@ -424,33 +431,43 @@
                 <div><span>Punti</span><strong id="profilePointCount">0</strong></div>
                 <div><span>Livello cittadino</span><strong id="profileLevel">Esploratore</strong></div>
               </div>
+              <div class="profile-progress" aria-label="Avanzamento livello cittadino">
+                <div><span id="profileProgressLabel">Prossimo livello</span><strong id="profileProgressValue">18%</strong></div>
+                <span class="profile-progress-track"><i id="profileProgressBar"></i></span>
+              </div>
               <button class="primary-action full-button" id="profileSignupButton" type="button">Registrati o accedi</button>
             </section>
 
             <section class="profile-actions-grid">
               <button class="profile-action-card active" data-profile-panel="settings" type="button">
-                <strong>Impostazioni</strong>
-                <span>Account, privacy e notifiche</span>
+                <span class="profile-action-icon icon-settings" aria-hidden="true"></span>
+                <span class="profile-action-copy"><strong>Impostazioni</strong><small>Account, privacy e notifiche</small></span>
+                <span class="profile-action-arrow" aria-hidden="true"></span>
               </button>
               <button class="profile-action-card" data-view-target="merchant" type="button">
-                <strong>Crea il tuo negozio</strong>
-                <span>Piani da 12,99 EUR/mese</span>
+                <span class="profile-action-icon icon-store" aria-hidden="true"></span>
+                <span class="profile-action-copy"><strong>Crea il tuo negozio</strong><small>Piani da 12,99 EUR/mese</small></span>
+                <span class="profile-action-arrow" aria-hidden="true"></span>
               </button>
               <button class="profile-action-card" data-profile-panel="coupons" type="button">
-                <strong>I miei coupon</strong>
-                <span>Sconti salvati e QR</span>
+                <span class="profile-action-icon icon-ticket" aria-hidden="true"></span>
+                <span class="profile-action-copy"><strong>I miei coupon</strong><small>Sconti salvati e QR</small></span>
+                <span class="profile-action-arrow" aria-hidden="true"></span>
               </button>
               <button class="profile-action-card" data-profile-panel="events" type="button">
-                <strong>I miei eventi</strong>
-                <span>Prenotazioni e reminder</span>
+                <span class="profile-action-icon icon-calendar" aria-hidden="true"></span>
+                <span class="profile-action-copy"><strong>I miei eventi</strong><small>Prenotazioni e reminder</small></span>
+                <span class="profile-action-arrow" aria-hidden="true"></span>
               </button>
               <button class="profile-action-card" data-profile-panel="preferences" type="button">
-                <strong>Preferenze</strong>
-                <span>Categorie e interessi</span>
+                <span class="profile-action-icon icon-heart" aria-hidden="true"></span>
+                <span class="profile-action-copy"><strong>Preferenze</strong><small>Categorie e interessi</small></span>
+                <span class="profile-action-arrow" aria-hidden="true"></span>
               </button>
               <button class="profile-action-card" data-view-target="map" type="button">
-                <strong>Luoghi salvati</strong>
-                <span>Attività e percorsi</span>
+                <span class="profile-action-icon icon-map" aria-hidden="true"></span>
+                <span class="profile-action-copy"><strong>Luoghi salvati</strong><small>Attività e percorsi</small></span>
+                <span class="profile-action-arrow" aria-hidden="true"></span>
               </button>
             </section>
 
@@ -768,9 +785,13 @@
       <div class="notification-menu-head">
         <div>
           <p class="eyebrow">Notifiche</p>
-          <h2>Centro rapido</h2>
+          <h2>Centro aggiornamenti</h2>
+          <span id="notificationSummary">Tutto sotto controllo</span>
         </div>
-        <button class="close-button" id="closeNotificationMenu" type="button" aria-label="Chiudi notifiche">x</button>
+        <div class="notification-head-actions">
+          <button class="notification-read-all" id="markAllNotificationsRead" type="button">Segna lette</button>
+          <button class="close-button" id="closeNotificationMenu" type="button" aria-label="Chiudi notifiche">x</button>
+        </div>
       </div>
       <div class="notification-menu-list" id="notificationMenuList"></div>
     </section>
@@ -837,14 +858,15 @@
       <section class="demo-panel" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle">
         <button class="close-button" id="closeOnboarding" type="button" aria-label="Chiudi">x</button>
         <div class="demo-visual">
-          <img src="assets/app-icon.svg" alt="MyAvezzano" />
+          <span class="demo-context-icon guide-icon-home" id="onboardingContextIcon" aria-hidden="true"></span>
           <div>
-            <p class="eyebrow" id="onboardingEyebrow">Guida rapida</p>
+            <div class="demo-kicker"><p class="eyebrow" id="onboardingEyebrow">Guida rapida</p><span id="onboardingStepLabel">1 di 7</span></div>
             <h2 id="onboardingTitle">Benvenuto su MyAvezzano</h2>
           </div>
         </div>
         <div class="demo-progress" aria-hidden="true"><span id="onboardingProgress"></span></div>
         <p class="demo-copy" id="onboardingCopy"></p>
+        <p class="demo-tip" id="onboardingTip"></p>
         <ul class="demo-points" id="onboardingPoints"></ul>
         <div class="demo-step-dots" id="onboardingDots" aria-label="Avanzamento guida"></div>
         <div class="demo-footer">
@@ -859,7 +881,7 @@
 
     <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
-    <script defer src="events-data.js?v=84"></script>
-    <script defer src="app.js?v=84"></script>
+    <script defer src="events-data.js?v=88"></script>
+    <script defer src="app.js?v=88"></script>
   </body>
 </html>
