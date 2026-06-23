@@ -8389,7 +8389,7 @@ body.theme-dark .notification-badge {
   }
 
   #profileView .profile-metrics {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   #profileView .profile-metrics > div {
@@ -8405,8 +8405,16 @@ body.theme-dark .notification-badge {
   }
 
   #profileView #profileLevel {
-    font-size: 11px;
-    overflow-wrap: anywhere;
+    font-size: 13px;
+  }
+
+  #profileView .profile-metrics > div:nth-child(4) {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid var(--line);
+    border-right: 0;
   }
 
   #profileView .profile-actions-grid {
