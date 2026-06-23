@@ -431,6 +431,8 @@ const cityHighlights = [
 
 const eventCategories = [
   ["Tutti", "Agenda completa", "all"],
+  ["Questo weekend", "Da venerdì a domenica", "weekend"],
+  ["Vicino a te", "Marsica e paesi vicini", "nearby"],
   ["Avezzano", "Eventi in città", "avezzano"],
   ["Alba Fucens", "Area immediata", "alba"],
   ["Teatro", "Spettacoli e classici", "teatro"],
@@ -445,6 +447,7 @@ let activeEventCategory = "all";
 const calendarEvents = window.MYAVEZZANO_EVENTS || [];
 const archivedEvents = window.MYAVEZZANO_ARCHIVED_EVENTS || [];
 const summerEvents = calendarEvents.filter((item) => item.date >= "2026-06-21" && item.date <= "2026-09-22");
+const coverageTowns = ["Avezzano", "Alba Fucens", "Celano", "Tagliacozzo", "Pescina", "Luco dei Marsi", "Trasacco", "Scurcola Marsicana", "Magliano dei Marsi"];
 const summerCategories = [
   ["Tutti", "Intero cartellone", "all"],
   ["Avezzano", "In città", "avezzano"],
@@ -583,39 +586,53 @@ const citySignatures = {
 
 const onboardingSteps = [
   {
-    view: "feed",
-    eyebrow: "Primo ingresso",
-    title: "La home ti mostra cosa conta oggi",
-    copy: "MyAvezzano non è pensata come un social infinito: apre subito su eventi, sconti, nuove aperture e cose utili in città.",
-    points: ["Scorri le card principali", "Salva quello che ti interessa", "Apri subito mappa, coupon o eventi"]
+    view: "feed", icon: "home", eyebrow: "Primo ingresso",
+    title: "La città, organizzata per la tua giornata",
+    copy: "La Home apre sulle informazioni che servono ora: l'evento del giorno, il weekend, offerte e novità locali.",
+    tip: "Parti da qui quando non sai cosa fare o dove andare.",
+    points: ["Guarda subito cosa succede oggi", "Scopri il programma del weekend", "Apri mappa, coupon o calendario con un tocco"]
   },
   {
-    view: "events",
-    eyebrow: "Serate",
-    title: "Trova cosa fare questa sera",
-    copy: "La sezione Eventi raccoglie divertimento, feste, serate, disco e calendario, con prenotazione e reminder.",
-    points: ["Filtra per tipo di evento", "Prenota una serata", "Attiva un reminder automatico"]
+    view: "events", icon: "events", eyebrow: "Oggi e weekend",
+    title: "Cosa si fa questa sera?",
+    copy: "Eventi, spettacoli, sport e musica sono ordinati per data. Il filtro Weekend raccoglie automaticamente gli appuntamenti da venerdì a domenica.",
+    tip: "Usa Salva o Reminder per non perdere l'appuntamento.",
+    points: ["Filtra per giorno, zona o categoria", "Controlla luogo, orario e costo", "Salva l'evento nel tuo profilo"]
   },
   {
-    view: "map",
-    eyebrow: "Mappa",
-    title: "Scopri locali e negozi vicino a te",
-    copy: "La mappa usa segnaposto a goccia con logo/foto del locale e può aprire Google Maps per la navigazione reale.",
-    points: ["Importa attività reali da OpenStreetMap", "Usa la tua posizione", "Apri la destinazione in Google Maps"]
+    view: "map", icon: "map", eyebrow: "Mappa e territorio",
+    title: "Avezzano e la Marsica diventano più vicine",
+    copy: "La mappa raccoglie attività e luoghi, mentre Eventi vicino a te è già predisposto per Celano, Tagliacozzo, Pescina e gli altri comuni della Marsica.",
+    tip: "La navigazione reale si apre in Google Maps.",
+    points: ["Usa la tua posizione", "Seleziona un segnaposto con il logo del locale", "Apri il percorso verso la destinazione"]
   },
   {
-    view: "coupons",
-    eyebrow: "Vantaggi",
+    view: "coupons", icon: "coupon", eyebrow: "Vantaggi",
     title: "Usa coupon QR e raccogli punti",
     copy: "I coupon digitali si salvano nel profilo, possono essere scansionati e alimentano il sistema fedeltà.",
+    tip: "Mostra il QR alla cassa prima della scadenza.",
     points: ["Apri i coupon disponibili", "Scansiona un QR", "Riscatta premi con i punti"]
   },
   {
-    view: "profile",
-    eyebrow: "Profilo",
+    view: "summer", icon: "summer", eyebrow: "Estate 2026",
+    title: "Il cartellone estivo senza doppioni",
+    copy: "Il programma stagionale riunisce gli eventi del calendario in una vista dedicata, ordinata e filtrabile.",
+    tip: "Apri il prossimo evento oppure salva l'intero programma.",
+    points: ["Scopri il prossimo appuntamento", "Filtra Avezzano e Alba Fucens", "Consulta prezzi e sedi"]
+  },
+  {
+    view: "profile", icon: "profile", eyebrow: "Profilo",
     title: "Tutto resta nel tuo pannello utente",
     copy: "Dopo la registrazione trovi coupon, eventi, preferenze, foto profilo e il percorso per creare il tuo negozio a pagamento.",
+    tip: "I salvataggi restano disponibili anche al prossimo accesso.",
     points: ["Registrati con Google, Apple, telefono o email", "Gestisci preferenze e salvataggi", "Crea una scheda negozio da 12,99 EUR/mese"]
+  },
+  {
+    view: "feed", icon: "notifications", eyebrow: "Sempre aggiornato",
+    title: "Notifiche utili, non rumore",
+    copy: "Il centro notifiche raccoglie promemoria, coupon in scadenza e comunicazioni importanti della città.",
+    tip: "Puoi cambiare le preferenze in qualsiasi momento dal profilo.",
+    points: ["Controlla il badge nella barra superiore", "Ricevi reminder degli eventi salvati", "Installa la PWA per averla sempre con te"]
   }
 ];
 
@@ -700,6 +717,9 @@ function renderOnboardingStep() {
   document.querySelector("#onboardingEyebrow").textContent = step.eyebrow;
   document.querySelector("#onboardingTitle").textContent = step.title;
   document.querySelector("#onboardingCopy").textContent = step.copy;
+  document.querySelector("#onboardingTip").textContent = step.tip;
+  document.querySelector("#onboardingStepLabel").textContent = `${onboardingIndex + 1} di ${onboardingSteps.length}`;
+  document.querySelector("#onboardingContextIcon").className = `demo-context-icon guide-icon-${step.icon}`;
   document.querySelector("#onboardingPoints").innerHTML = step.points.map((point) => `<li>${point}</li>`).join("");
   document.querySelector("#onboardingProgress").style.width = `${((onboardingIndex + 1) / onboardingSteps.length) * 100}%`;
   document.querySelector("#onboardingDots").innerHTML = onboardingSteps.map((_, index) => `
@@ -1073,6 +1093,35 @@ function currentDateKey() {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 }
 
+function dateKey(date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function weekendWindow(referenceKey = currentDateKey()) {
+  const reference = eventDate(referenceKey);
+  const weekday = reference.getDay();
+  const offsetToFriday = weekday === 6 ? -1 : weekday === 0 ? -2 : 5 - weekday;
+  const start = new Date(reference);
+  start.setDate(reference.getDate() + offsetToFriday);
+  const end = new Date(start);
+  end.setDate(start.getDate() + 2);
+  return { start: dateKey(start), end: dateKey(end) };
+}
+
+function eventOverlapsRange(item, start, end) {
+  return item.date <= end && (item.endDate || item.date) >= start;
+}
+
+function currentWeekendEvents() {
+  const { start, end } = weekendWindow();
+  return calendarEvents.filter((item) => eventOverlapsRange(item, start, end));
+}
+
+function nearbyEvents() {
+  const today = currentDateKey();
+  return calendarEvents.filter((item) => item.area !== "Avezzano" && coverageTowns.includes(item.area) && (item.endDate || item.date) >= today);
+}
+
 function groupEventsByMonth(items) {
   return items.reduce((months, item) => {
     const date = eventDate(item.date);
@@ -1104,6 +1153,12 @@ function eventMatchesFilter(item, filter) {
   if (filter === "all") return !item.past;
   if (filter === "archivio") return Boolean(item.past);
   if (item.past) return false;
+  if (filter === "weekend") {
+    const { start, end } = weekendWindow();
+    return eventOverlapsRange(item, start, end);
+  }
+  if (filter === "nearby") return item.area !== "Avezzano" && coverageTowns.includes(item.area);
+  if (filter === "summer") return summerEvents.some((event) => event.id === item.id);
   if (filter === "avezzano") return item.area === "Avezzano";
   if (filter === "alba") return item.area === "Alba Fucens";
   return item.category.toLowerCase() === filter;
@@ -1160,10 +1215,57 @@ function eventCardMarkup(item, { compact = false, idPrefix = "event" } = {}) {
 }
 
 function renderEventCategories() {
-  document.querySelector("#eventCategories").innerHTML = eventCategories.map(([title, text, filter]) => `
+  const adminControl = getAdminControl();
+  document.querySelector("#eventCategories").innerHTML = eventCategories
+    .filter(([, , filter]) => filter !== "nearby" || (adminControl.nearbyEventsEnabled && nearbyEvents().length))
+    .map(([title, text, filter]) => `
     <button class="event-chip ${filter === activeEventCategory ? "active" : ""}" data-action="event-category" data-category="${title}" data-event-filter="${filter}" aria-pressed="${filter === activeEventCategory}" type="button">
       <strong>${title}</strong>
       <span>${text}</span>
+    </button>
+  `).join("");
+}
+
+function renderHomeEventFocus() {
+  const panel = document.querySelector("#homeEventFocus");
+  if (!panel) return;
+  const today = currentDateKey();
+  const todayEvents = calendarEvents.filter((item) => item.date <= today && (item.endDate || item.date) >= today);
+  const item = todayEvents[0] || calendarEvents.find((event) => (event.endDate || event.date) >= today);
+  if (!item) {
+    panel.hidden = true;
+    return;
+  }
+  const parts = eventDayParts(item);
+  panel.hidden = false;
+  panel.innerHTML = `
+    <div class="home-event-heading">
+      <div><p class="eyebrow">Cosa si fa questa sera?</p><strong>${todayEvents.length ? "In programma oggi" : "Il prossimo appuntamento"}</strong></div>
+      <button class="ghost compact-button" data-view-target="events" type="button">Calendario</button>
+    </div>
+    <div class="home-event-main">
+      <time datetime="${item.date}"><span>${parts.weekday}</span><strong>${parts.day}</strong><small>${parts.month}</small></time>
+      <div><span class="agenda-tag">${item.category}</span><h2>${item.title}</h2><p>${item.time} · ${item.place}</p></div>
+      <button class="save-action" data-action="save-event" data-event-id="${item.id}" data-title="${item.title}" type="button">Salva</button>
+    </div>
+  `;
+}
+
+function renderWeekendHome() {
+  const panel = document.querySelector("#weekendHome");
+  const list = document.querySelector("#weekendHomeList");
+  const meta = document.querySelector("#weekendHomeMeta");
+  if (!panel || !list || !meta) return;
+  const items = currentWeekendEvents();
+  const { start, end } = weekendWindow();
+  panel.hidden = !items.length;
+  if (!items.length) return;
+  meta.textContent = `${items.length} ${items.length === 1 ? "appuntamento" : "appuntamenti"} · ${new Intl.DateTimeFormat("it-IT", { day: "numeric", month: "short" }).format(eventDate(start))}-${new Intl.DateTimeFormat("it-IT", { day: "numeric", month: "short" }).format(eventDate(end))}`;
+  list.innerHTML = items.slice(0, 4).map((item) => `
+    <button class="weekend-event-row" data-action="event-category" data-category="Questo weekend" data-event-filter="weekend" type="button">
+      <span>${eventDayParts(item).weekday} ${eventDayParts(item).day}</span>
+      <strong>${item.title}</strong>
+      <small>${item.time}</small>
     </button>
   `).join("");
 }
@@ -1302,6 +1404,8 @@ function render() {
   `).join("");
 
   renderSummerHomeBand();
+  renderHomeEventFocus();
+  renderWeekendHome();
   renderCityPulse();
   renderLastMinuteDeals();
   renderNotificationState();
@@ -1731,6 +1835,7 @@ function defaultAdminControl() {
     push: true,
     pulseEnabled: true,
     lastMinuteEnabled: true,
+    nearbyEventsEnabled: true,
     featuredEvent: "street-green-fest",
     lastSync: null,
     broadcasts: [],
@@ -1831,6 +1936,7 @@ function renderAdminDashboard() {
         <div><span>Comunicazioni</span><strong>${adminControl.broadcasts.length}</strong></div>
         <div><span>Zone monitorate</span><strong>${pulseSnapshot.length}</strong></div>
         <div><span>Ultimo momento</span><strong>${activeLastMinute}</strong></div>
+        <div><span>Comuni predisposti</span><strong>${coverageTowns.length}</strong></div>
       </section>
       <section class="panel admin-platform-panel">
         <div class="panel-head">
@@ -1847,6 +1953,7 @@ function renderAdminDashboard() {
           ${adminControlButton("push", "Centro notifiche", "Abilita aggiornamenti, badge e comunicazioni agli utenti", adminControl.push)}
           ${adminControlButton("pulseEnabled", "Avezzano ora", "Mostra lo stato operativo delle zone cittadine", adminControl.pulseEnabled)}
           ${adminControlButton("lastMinuteEnabled", "Ultimo momento", "Pubblica le disponibilita a tempo limitato", adminControl.lastMinuteEnabled)}
+          ${adminControlButton("nearbyEventsEnabled", "Eventi vicino a te", "Estende il calendario ai comuni della Marsica", adminControl.nearbyEventsEnabled)}
         </div>
       </section>
       <section class="panel intelligence-panel">
@@ -2010,15 +2117,16 @@ function renderAdminDashboard() {
           </label>
           <button class="primary-action" data-admin-action="send-broadcast" type="button" ${adminControl.push ? "" : "disabled"}>Invia comunicazione</button>
         </section>
-        <section class="panel">
-          <h2>Analytics città</h2>
-          <div class="bar-chart">
-            <span style="height:48%"></span>
-            <span style="height:72%"></span>
-            <span style="height:58%"></span>
-            <span style="height:90%"></span>
-            <span style="height:66%"></span>
-            <span style="height:84%"></span>
+        <section class="panel admin-coverage-panel">
+          <div class="panel-head">
+            <div><p class="eyebrow">Copertura territoriale</p><h2>Avezzano e Marsica</h2></div>
+            <span class="pill ${adminControl.nearbyEventsEnabled ? "success" : "warning"}">${adminControl.nearbyEventsEnabled ? "Estensione attiva" : "In pausa"}</span>
+          </div>
+          <div class="coverage-town-grid">
+            ${coverageTowns.map((town) => {
+              const count = calendarEvents.filter((item) => item.area === town).length;
+              return `<div class="coverage-town ${count ? "has-events" : ""}"><strong>${town}</strong><span>${count ? `${count} eventi` : "In attesa dati"}</span></div>`;
+            }).join("")}
           </div>
         </section>
         <section class="panel">
@@ -2096,12 +2204,15 @@ function handleAdminAction(button) {
       moderation: "Moderazione preventiva",
       push: "Notifiche push",
       pulseEnabled: "Avezzano ora",
-      lastMinuteEnabled: "Ultimo momento"
+      lastMinuteEnabled: "Ultimo momento",
+      nearbyEventsEnabled: "Eventi vicino a te"
     };
     addAdminAudit(control, `${controlLabels[key] || key}: ${control[key] ? "attivo" : "disattivo"}`);
     renderCityPulse();
     renderLastMinuteDeals();
     renderNotificationState();
+    eventsViewRendered = false;
+    renderWeekendHome();
     if (!document.querySelector("#notificationMenu")?.hasAttribute("hidden")) renderNotificationMenu();
     renderAdminDashboard();
     showToast("Controllo piattaforma aggiornato.", "success");
@@ -2748,7 +2859,7 @@ function switchView(view, updateHash = true) {
 }
 
 function animateActiveView(scope = document.querySelector(".view.active")) {
-  if (!scope || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if (!scope || document.body.classList.contains("fx-light") || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   const animatedItems = scope.querySelectorAll(`
     .shortcut-card,
     .post,
@@ -2799,7 +2910,7 @@ function animateGlobalSurfaces() {
 function preferredTheme() {
   const stored = localStorage.getItem(THEME_STORAGE_KEY);
   if (stored === "dark" || stored === "light") return stored;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  return "light";
 }
 
 function applyTheme(theme = preferredTheme()) {
@@ -2820,7 +2931,7 @@ function toggleTheme() {
   const nextTheme = document.body.classList.contains("theme-dark") ? "light" : "dark";
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
-  if (!prefersReducedMotion && !document.body.classList.contains("fx-light")) {
+  if (!prefersReducedMotion) {
     clearTimeout(themeTransitionTimer);
     document.body.classList.remove("theme-transition", "theme-to-dark", "theme-to-light", "theme-transitioning", "sunset-transition", "sunrise-transition", "night-entering", "day-entering");
     document.body.offsetHeight;
@@ -2833,7 +2944,7 @@ function toggleTheme() {
     );
     themeTransitionTimer = window.setTimeout(() => {
       document.body.classList.remove("theme-transition", "theme-to-dark", "theme-to-light", "theme-transitioning", "sunset-transition", "sunrise-transition", "night-entering", "day-entering");
-    }, 1450);
+    }, nextTheme === "dark" ? 3000 : 1800);
   }
   applyTheme(nextTheme);
   updateAtmosphereForTheme();
@@ -2841,7 +2952,7 @@ function toggleTheme() {
 }
 
 function preferredFxMode() {
-  return localStorage.getItem(FX_MODE_STORAGE_KEY) === "light" ? "light" : "full";
+  return "light";
 }
 
 function applyFxMode(mode = preferredFxMode(), syncEffects = true) {
@@ -3227,6 +3338,7 @@ function handleAction(button) {
       switchView("summer");
       return;
     }
+    switchView("events");
     renderEventAgenda(button.dataset.eventFilter || "all");
     showToast(`Filtro eventi attivo: ${button.dataset.category}.`);
     return;
@@ -4471,12 +4583,7 @@ function initWebglAura() {
 
 async function bootApp() {
   applyTheme();
-  applyFxMode(preferredFxMode(), false);
-  initAtmosphereFX();
-  initHeroMicroParallax();
-  initScrollAtmosphere();
-  initSearchPlaceholderCycle();
-  initWebglAura();
+  applyFxMode("light", false);
   await seedAdminUser();
   render();
   renderLegalPanel();
@@ -4512,6 +4619,5 @@ async function bootApp() {
 }
 
 document.querySelector("#themeToggle")?.addEventListener("click", toggleTheme);
-document.querySelector("#fxModeToggle")?.addEventListener("click", toggleFxMode);
 
 bootApp();
