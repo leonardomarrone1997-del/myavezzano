@@ -857,6 +857,8 @@ function renderSmartStrip() {
 }
 
 function cityPulseSnapshot() {
+  const adminControl = getAdminControl();
+  if (!adminControl.pulseEnabled) return [];
   const hour = new Date().getHours();
   return cityPulseZones.map((zone) => {
     let adjustment = 0;
@@ -864,7 +866,15 @@ function cityPulseSnapshot() {
     if (zone.id === "torlonia") adjustment = hour >= 9 && hour <= 20 ? 12 : -4;
     if (zone.id === "castello") adjustment = hour >= 18 && hour <= 22 ? 8 : -2;
     if (zone.id === "corradini") adjustment = hour >= 9 && hour <= 20 ? 10 : 0;
-    return { ...zone, score: Math.max(18, Math.min(94, zone.base + adjustment)) };
+    const override = adminControl.pulseOverrides[zone.id] || "auto";
+    const forced = {
+      live: { kind: "live", status: "Vivace", score: 88 },
+      calm: { kind: "calm", status: "Tranquilla", score: 34 },
+      value: { kind: "value", status: "Conveniente", score: 66 }
+    }[override];
+    return forced
+      ? { ...zone, ...forced, adminOverride: true }
+      : { ...zone, score: Math.max(18, Math.min(94, zone.base + adjustment)) };
   });
 }
 
@@ -917,6 +927,8 @@ function renderCityPulse() {
   const home = document.querySelector("#cityPulseHome");
   const map = document.querySelector("#cityPulseMap");
   const updated = document.querySelector("#cityPulseTime");
+  document.querySelector(".city-pulse-panel")?.toggleAttribute("hidden", !snapshot.length);
+  document.querySelector(".map-pulse-panel")?.toggleAttribute("hidden", !snapshot.length);
   if (home) home.innerHTML = [strongestLive, bestValue].filter(Boolean).map((zone) => pulseZoneMarkup(zone, true)).join("");
   if (map) map.innerHTML = snapshot.map((zone) => pulseZoneMarkup(zone)).join("");
   if (updated) updated.textContent = `Aggiornato ${new Intl.DateTimeFormat("it-IT", { hour: "2-digit", minute: "2-digit" }).format(new Date())}`;
@@ -981,10 +993,16 @@ function updateLastMinuteCountdowns() {
 
 function renderLastMinuteDeals() {
   const state = getLastMinuteState();
+  const adminControl = getAdminControl();
+  const visibleDeals = adminControl.lastMinuteEnabled
+    ? lastMinuteDeals.filter((deal) => adminControl.lastMinuteStatus[deal.id] !== "paused")
+    : [];
   const home = document.querySelector("#lastMinuteHome");
   const grid = document.querySelector("#lastMinuteGrid");
-  if (home) home.innerHTML = lastMinuteDeals.slice(0, 2).map((deal) => lastMinuteCardMarkup(deal, state.deadlines[deal.id], true)).join("");
-  if (grid) grid.innerHTML = lastMinuteDeals.map((deal) => lastMinuteCardMarkup(deal, state.deadlines[deal.id])).join("");
+  document.querySelector(".last-minute-panel")?.toggleAttribute("hidden", !visibleDeals.length);
+  document.querySelector(".last-minute-section")?.toggleAttribute("hidden", !visibleDeals.length);
+  if (home) home.innerHTML = visibleDeals.slice(0, 2).map((deal) => lastMinuteCardMarkup(deal, state.deadlines[deal.id], true)).join("");
+  if (grid) grid.innerHTML = visibleDeals.map((deal) => lastMinuteCardMarkup(deal, state.deadlines[deal.id])).join("");
   updateLastMinuteCountdowns();
   if (!lastMinuteCountdownTimer) lastMinuteCountdownTimer = window.setInterval(updateLastMinuteCountdowns, 60000);
 }
@@ -1652,10 +1670,14 @@ function defaultAdminControl() {
     registrations: true,
     moderation: true,
     push: true,
+    pulseEnabled: true,
+    lastMinuteEnabled: true,
     featuredEvent: "street-green-fest",
     lastSync: null,
     broadcasts: [],
     audit: [],
+    pulseOverrides: Object.fromEntries(cityPulseZones.map((zone) => [zone.id, "auto"])),
+    lastMinuteStatus: Object.fromEntries(lastMinuteDeals.map((deal) => [deal.id, "active"])),
     moderationQueue: [
       { id: "venue-moon-club", type: "Attivita", title: "Moon Club", status: "pending" },
       { id: "comment-report", type: "Segnalazione", title: "Commento segnalato", status: "pending" },
@@ -1672,7 +1694,9 @@ function getAdminControl() {
     ...stored,
     broadcasts: Array.isArray(stored.broadcasts) ? stored.broadcasts : defaults.broadcasts,
     audit: Array.isArray(stored.audit) ? stored.audit : defaults.audit,
-    moderationQueue: Array.isArray(stored.moderationQueue) ? stored.moderationQueue : defaults.moderationQueue
+    moderationQueue: Array.isArray(stored.moderationQueue) ? stored.moderationQueue : defaults.moderationQueue,
+    pulseOverrides: { ...defaults.pulseOverrides, ...(stored.pulseOverrides || {}) },
+    lastMinuteStatus: { ...defaults.lastMinuteStatus, ...(stored.lastMinuteStatus || {}) }
   };
 }
 
@@ -1725,6 +1749,9 @@ function renderAdminDashboard() {
   const adminControl = getAdminControl();
   const pendingModeration = adminControl.moderationQueue.filter((item) => item.status === "pending").length;
   const featuredEvent = calendarEvents.find((item) => item.id === adminControl.featuredEvent) || calendarEvents[0];
+  const pulseSnapshot = cityPulseSnapshot();
+  const lastMinuteState = getLastMinuteState();
+  const activeLastMinute = lastMinuteDeals.filter((deal) => adminControl.lastMinuteStatus[deal.id] !== "paused" && (lastMinuteState.deadlines[deal.id] || 0) > Date.now()).length;
 
   root.innerHTML = `
     <div class="admin-shell">
@@ -1743,6 +1770,8 @@ function renderAdminDashboard() {
         <div><span>Da moderare</span><strong>${pendingModeration}</strong></div>
         <div><span>Salvataggi</span><strong>${requests.length}</strong></div>
         <div><span>Comunicazioni</span><strong>${adminControl.broadcasts.length}</strong></div>
+        <div><span>Zone monitorate</span><strong>${pulseSnapshot.length}</strong></div>
+        <div><span>Ultimo momento</span><strong>${activeLastMinute}</strong></div>
       </section>
       <section class="panel admin-platform-panel">
         <div class="panel-head">
@@ -1757,6 +1786,8 @@ function renderAdminDashboard() {
           ${adminControlButton("registrations", "Nuove registrazioni", "Consenti la creazione di nuovi account", adminControl.registrations)}
           ${adminControlButton("moderation", "Moderazione preventiva", "Controlla i contenuti prima della pubblicazione", adminControl.moderation)}
           ${adminControlButton("push", "Notifiche push", "Abilita le comunicazioni agli utenti", adminControl.push)}
+          ${adminControlButton("pulseEnabled", "Avezzano ora", "Mostra lo stato operativo delle zone cittadine", adminControl.pulseEnabled)}
+          ${adminControlButton("lastMinuteEnabled", "Ultimo momento", "Pubblica le disponibilita a tempo limitato", adminControl.lastMinuteEnabled)}
         </div>
       </section>
       <section class="panel intelligence-panel">
@@ -1785,6 +1816,58 @@ function renderAdminDashboard() {
         </div>
       </section>
       <div class="admin-grid">
+        <section class="panel admin-live-control">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Avezzano ora</p>
+              <h2>Regia zone cittadine</h2>
+            </div>
+            <span class="pill ${adminControl.pulseEnabled ? "success" : "warning"}">${adminControl.pulseEnabled ? "Pubblico" : "Sospeso"}</span>
+          </div>
+          <div class="admin-feature-list">
+            ${cityPulseZones.map((zone) => `
+              <div class="admin-feature-row">
+                <div><strong>${zone.name}</strong><span>${zone.reason}</span></div>
+                <label class="admin-inline-select">
+                  <span>Stato</span>
+                  <select data-admin-pulse-zone="${zone.id}">
+                    <option value="auto" ${adminControl.pulseOverrides[zone.id] === "auto" ? "selected" : ""}>Automatico</option>
+                    <option value="live" ${adminControl.pulseOverrides[zone.id] === "live" ? "selected" : ""}>Vivace</option>
+                    <option value="calm" ${adminControl.pulseOverrides[zone.id] === "calm" ? "selected" : ""}>Tranquilla</option>
+                    <option value="value" ${adminControl.pulseOverrides[zone.id] === "value" ? "selected" : ""}>Conveniente</option>
+                  </select>
+                </label>
+                <button class="ghost compact-button" data-admin-action="apply-pulse-zone" data-zone-id="${zone.id}" type="button">Applica</button>
+              </div>
+            `).join("")}
+          </div>
+        </section>
+        <section class="panel admin-last-minute-control">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Ultimo momento</p>
+              <h2>Disponibilita attive</h2>
+            </div>
+            <span class="pill ${adminControl.lastMinuteEnabled ? "success" : "warning"}">${adminControl.lastMinuteEnabled ? "Pubblico" : "Sospeso"}</span>
+          </div>
+          <div class="admin-feature-list">
+            ${lastMinuteDeals.map((deal) => {
+              const deadline = getLastMinuteState().deadlines[deal.id] || 0;
+              const paused = adminControl.lastMinuteStatus[deal.id] === "paused";
+              return `
+                <div class="admin-feature-row admin-deal-row">
+                  <div><strong>${deal.title}</strong><span>${deal.place} · ${formatLastMinuteCountdown(deadline - Date.now())}</span></div>
+                  <span class="pill ${paused ? "warning" : "success"}">${paused ? "In pausa" : "Attiva"}</span>
+                  <div class="admin-row-actions">
+                    <button class="ghost compact-button" data-admin-action="extend-last-minute" data-deal-id="${deal.id}" type="button">+30 min</button>
+                    <button class="ghost compact-button" data-admin-action="reset-last-minute" data-deal-id="${deal.id}" type="button">Ripristina</button>
+                    <button class="ghost compact-button" data-admin-action="toggle-last-minute" data-deal-id="${deal.id}" type="button">${paused ? "Pubblica" : "Pausa"}</button>
+                  </div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        </section>
         <section class="panel">
           <div class="panel-head">
             <h2>Utenti registrati</h2>
@@ -1952,9 +2035,13 @@ function handleAdminAction(button) {
       maintenance: "Modalità manutenzione",
       registrations: "Nuove registrazioni",
       moderation: "Moderazione preventiva",
-      push: "Notifiche push"
+      push: "Notifiche push",
+      pulseEnabled: "Avezzano ora",
+      lastMinuteEnabled: "Ultimo momento"
     };
     addAdminAudit(control, `${controlLabels[key] || key}: ${control[key] ? "attivo" : "disattivo"}`);
+    renderCityPulse();
+    renderLastMinuteDeals();
     renderAdminDashboard();
     showToast("Controllo piattaforma aggiornato.", "success");
     return;
@@ -1968,6 +2055,43 @@ function handleAdminAction(button) {
     addAdminAudit(control, `${item.title}: ${item.status === "approved" ? "approvato" : "rifiutato"}`);
     renderAdminDashboard();
     showToast("Contenuto moderato.", "success");
+    return;
+  }
+
+  if (button.dataset.adminAction === "apply-pulse-zone") {
+    const zone = cityPulseZones.find((item) => item.id === button.dataset.zoneId);
+    const select = document.querySelector(`[data-admin-pulse-zone="${button.dataset.zoneId}"]`);
+    if (!zone || !select) return;
+    const control = getAdminControl();
+    control.pulseOverrides[zone.id] = select.value;
+    addAdminAudit(control, `${zone.name}: stato ${select.options[select.selectedIndex].text.toLowerCase()}`);
+    renderCityPulse();
+    renderAdminDashboard();
+    showToast("Stato della zona aggiornato.", "success");
+    return;
+  }
+
+  if (["toggle-last-minute", "extend-last-minute", "reset-last-minute"].includes(button.dataset.adminAction)) {
+    const deal = lastMinuteDeals.find((item) => item.id === button.dataset.dealId);
+    if (!deal) return;
+    const control = getAdminControl();
+    const state = getLastMinuteState();
+    if (button.dataset.adminAction === "toggle-last-minute") {
+      const paused = control.lastMinuteStatus[deal.id] === "paused";
+      control.lastMinuteStatus[deal.id] = paused ? "active" : "paused";
+      addAdminAudit(control, `${deal.title}: ${paused ? "pubblicata" : "messa in pausa"}`);
+    } else if (button.dataset.adminAction === "extend-last-minute") {
+      state.deadlines[deal.id] = Math.max(Date.now(), state.deadlines[deal.id] || 0) + 30 * 60000;
+      localStorage.setItem(LAST_MINUTE_STATE_KEY, JSON.stringify(state));
+      addAdminAudit(control, `${deal.title}: prorogata di 30 minuti`);
+    } else {
+      state.deadlines[deal.id] = Date.now() + deal.durationMinutes * 60000;
+      localStorage.setItem(LAST_MINUTE_STATE_KEY, JSON.stringify(state));
+      addAdminAudit(control, `${deal.title}: disponibilita ripristinata`);
+    }
+    renderLastMinuteDeals();
+    renderAdminDashboard();
+    showToast("Disponibilita aggiornata.", "success");
     return;
   }
 

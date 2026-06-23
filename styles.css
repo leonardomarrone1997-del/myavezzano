@@ -7491,11 +7491,18 @@ body.theme-dark .agenda-attendance strong {
 
 /* GOD console */
 .admin-metrics {
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .admin-metrics div {
   border: 1px solid var(--line);
+}
+
+.city-pulse-panel[hidden],
+.map-pulse-panel[hidden],
+.last-minute-panel[hidden],
+.last-minute-section[hidden] {
+  display: none;
 }
 
 .admin-control-grid {
@@ -7608,7 +7615,64 @@ body.theme-dark .agenda-attendance strong {
 
 .admin-row-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
+}
+
+.admin-feature-list {
+  display: grid;
+  gap: 0;
+}
+
+.admin-feature-row {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) minmax(120px, auto) auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 66px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-feature-row:last-child {
+  border-bottom: 0;
+}
+
+.admin-feature-row > div:first-child {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.admin-feature-row > div:first-child span {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.admin-inline-select {
+  display: grid;
+  grid-template-columns: auto minmax(110px, 1fr);
+  align-items: center;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.admin-inline-select select {
+  width: 100%;
+  min-height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 7px 9px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+}
+
+.admin-deal-row {
+  grid-template-columns: minmax(150px, 1fr) auto minmax(210px, auto);
 }
 
 .admin-field {
@@ -7641,6 +7705,7 @@ body.theme-dark .agenda-attendance strong {
 body.theme-dark .admin-control-toggle,
 body.theme-dark .admin-field select,
 body.theme-dark .admin-field textarea,
+body.theme-dark .admin-inline-select select,
 body.theme-dark .admin-metrics div {
   border-color: rgba(148,163,184,.18);
   background: #101c2b;
@@ -7732,6 +7797,20 @@ body.theme-dark .admin-control-toggle.is-on b {
   .admin-list-row {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .admin-feature-row,
+  .admin-deal-row {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .admin-inline-select {
+    grid-template-columns: 54px minmax(0, 1fr);
+  }
+
+  .admin-feature-row > .compact-button {
+    width: 100%;
   }
 }
 
