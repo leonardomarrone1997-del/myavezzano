@@ -1578,6 +1578,16 @@ function saveReadNotifications(ids) {
 
 function notificationItems() {
   const user = getStoredUser();
+  if (!getAdminControl().push) {
+    return [{
+      id: "notifications-paused",
+      title: "Notifiche temporaneamente sospese",
+      text: "Il servizio riprenderà appena saranno disponibili nuovi aggiornamenti.",
+      tone: "quiet",
+      time: "Sistema",
+      silent: true
+    }];
+  }
   const merchantItems = getMerchantNotifications().slice(-2).reverse().map((item) => ({
     id: item.id,
     title: item.title,
@@ -1601,7 +1611,7 @@ function notificationItems() {
 
 function notificationUnreadCount() {
   const read = new Set(getReadNotifications());
-  return notificationItems().filter((item) => !read.has(item.id)).length;
+  return notificationItems().filter((item) => !item.silent && !read.has(item.id)).length;
 }
 
 function renderNotificationState() {
@@ -1621,16 +1631,16 @@ function renderNotificationMenu() {
   if (!list) return;
   const read = new Set(getReadNotifications());
   const items = notificationItems();
-  const unread = items.filter((item) => !read.has(item.id)).length;
+  const unread = items.filter((item) => !item.silent && !read.has(item.id)).length;
   const summary = document.querySelector("#notificationSummary");
   const markAll = document.querySelector("#markAllNotificationsRead");
   if (summary) summary.textContent = unread ? `${unread} aggiornamenti da leggere` : "Tutto sotto controllo";
   if (markAll) markAll.hidden = unread === 0;
   list.innerHTML = items.map((item) => `
-    <button class="notification-menu-item ${item.tone} ${read.has(item.id) ? "is-read" : "is-unread"}" data-notification-open data-notification-id="${item.id}" type="button">
+    <button class="notification-menu-item ${item.tone} ${read.has(item.id) || item.silent ? "is-read" : "is-unread"}" data-notification-open data-notification-id="${item.id}" type="button">
       <span class="notification-item-icon" aria-hidden="true"></span>
       <div>
-        <span class="notification-item-meta"><em>${item.time}</em>${read.has(item.id) ? "" : "<i>Nuova</i>"}</span>
+        <span class="notification-item-meta"><em>${item.time}</em>${read.has(item.id) || item.silent ? "" : "<i>Nuova</i>"}</span>
         <strong>${item.title}</strong>
         <small>${item.text}</small>
       </div>
@@ -1834,7 +1844,7 @@ function renderAdminDashboard() {
           ${adminControlButton("maintenance", "Modalità manutenzione", "Sospende temporaneamente le funzioni pubbliche", adminControl.maintenance)}
           ${adminControlButton("registrations", "Nuove registrazioni", "Consenti la creazione di nuovi account", adminControl.registrations)}
           ${adminControlButton("moderation", "Moderazione preventiva", "Controlla i contenuti prima della pubblicazione", adminControl.moderation)}
-          ${adminControlButton("push", "Notifiche push", "Abilita le comunicazioni agli utenti", adminControl.push)}
+          ${adminControlButton("push", "Centro notifiche", "Abilita aggiornamenti, badge e comunicazioni agli utenti", adminControl.push)}
           ${adminControlButton("pulseEnabled", "Avezzano ora", "Mostra lo stato operativo delle zone cittadine", adminControl.pulseEnabled)}
           ${adminControlButton("lastMinuteEnabled", "Ultimo momento", "Pubblica le disponibilita a tempo limitato", adminControl.lastMinuteEnabled)}
         </div>
@@ -2091,6 +2101,8 @@ function handleAdminAction(button) {
     addAdminAudit(control, `${controlLabels[key] || key}: ${control[key] ? "attivo" : "disattivo"}`);
     renderCityPulse();
     renderLastMinuteDeals();
+    renderNotificationState();
+    if (!document.querySelector("#notificationMenu")?.hasAttribute("hidden")) renderNotificationMenu();
     renderAdminDashboard();
     showToast("Controllo piattaforma aggiornato.", "success");
     return;
