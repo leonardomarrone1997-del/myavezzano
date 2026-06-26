@@ -345,6 +345,8 @@ const wikidataImageCache = new Map();
 const DEMO_STATE_KEY = "myavezzano_demo_state";
 const ONBOARDING_KEY = "myavezzano_onboarding_seen";
 const THEME_STORAGE_KEY = "myavezzano_theme";
+const VISUAL_STYLE_STORAGE_KEY = "myavezzano_visual_style";
+const VISUAL_STYLE_PREVIOUS_THEME_KEY = "myavezzano_visual_style_previous_theme";
 const FX_MODE_STORAGE_KEY = "myavezzano_fx_mode";
 const ADMIN_CONTROL_KEY = "myavezzano_admin_control_v1";
 const NOTIFICATION_READ_KEY = "myavezzano_notification_reads_v1";
@@ -458,9 +460,9 @@ const summerCategories = [
 let activeSummerCategory = "all";
 
 const coupons = [
-  ["Aperitivo 2x1", "Caffè Risorgimento", "Scade oggi alle 20:00", "35 punti", "assets/coupons/aperitivo-2x1.svg", "AVZ-APERITIVO-2X1"],
-  ["-20% nuova collezione", "Atelier Marsica", "Valido fino a domenica", "80 usi rimasti", "assets/coupons/atelier-marsica-20.svg", "AVZ-MARSICA-20"],
-  ["Ingresso prova gratuito", "FitLab Avezzano", "Prenota entro 48 ore", "50 punti", "assets/coupons/fitlab-prova-gratis.svg", "AVZ-FITLAB-PROVA"]
+  ["Aperitivo 2x1", "Caffè Risorgimento", "Scade oggi alle 20:00", "35 punti", "assets/coupons/aperitivo-2x1.svg", "AVZ-APERITIVO-2X1", "bar"],
+  ["-20% nuova collezione", "Atelier Marsica", "Valido fino a domenica", "80 usi rimasti", "assets/coupons/atelier-marsica-20.svg", "AVZ-MARSICA-20", "negozi"],
+  ["Ingresso prova gratuito", "FitLab Avezzano", "Prenota entro 48 ore", "50 punti", "assets/coupons/fitlab-prova-gratis.svg", "AVZ-FITLAB-PROVA", "servizi"]
 ];
 
 const cityPulseZones = [
@@ -1436,8 +1438,8 @@ function render() {
   `;
   }).join("");
 
-  document.querySelector("#couponsGrid").innerHTML = coupons.map(([title, place, expires, meta, qrSrc, couponCode]) => `
-    <article class="coupon-card">
+  document.querySelector("#couponsGrid").innerHTML = coupons.map(([title, place, expires, meta, qrSrc, couponCode, category]) => `
+    <article class="coupon-card" data-coupon-category="${category}">
       <div class="card-body">
         <p class="eyebrow">${place}</p>
         <h2>${title}</h2>
@@ -1836,6 +1838,7 @@ function defaultAdminControl() {
     pulseEnabled: true,
     lastMinuteEnabled: true,
     nearbyEventsEnabled: true,
+    cityNightEnabled: true,
     featuredEvent: "street-green-fest",
     lastSync: null,
     broadcasts: [],
@@ -1954,6 +1957,7 @@ function renderAdminDashboard() {
           ${adminControlButton("pulseEnabled", "Avezzano ora", "Mostra lo stato operativo delle zone cittadine", adminControl.pulseEnabled)}
           ${adminControlButton("lastMinuteEnabled", "Ultimo momento", "Pubblica le disponibilita a tempo limitato", adminControl.lastMinuteEnabled)}
           ${adminControlButton("nearbyEventsEnabled", "Eventi vicino a te", "Estende il calendario ai comuni della Marsica", adminControl.nearbyEventsEnabled)}
+          ${adminControlButton("cityNightEnabled", "Tema City Night", "Rende disponibile lo stile alternativo agli utenti", adminControl.cityNightEnabled)}
         </div>
       </section>
       <section class="panel intelligence-panel">
@@ -2205,7 +2209,8 @@ function handleAdminAction(button) {
       push: "Notifiche push",
       pulseEnabled: "Avezzano ora",
       lastMinuteEnabled: "Ultimo momento",
-      nearbyEventsEnabled: "Eventi vicino a te"
+      nearbyEventsEnabled: "Eventi vicino a te",
+      cityNightEnabled: "Tema City Night"
     };
     addAdminAudit(control, `${controlLabels[key] || key}: ${control[key] ? "attivo" : "disattivo"}`);
     renderCityPulse();
@@ -2213,6 +2218,7 @@ function handleAdminAction(button) {
     renderNotificationState();
     eventsViewRendered = false;
     renderWeekendHome();
+    applyVisualStyle(preferredVisualStyle());
     if (!document.querySelector("#notificationMenu")?.hasAttribute("hidden")) renderNotificationMenu();
     renderAdminDashboard();
     showToast("Controllo piattaforma aggiornato.", "success");
@@ -2907,6 +2913,53 @@ function animateGlobalSurfaces() {
   animateActiveView();
 }
 
+function preferredVisualStyle() {
+  return localStorage.getItem(VISUAL_STYLE_STORAGE_KEY) === "city-night" ? "city-night" : "classic";
+}
+
+function applyVisualStyle(style = preferredVisualStyle(), syncColorTheme = true) {
+  const available = getAdminControl().cityNightEnabled;
+  const nextStyle = style === "city-night" && available ? "city-night" : "classic";
+  if (style === "city-night" && !available) localStorage.setItem(VISUAL_STYLE_STORAGE_KEY, "classic");
+  const isCityNight = nextStyle === "city-night";
+  document.body.classList.toggle("visual-theme-city-night", isCityNight);
+  document.documentElement.dataset.visualStyle = nextStyle;
+
+  const select = document.querySelector("#visualThemeSelect");
+  const themeToggle = document.querySelector("#themeToggle");
+  if (select) {
+    select.value = nextStyle;
+    select.disabled = !available;
+  }
+  if (themeToggle) {
+    themeToggle.disabled = isCityNight;
+    themeToggle.title = isCityNight ? "City Night usa la modalità notturna" : "Cambia tema giorno o notte";
+  }
+
+  if (!syncColorTheme) return;
+  if (isCityNight) {
+    if (!document.body.classList.contains("theme-dark")) {
+      localStorage.setItem(VISUAL_STYLE_PREVIOUS_THEME_KEY, preferredTheme());
+    }
+    localStorage.setItem(THEME_STORAGE_KEY, "dark");
+    applyTheme("dark");
+  } else {
+    const previousTheme = localStorage.getItem(VISUAL_STYLE_PREVIOUS_THEME_KEY);
+    if (previousTheme === "light" || previousTheme === "dark") {
+      localStorage.setItem(THEME_STORAGE_KEY, previousTheme);
+      localStorage.removeItem(VISUAL_STYLE_PREVIOUS_THEME_KEY);
+      applyTheme(previousTheme);
+    }
+  }
+}
+
+function changeVisualStyle(event) {
+  const nextStyle = event.target.value === "city-night" ? "city-night" : "classic";
+  localStorage.setItem(VISUAL_STYLE_STORAGE_KEY, nextStyle);
+  applyVisualStyle(nextStyle);
+  showToast(nextStyle === "city-night" ? "Stile City Night attivato." : "Stile classico ripristinato.", "success");
+}
+
 function preferredTheme() {
   const stored = localStorage.getItem(THEME_STORAGE_KEY);
   if (stored === "dark" || stored === "light") return stored;
@@ -3341,6 +3394,21 @@ function handleAction(button) {
     switchView("events");
     renderEventAgenda(button.dataset.eventFilter || "all");
     showToast(`Filtro eventi attivo: ${button.dataset.category}.`);
+    return;
+  }
+
+  if (action === "city-coupon-filter") {
+    const filter = button.dataset.couponFilter || "all";
+    document.querySelectorAll(".city-night-coupon-tabs button").forEach((item) => {
+      item.classList.toggle("active", item === button);
+    });
+    let visible = 0;
+    document.querySelectorAll("#couponsGrid .coupon-card").forEach((card) => {
+      const matches = filter === "all" || card.dataset.couponCategory === filter;
+      card.hidden = !matches;
+      if (matches) visible += 1;
+    });
+    showToast(visible ? `${visible} coupon disponibili.` : "Nessun coupon in questa categoria.");
     return;
   }
 
@@ -4583,6 +4651,7 @@ function initWebglAura() {
 
 async function bootApp() {
   applyTheme();
+  applyVisualStyle(preferredVisualStyle());
   applyFxMode("light", false);
   await seedAdminUser();
   render();
@@ -4619,5 +4688,6 @@ async function bootApp() {
 }
 
 document.querySelector("#themeToggle")?.addEventListener("click", toggleTheme);
+document.querySelector("#visualThemeSelect")?.addEventListener("change", changeVisualStyle);
 
 bootApp();
