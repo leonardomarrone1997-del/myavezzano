@@ -8959,6 +8959,18 @@ body.theme-dark .event-chip[data-event-filter="summer"] {
   font-size: 12px;
 }
 
+.home-event-main > .save-action {
+  min-height: 36px;
+  padding: 0 13px;
+  border: 1px solid rgba(14, 116, 144, .28);
+  border-radius: 8px;
+  background: var(--blue);
+  color: #fff;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 900;
+}
+
 .weekend-home {
   padding: 12px 14px;
 }
@@ -9074,6 +9086,14 @@ body.theme-dark .event-chip[data-event-filter="summer"] {
   width: 100%;
 }
 
+.admin-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.admin-grid > * {
+  min-width: 0;
+}
+
 body.fx-light.theme-transition .theme-sky-transition {
   display: block !important;
   animation-duration: 2.8s !important;
@@ -9102,12 +9122,404 @@ body.theme-dark .weekend-event-row {
 }
 
 @media (max-width: 760px) {
-  .home-event-main { align-items: flex-start; flex-wrap: wrap; }
-  .home-event-main > div { width: calc(100% - 64px); }
-  .home-event-main > .save-action { margin-left: 62px; }
+  .home-event-heading { align-items: flex-start; }
+  .home-event-heading .compact-button { max-width: 88px; flex: 0 0 auto; padding-inline: 8px; }
+  .home-event-main { display: grid; grid-template-columns: 50px minmax(0, 1fr); align-items: start; }
+  .home-event-main > div { width: auto; overflow-wrap: anywhere; }
+  .home-event-main > .save-action { grid-column: 2; justify-self: start; }
   .weekend-home-list { grid-template-columns: 1fr 1fr; }
   .coverage-town-grid { grid-template-columns: 1fr 1fr; }
+  .admin-grid { grid-template-columns: minmax(0, 1fr); }
   .demo-context-icon { width: 58px; height: 58px; flex-basis: 58px; background-size: 44px 44px; }
+}
+
+/* Selectable City Night theme: isolated from the classic visual system */
+.visual-theme-picker {
+  min-height: 40px;
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 7px 4px 10px;
+  border: 1px solid rgba(255,255,255,.62);
+  border-radius: 8px;
+  background: rgba(255,255,255,.56);
+  color: var(--ink);
+}
+
+.visual-theme-picker > span {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.visual-theme-picker select {
+  min-height: 30px;
+  max-width: 112px;
+  border: 0;
+  border-radius: 6px;
+  background: rgba(255,255,255,.78);
+  color: var(--ink);
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.topbar > .top-actions .theme-mode-group {
+  grid-column: span 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.topbar > .top-actions .theme-mode-group .visual-theme-picker,
+.topbar > .top-actions .theme-mode-group .theme-toggle {
+  min-width: 0;
+  margin: 0;
+}
+
+.city-night-coupon-tabs { display: none; }
+
+body.visual-theme-city-night {
+  --ink: #f7fbff;
+  --muted: #91a7c1;
+  --line: rgba(69, 185, 224, .20);
+  --paper: #07182d;
+  --panel: #081b32;
+  --glass: rgba(7, 24, 45, .94);
+  --glass-strong: #0a1f39;
+  --glass-soft: rgba(8, 27, 50, .80);
+  --glass-line: rgba(55, 201, 226, .22);
+  --blue: #29c7de;
+  --blue-deep: #061f3a;
+  --coral: #ff6259;
+  --sky-soft: rgba(41, 199, 222, .10);
+  --red-soft: rgba(255, 98, 89, .10);
+  --shadow: 0 18px 46px rgba(0, 5, 15, .30);
+  --shadow-soft: 0 8px 24px rgba(0, 5, 15, .22);
+  background: #020b18;
+  color: #f7fbff;
+}
+
+body.visual-theme-city-night::before {
+  inset: 0;
+  background-image: var(--avezzano-hero-night);
+  background-color: #031126;
+  background-blend-mode: multiply;
+  background-position: center top;
+  opacity: .38;
+  transform: none;
+}
+
+body.visual-theme-city-night::after {
+  background-image: none;
+  background: rgba(2, 11, 24, .54);
+}
+
+body.visual-theme-city-night .sidebar,
+body.visual-theme-city-night .topbar,
+body.visual-theme-city-night .panel,
+body.visual-theme-city-night .post,
+body.visual-theme-city-night .home-event-focus,
+body.visual-theme-city-night .weekend-home,
+body.visual-theme-city-night .summer-home-band,
+body.visual-theme-city-night .city-pulse-panel,
+body.visual-theme-city-night .last-minute-panel,
+body.visual-theme-city-night .home-command-center,
+body.visual-theme-city-night .agenda-event,
+body.visual-theme-city-night .event-ticket-note,
+body.visual-theme-city-night .coupon-card,
+body.visual-theme-city-night .last-minute-section,
+body.visual-theme-city-night .notification-menu {
+  border-color: rgba(55, 201, 226, .20);
+  background: #07182d;
+  color: #f7fbff;
+  box-shadow: 0 12px 30px rgba(0, 5, 15, .24);
+}
+
+body.visual-theme-city-night .topbar {
+  overflow: hidden;
+  background-color: #06162b;
+  background-image: var(--avezzano-hero-night);
+  background-position: center 46%;
+  background-size: cover;
+  background-blend-mode: soft-light;
+}
+
+body.visual-theme-city-night .topbar::before {
+  background: rgba(2, 12, 27, .66);
+}
+
+body.visual-theme-city-night .topbar h1,
+body.visual-theme-city-night .topbar .eyebrow,
+body.visual-theme-city-night .section-head h2,
+body.visual-theme-city-night .section-head .eyebrow,
+body.visual-theme-city-night .agenda-event h3,
+body.visual-theme-city-night .coupon-card h2,
+body.visual-theme-city-night .home-event-main h2,
+body.visual-theme-city-night .weekend-home strong,
+body.visual-theme-city-night .summer-home-band strong {
+  color: #f7fbff;
+}
+
+body.visual-theme-city-night .topbar-copy,
+body.visual-theme-city-night .agenda-event p,
+body.visual-theme-city-night .coupon-card p,
+body.visual-theme-city-night .home-event-main p,
+body.visual-theme-city-night .weekend-event-row small,
+body.visual-theme-city-night .summer-home-band .summer-home-copy span:last-child {
+  color: #91a7c1;
+}
+
+body.visual-theme-city-night .visual-theme-picker {
+  border-color: rgba(55, 201, 226, .28);
+  background: rgba(3, 17, 37, .88);
+  color: #f7fbff;
+}
+
+body.visual-theme-city-night .visual-theme-picker > span { color: #58d4e6; }
+body.visual-theme-city-night .visual-theme-picker select { background: #0b2847; color: #f7fbff; }
+
+body.visual-theme-city-night #feedView.active {
+  display: flex;
+  flex-direction: column;
+}
+
+body.visual-theme-city-night #feedView .summer-home-band { order: 1; }
+body.visual-theme-city-night #feedView .home-event-focus { order: 2; }
+body.visual-theme-city-night #feedView .weekend-home { order: 3; }
+body.visual-theme-city-night #feedView .home-quick-actions { order: 4; }
+body.visual-theme-city-night #feedView .city-now-grid { order: 5; }
+body.visual-theme-city-night #feedView .home-command-center { order: 6; }
+body.visual-theme-city-night #feedView .utility-shell { order: 7; }
+
+body.visual-theme-city-night .summer-home-band {
+  min-height: 230px;
+  align-items: flex-end;
+  padding: 20px;
+  border: 1px solid rgba(55, 201, 226, .30);
+  border-left: 1px solid rgba(55, 201, 226, .30);
+  background-color: #06162b;
+  background-image: var(--avezzano-hero-night);
+  background-position: center 62%;
+  background-size: cover;
+  background-blend-mode: soft-light;
+}
+
+body.visual-theme-city-night .summer-home-band::before {
+  content: "Eventi, musica, cultura, divertimento";
+  position: absolute;
+  left: 20px;
+  top: 72px;
+  max-width: 230px;
+  color: rgba(247,251,255,.78);
+  font-size: 9px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+body.visual-theme-city-night .summer-home-band { position: relative; overflow: hidden; }
+body.visual-theme-city-night .summer-home-copy { position: relative; z-index: 1; align-items: flex-end; }
+body.visual-theme-city-night .summer-home-mark {
+  width: 48px;
+  height: 48px;
+  flex-basis: 48px;
+  background: #ff6259;
+  border: 0;
+  color: #06162b;
+}
+
+body.visual-theme-city-night .summer-home-band .eyebrow {
+  margin-bottom: 8px;
+  color: #fff;
+  font-family: Georgia, serif;
+  font-size: clamp(24px, 5vw, 42px);
+  font-style: italic;
+  font-weight: 500;
+  text-transform: none;
+}
+
+body.visual-theme-city-night .summer-home-band strong { font-size: 13px; }
+body.visual-theme-city-night .summer-home-action {
+  position: relative;
+  z-index: 1;
+  border-color: #ff7a69;
+  background: #ff6259;
+  color: #fff;
+}
+
+body.visual-theme-city-night .home-event-focus {
+  border-left: 3px solid #ff6259;
+}
+
+body.visual-theme-city-night .home-event-main time,
+body.visual-theme-city-night .agenda-date {
+  background: #0b2847;
+  color: #70e2f0;
+}
+
+body.visual-theme-city-night .weekend-home-list {
+  grid-template-columns: 1fr 1fr;
+}
+
+body.visual-theme-city-night .weekend-event-row,
+body.visual-theme-city-night .event-chip {
+  border-color: rgba(55, 201, 226, .18);
+  background: #091d35;
+  color: #f7fbff;
+}
+
+body.visual-theme-city-night .weekend-event-row:nth-child(2n),
+body.visual-theme-city-night .event-chip.active {
+  border-color: rgba(255, 98, 89, .58);
+  background: rgba(255, 98, 89, .10);
+}
+
+body.visual-theme-city-night .agenda-event {
+  border-left: 3px solid #29c7de;
+}
+
+body.visual-theme-city-night .agenda-event:nth-child(2n) { border-left-color: #ff6259; }
+body.visual-theme-city-night .agenda-tag { border-color: rgba(41,199,222,.34); background: rgba(41,199,222,.10); color: #70e2f0; }
+
+body.visual-theme-city-night .city-night-coupon-tabs {
+  display: flex;
+  gap: 6px;
+  margin: 0 0 14px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+body.visual-theme-city-night #couponsView.active {
+  display: flex;
+  flex-direction: column;
+}
+
+body.visual-theme-city-night #couponsView > .section-head:first-child { order: 1; }
+body.visual-theme-city-night #couponsView > .city-night-coupon-tabs { order: 2; }
+body.visual-theme-city-night #couponsView > .coupon-library-head { display: none; }
+body.visual-theme-city-night #couponsView > #couponsGrid { order: 3; }
+body.visual-theme-city-night #couponsView > .last-minute-section { order: 4; margin-top: 16px; }
+
+body.visual-theme-city-night .city-night-coupon-tabs::-webkit-scrollbar { display: none; }
+
+body.visual-theme-city-night .city-night-coupon-tabs button {
+  min-height: 30px;
+  flex: 0 0 auto;
+  padding: 0 11px;
+  border: 1px solid rgba(55, 201, 226, .18);
+  border-radius: 6px;
+  background: #091d35;
+  color: #91a7c1;
+  font-size: 9px;
+  font-weight: 850;
+}
+
+body.visual-theme-city-night .city-night-coupon-tabs button.active {
+  border-color: #f7fbff;
+  background: #f7fbff;
+  color: #06162b;
+}
+
+body.visual-theme-city-night #couponsGrid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+body.visual-theme-city-night .coupon-card {
+  min-height: 154px;
+  border: 1px solid #29c7de;
+  background: #081a30;
+}
+
+body.visual-theme-city-night .coupon-card:nth-child(2n) { border-color: #f05fa5; }
+body.visual-theme-city-night .coupon-card:nth-child(3n) { border-color: #ff9d57; }
+body.visual-theme-city-night .coupon-card .card-body { padding: 13px; }
+body.visual-theme-city-night .coupon-card .eyebrow { color: #70e2f0; }
+body.visual-theme-city-night .coupon-card:nth-child(2n) .eyebrow { color: #ff87c0; }
+body.visual-theme-city-night .coupon-card .qr { width: 88px; height: 88px; border-radius: 7px; box-shadow: none; }
+body.visual-theme-city-night .coupon-card .pill { background: rgba(41,199,222,.12); color: #70e2f0; }
+
+body.visual-theme-city-night .bottom-nav {
+  border-color: rgba(55, 201, 226, .22);
+  background: #06162b;
+}
+
+body.visual-theme-city-night .bottom-nav-item.active {
+  color: #29c7de;
+  border-color: rgba(41, 199, 222, .28);
+  background: #0a2744;
+  box-shadow: none;
+}
+
+@media (max-width: 760px) {
+  body.visual-theme-city-night .topbar {
+    min-height: 72px;
+    padding: 10px 12px 10px 56px;
+    justify-content: flex-end;
+    background-position: center;
+  }
+
+  body.visual-theme-city-night .topbar > div:first-child,
+  body.visual-theme-city-night .top-actions .weather-widget,
+  body.visual-theme-city-night .top-actions .theme-toggle,
+  body.visual-theme-city-night .top-actions .guide-button,
+  body.visual-theme-city-night .top-actions .top-profile-status,
+  body.visual-theme-city-night .top-actions #openSignup {
+    display: none !important;
+  }
+
+  body.visual-theme-city-night .topbar::after {
+    content: "MyAvezzano";
+    position: absolute;
+    left: 58px;
+    top: 24px;
+    width: auto;
+    height: auto;
+    background: none;
+    color: #f7fbff;
+    font-size: 13px;
+    font-weight: 900;
+    opacity: 1;
+  }
+
+  body.visual-theme-city-night .topbar > .top-actions {
+    width: auto;
+    display: flex;
+    margin-left: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  body.visual-theme-city-night .topbar .theme-mode-group { display: block; grid-column: auto; }
+
+  body.visual-theme-city-night .visual-theme-picker { min-height: 34px; padding: 2px 5px 2px 7px; }
+  body.visual-theme-city-night .visual-theme-picker > span { display: none; }
+  body.visual-theme-city-night .visual-theme-picker select { min-height: 28px; max-width: 94px; }
+  body.visual-theme-city-night .notification-button { width: 34px; height: 34px; }
+
+  body.visual-theme-city-night .summer-home-band { min-height: 260px; padding: 16px; }
+  body.visual-theme-city-night .summer-home-band::before { left: 16px; top: 74px; }
+  body.visual-theme-city-night .summer-home-copy { align-items: flex-end; }
+  body.visual-theme-city-night .summer-home-band .eyebrow { font-size: 30px; }
+  body.visual-theme-city-night .summer-home-band strong,
+  body.visual-theme-city-night .summer-home-band .summer-home-copy span:last-child { max-width: 210px; }
+  body.visual-theme-city-night .summer-home-action { align-self: flex-end; width: 92px; }
+
+  body.visual-theme-city-night .home-event-heading { align-items: center; }
+  body.visual-theme-city-night .home-event-main { grid-template-columns: 46px minmax(0, 1fr); }
+  body.visual-theme-city-night .home-event-main time { width: 46px; min-width: 46px; }
+  body.visual-theme-city-night .home-event-main h2 { font-size: 15px; }
+  body.visual-theme-city-night .weekend-home-list { grid-template-columns: 1fr; }
+
+  body.visual-theme-city-night #couponsGrid { grid-template-columns: 1fr; }
+  body.visual-theme-city-night .coupon-card { min-height: 132px; }
+  body.visual-theme-city-night .coupon-card .card-body { grid-template-columns: minmax(0, 1fr) 82px; }
+  body.visual-theme-city-night .coupon-card .qr { width: 76px; height: 76px; }
+  body.visual-theme-city-night .coupon-card h2 { font-size: 18px; }
+  body.visual-theme-city-night .last-minute-section { padding: 12px; }
 }
 
 @media (max-width: 760px) {
