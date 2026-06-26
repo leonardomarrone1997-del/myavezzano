@@ -60,7 +60,7 @@
         ]
       }
     </script>
-    <link rel="stylesheet" href="styles.css?v=88" />
+    <link rel="stylesheet" href="styles.css?v=94" />
   </head>
 <body class="view-feed">
     <a class="skip-link" href="#mainContent">Vai al contenuto</a>
@@ -133,6 +133,13 @@
               </div>
             </div>
             <div class="theme-mode-group" aria-label="Tema">
+              <label class="visual-theme-picker" for="visualThemeSelect">
+                <span>Stile</span>
+                <select id="visualThemeSelect" aria-label="Scegli stile interfaccia">
+                  <option value="classic">Classico</option>
+                  <option value="city-night">City Night</option>
+                </select>
+              </label>
               <button class="theme-toggle" id="themeToggle" type="button" aria-label="Attiva tema notturno" aria-pressed="false">
                 <span aria-hidden="true"></span>
                 <strong id="themeToggleLabel">Notte</strong>
@@ -375,6 +382,13 @@
               <h2>Coupon QR e conversioni</h2>
             </div>
             <button class="primary-action" data-action="scan-qr" type="button">Scansiona QR</button>
+          </div>
+          <div class="city-night-coupon-tabs" aria-label="Filtra coupon">
+            <button class="active" data-action="city-coupon-filter" data-coupon-filter="all" type="button">Tutti</button>
+            <button data-action="city-coupon-filter" data-coupon-filter="ristoranti" type="button">Ristoranti</button>
+            <button data-action="city-coupon-filter" data-coupon-filter="bar" type="button">Bar</button>
+            <button data-action="city-coupon-filter" data-coupon-filter="negozi" type="button">Negozi</button>
+            <button data-action="city-coupon-filter" data-coupon-filter="servizi" type="button">Servizi</button>
           </div>
           <section class="last-minute-section" aria-labelledby="lastMinuteTitle">
             <div class="section-head compact-section-head">
@@ -881,7 +895,7 @@
 
     <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
-    <script defer src="events-data.js?v=88"></script>
-    <script defer src="app.js?v=88"></script>
+    <script defer src="events-data.js?v=94"></script>
+    <script defer src="app.js?v=94"></script>
   </body>
 </html>
