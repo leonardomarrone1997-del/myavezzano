@@ -1,4 +1,4 @@
-const CACHE_NAME = "myavezzano-v97";
+const CACHE_NAME = "myavezzano-v98";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -7,9 +7,9 @@ const APP_SHELL = [
   "./mappa.html",
   "./estate-2026.html",
   "./attivita-locali.html",
-  "./styles.css?v=97",
-  "./events-data.js?v=97",
-  "./app.js?v=97",
+  "./styles.css?v=98",
+  "./events-data.js?v=98",
+  "./app.js?v=98",
   "./manifest.json",
   "./robots.txt",
   "./llms.txt",

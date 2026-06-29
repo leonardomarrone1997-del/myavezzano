@@ -472,6 +472,43 @@ body.menu-open .sidebar {
 }
 .side-card p { display: none; }
 
+.city-selector-card {
+  display: grid;
+  gap: 7px;
+}
+
+.city-selector-card > strong {
+  display: none;
+}
+
+.city-selector-card label {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.city-selector-card select {
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 850;
+  padding: 0 32px 0 10px;
+}
+
+.city-selector-card p#citySelectorMeta {
+  display: block;
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
 .main {
   width: min(1360px, 100%);
   margin: 0 auto;
@@ -2741,6 +2778,16 @@ body.theme-dark .topbar::before {
     repeating-linear-gradient(90deg, rgba(255,255,255,.08) 0 1px, transparent 1px 64px);
 }
 
+body.theme-dark .city-selector-card select {
+  background: rgba(2,6,23,.72);
+  border-color: rgba(255,255,255,.18);
+  color: var(--ink);
+}
+
+body.theme-dark .city-selector-card p#citySelectorMeta {
+  color: rgba(226,232,240,.76);
+}
+
 body.theme-dark .topbar-copy,
 body.theme-dark .profile-card span,
 body.theme-dark .post-top span,
@@ -3229,6 +3276,7 @@ body.theme-dark .topbar::after {
   .brand { display: flex; padding: 0 2px; }
   .brand div:last-child { display: block; }
   .side-card { display: none; }
+  .city-selector-card { display: grid; }
   .main { padding: 56px 12px 24px; }
   .topbar { align-items: stretch; flex-direction: column; padding: 14px; margin-bottom: 16px; }
   .topbar .eyebrow,

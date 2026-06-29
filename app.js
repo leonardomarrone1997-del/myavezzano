@@ -504,6 +504,22 @@ const calendarEvents = window.MYAVEZZANO_EVENTS || [];
 const archivedEvents = window.MYAVEZZANO_ARCHIVED_EVENTS || [];
 const summerEvents = calendarEvents.filter((item) => item.date >= "2026-06-21" && item.date <= "2026-09-22");
 const coverageTowns = ["Avezzano", "Alba Fucens", "Celano", "Tagliacozzo", "Pescina", "Luco dei Marsi", "Trasacco", "Carsoli", "Scurcola Marsicana", "Magliano de' Marsi"];
+const CITY_SELECTOR_STORAGE_KEY = "myavezzano_selected_town_v1";
+const townCoordinates = {
+  Avezzano: { lat: 42.0326, lng: 13.4256 },
+  "Alba Fucens": { lat: 42.0784, lng: 13.4111 },
+  Celano: { lat: 42.0837, lng: 13.5481 },
+  Tagliacozzo: { lat: 42.0691, lng: 13.2558 },
+  Pescina: { lat: 42.0263, lng: 13.6568 },
+  "Luco dei Marsi": { lat: 41.9597, lng: 13.4737 },
+  Trasacco: { lat: 41.9578, lng: 13.5325 },
+  Carsoli: { lat: 42.0991, lng: 13.0881 },
+  "Scurcola Marsicana": { lat: 42.0634, lng: 13.3408 },
+  "Magliano de' Marsi": { lat: 42.0917, lng: 13.3647 }
+};
+let activeTown = ["all", ...coverageTowns].includes(localStorage.getItem(CITY_SELECTOR_STORAGE_KEY))
+  ? localStorage.getItem(CITY_SELECTOR_STORAGE_KEY)
+  : "Avezzano";
 const summerCategories = [
   ["Tutti", "Intero cartellone", "all"],
   ["Avezzano", "In città", "avezzano"],
@@ -1154,6 +1170,32 @@ function dateKey(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
+function selectedTownLabel() {
+  return activeTown === "all" ? "Marsica" : activeTown;
+}
+
+function placeTown(place) {
+  const haystack = [place.area, place.distance, place.address, place.caption, place.stats].filter(Boolean).join(" ").toLowerCase();
+  const matched = coverageTowns.find((town) => haystack.includes(town.toLowerCase()));
+  return matched || "Avezzano";
+}
+
+function eventInSelectedTown(item) {
+  return activeTown === "all" || item.area === activeTown;
+}
+
+function placeInSelectedTown(place) {
+  return activeTown === "all" || placeTown(place) === activeTown;
+}
+
+function scopedEvents(items) {
+  return activeTown === "all" ? items : items.filter(eventInSelectedTown);
+}
+
+function scopedPlaces(items) {
+  return activeTown === "all" ? items : items.filter(placeInSelectedTown);
+}
+
 function weekendWindow(referenceKey = currentDateKey()) {
   const reference = eventDate(referenceKey);
   const weekday = reference.getDay();
@@ -1171,7 +1213,7 @@ function eventOverlapsRange(item, start, end) {
 
 function currentWeekendEvents() {
   const { start, end } = weekendWindow();
-  return calendarEvents.filter((item) => eventOverlapsRange(item, start, end));
+  return scopedEvents(calendarEvents.filter((item) => eventOverlapsRange(item, start, end)));
 }
 
 function nearbyEvents() {
@@ -1287,8 +1329,9 @@ function renderHomeEventFocus() {
   const panel = document.querySelector("#homeEventFocus");
   if (!panel) return;
   const today = currentDateKey();
-  const todayEvents = calendarEvents.filter((item) => item.date <= today && (item.endDate || item.date) >= today);
-  const item = todayEvents[0] || calendarEvents.find((event) => (event.endDate || event.date) >= today);
+  const townEvents = scopedEvents(calendarEvents);
+  const todayEvents = townEvents.filter((item) => item.date <= today && (item.endDate || item.date) >= today);
+  const item = todayEvents[0] || townEvents.find((event) => (event.endDate || event.date) >= today);
   if (!item) {
     panel.hidden = true;
     return;
@@ -1297,7 +1340,7 @@ function renderHomeEventFocus() {
   panel.hidden = false;
   panel.innerHTML = `
     <div class="home-event-heading">
-      <div><p class="eyebrow">Cosa si fa questa sera?</p><strong>${todayEvents.length ? "In programma oggi" : "Il prossimo appuntamento"}</strong></div>
+      <div><p class="eyebrow">Cosa si fa questa sera?</p><strong>${todayEvents.length ? `Oggi a ${selectedTownLabel()}` : `Prossimo a ${selectedTownLabel()}`}</strong></div>
       <button class="ghost compact-button" data-view-target="events" type="button">Calendario</button>
     </div>
     <div class="home-event-main">
@@ -1334,8 +1377,9 @@ function renderTonightAgenda() {
   if (!grid || !heading || !copy) return;
 
   const today = currentDateKey();
-  const todayEvents = calendarEvents.filter((item) => item.date <= today && (item.endDate || item.date) >= today);
-  const visible = todayEvents.length ? todayEvents : calendarEvents.filter((item) => (item.endDate || item.date) >= today).slice(0, 1);
+  const townEvents = scopedEvents(calendarEvents);
+  const todayEvents = townEvents.filter((item) => item.date <= today && (item.endDate || item.date) >= today);
+  const visible = todayEvents.length ? todayEvents : townEvents.filter((item) => (item.endDate || item.date) >= today).slice(0, 1);
 
   if (!visible.length) {
     heading.textContent = "Cartellone 2026 concluso";
@@ -1346,7 +1390,7 @@ function renderTonightAgenda() {
 
   heading.textContent = todayEvents.length ? "In programma oggi" : "Il prossimo appuntamento";
   copy.textContent = todayEvents.length
-    ? `${todayEvents.length} ${todayEvents.length === 1 ? "evento" : "eventi"} in agenda oggi.`
+    ? `${todayEvents.length} ${todayEvents.length === 1 ? "evento" : "eventi"} in agenda oggi a ${selectedTownLabel()}.`
     : `Nessun evento oggi: il prossimo è ${eventRangeLabel(visible[0])}.`;
   grid.innerHTML = visible.map((item) => eventCardMarkup(item, { compact: true, idPrefix: "tonight-event" })).join("");
 }
@@ -1358,7 +1402,7 @@ function renderEventAgenda(filter = activeEventCategory) {
   if (!grid) return;
 
   const source = filter === "archivio" ? archivedEvents : calendarEvents;
-  const filtered = source.filter((item) => eventMatchesFilter(item, filter));
+  const filtered = source.filter((item) => eventMatchesFilter(item, filter)).filter(eventInSelectedTown);
   if (!filtered.length) {
     grid.innerHTML = `<div class="agenda-empty"><strong>Nessun evento in questa categoria.</strong><span>Prova un altro filtro del calendario.</span></div>`;
     return;
@@ -1384,7 +1428,8 @@ function summerEventMatchesFilter(item, filter) {
 
 function nextSummerEvent() {
   const today = currentDateKey();
-  return summerEvents.find((item) => (item.endDate || item.date) >= today) || summerEvents[0];
+  const townEvents = scopedEvents(summerEvents);
+  return townEvents.find((item) => (item.endDate || item.date) >= today) || townEvents[0] || summerEvents[0];
 }
 
 function renderSummerHomeBand() {
@@ -1438,7 +1483,7 @@ function renderSummerProgram(filter = activeSummerCategory) {
   renderSummerFilters();
   const grid = document.querySelector("#summerGrid");
   if (!grid) return;
-  const filtered = summerEvents.filter((item) => summerEventMatchesFilter(item, filter));
+  const filtered = summerEvents.filter((item) => summerEventMatchesFilter(item, filter)).filter(eventInSelectedTown);
   grid.innerHTML = filtered.length
     ? eventAgendaMarkup(filtered, { idPrefix: "summer-event" })
     : `<div class="agenda-empty"><strong>Nessun evento in questo filtro.</strong><span>Apri l'intero cartellone Estate 2026.</span></div>`;
@@ -2661,10 +2706,15 @@ function placePhotoLabel(place) {
   return "";
 }
 
+function visibleMapPlaces(term = "") {
+  const source = term ? intelligentPlaces(term) : mapPlaces;
+  return scopedPlaces(source);
+}
+
 function renderMapBusinessList() {
   if (!mapViewRendered && !document.body.classList.contains("view-map")) return;
   const term = document.querySelector("#searchInput")?.value.trim() || "";
-  const places = term ? intelligentPlaces(term) : mapPlaces;
+  const places = visibleMapPlaces(term);
   document.querySelector("#mapBusinessList").innerHTML = places.map((place) => `
     <button class="destination-item ${selectedPlace.id === place.id ? "active" : ""}" data-place-id="${place.id}" type="button">
       <img class="destination-logo" src="${smartImageUrl(place.photo || place.logo || place.image, 96)}" alt="" loading="lazy" decoding="async" />
@@ -2675,7 +2725,7 @@ function renderMapBusinessList() {
       </span>
     </button>
   `).join("");
-  document.querySelector("#realBusinessCount").textContent = realPlacesLoaded ? `${mapPlaces.length} reali` : "Demo";
+  document.querySelector("#realBusinessCount").textContent = realPlacesLoaded ? `${places.length} reali` : `${places.length} demo`;
   applySearchFilter();
 }
 
@@ -2685,7 +2735,7 @@ function rebuildMapMarkers() {
   mapMarkers.forEach((marker) => marker.remove());
   mapMarkers.clear();
 
-  mapPlaces.forEach((place) => {
+  visibleMapPlaces().forEach((place) => {
     const marker = L.marker([place.lat, place.lng], { icon: createMapIcon(place) }).addTo(interactiveMap);
     marker.bindPopup(`<strong>${place.name}</strong><br>${place.category}<br>${place.address}`, {
       closeButton: false,
@@ -2712,13 +2762,14 @@ function applyImportedPlaces(places, statusText) {
   });
 
   mapPlaces = curated.concat(imported).slice(0, MAX_REAL_PLACES);
-  selectedPlace = mapPlaces[0];
+  selectedPlace = visibleMapPlaces()[0] || mapPlaces[0];
   realPlacesLoaded = true;
   renderMapBusinessList();
 
   if (interactiveMap && window.L) {
     rebuildMapMarkers();
-    const bounds = L.latLngBounds(mapPlaces.map((place) => [place.lat, place.lng]));
+    const placesInView = visibleMapPlaces();
+    const bounds = L.latLngBounds((placesInView.length ? placesInView : mapPlaces).map((place) => [place.lat, place.lng]));
     interactiveMap.fitBounds(bounds, { padding: [34, 34], maxZoom: 15 });
   }
 
@@ -2852,6 +2903,66 @@ function refreshInteractiveMapLayout() {
       if (interactiveMap) interactiveMap.invalidateSize();
     }, delay);
   });
+}
+
+function updateCitySelectorUi() {
+  const selector = document.querySelector("#citySelector");
+  const meta = document.querySelector("#citySelectorMeta");
+  const weatherTown = document.querySelector(".weather-widget div span");
+  if (selector) selector.value = activeTown;
+  if (weatherTown) weatherTown.textContent = selectedTownLabel();
+  if (!meta) return;
+
+  const places = scopedPlaces(mapPlaces);
+  const futureEvents = scopedEvents(calendarEvents).filter((item) => (item.endDate || item.date) >= currentDateKey());
+  const placeLabel = places.length === 1 ? "locale" : "locali";
+  const eventLabel = futureEvents.length === 1 ? "evento" : "eventi";
+  meta.textContent = activeTown === "all"
+    ? `${places.length} ${placeLabel} e ${futureEvents.length} ${eventLabel} nella Marsica.`
+    : `${places.length} ${placeLabel} e ${futureEvents.length} ${eventLabel} su ${activeTown}.`;
+}
+
+function refreshTownScopedViews({ panMap = false } = {}) {
+  const places = visibleMapPlaces();
+  if (places.length && !places.some((place) => place.id === selectedPlace?.id)) {
+    selectedPlace = places[0];
+  }
+
+  updateCitySelectorUi();
+  renderHomeEventFocus();
+  renderWeekendHome();
+  renderSummerHomeBand();
+
+  if (eventsViewRendered || document.body.classList.contains("view-events")) {
+    renderTonightAgenda();
+    renderEventAgenda(activeEventCategory);
+  }
+
+  if (summerViewRendered || document.body.classList.contains("view-summer")) {
+    renderSummerProgram(activeSummerCategory);
+  }
+
+  if (mapViewRendered || document.body.classList.contains("view-map")) {
+    renderMapBusinessList();
+    rebuildMapMarkers();
+    if (selectedPlace) selectMapPlace(selectedPlace.id, panMap);
+    if (panMap && interactiveMap && activeTown !== "all" && townCoordinates[activeTown]) {
+      interactiveMap.setView([townCoordinates[activeTown].lat, townCoordinates[activeTown].lng], 14);
+    }
+  }
+}
+
+function setActiveTown(town) {
+  activeTown = ["all", ...coverageTowns].includes(town) ? town : "Avezzano";
+  if ((activeEventCategory === "avezzano" && activeTown !== "Avezzano") || (activeEventCategory === "alba" && activeTown !== "Alba Fucens")) {
+    activeEventCategory = "all";
+  }
+  if ((activeSummerCategory === "avezzano" && activeTown !== "Avezzano") || (activeSummerCategory === "alba" && activeTown !== "Alba Fucens")) {
+    activeSummerCategory = "all";
+  }
+  localStorage.setItem(CITY_SELECTOR_STORAGE_KEY, activeTown);
+  refreshTownScopedViews({ panMap: true });
+  showToast(activeTown === "all" ? "Vista impostata su tutta la Marsica." : `Vista impostata su ${activeTown}.`, "success");
 }
 
 async function focusCityPulseZone(zoneId) {
@@ -4794,6 +4905,7 @@ async function bootApp() {
   await seedAdminUser();
   render();
   renderLegalPanel();
+  refreshTownScopedViews();
   selectMapPlace(selectedPlace.id, false);
   updateAuthUi();
 
@@ -4827,5 +4939,6 @@ async function bootApp() {
 
 document.querySelector("#themeToggle")?.addEventListener("click", toggleTheme);
 document.querySelector("#visualThemeSelect")?.addEventListener("change", changeVisualStyle);
+document.querySelector("#citySelector")?.addEventListener("change", (event) => setActiveTown(event.target.value));
 
 bootApp();

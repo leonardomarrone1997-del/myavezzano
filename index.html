@@ -60,7 +60,7 @@
         ]
       }
     </script>
-    <link rel="stylesheet" href="styles.css?v=97" />
+    <link rel="stylesheet" href="styles.css?v=98" />
   </head>
 <body class="view-feed">
     <a class="skip-link" href="#mainContent">Vai al contenuto</a>
@@ -105,7 +105,21 @@
           <button class="nav-item" data-view="legal" type="button">Privacy e termini</button>
         </nav>
 
-        <div class="side-card">
+        <div class="side-card city-selector-card" aria-label="Comune attivo">
+          <label for="citySelector">Comune</label>
+          <select id="citySelector" aria-label="Scegli comune">
+            <option value="all">Tutta la Marsica</option>
+            <option value="Avezzano" selected>Avezzano</option>
+            <option value="Celano">Celano</option>
+            <option value="Tagliacozzo">Tagliacozzo</option>
+            <option value="Pescina">Pescina</option>
+            <option value="Luco dei Marsi">Luco dei Marsi</option>
+            <option value="Trasacco">Trasacco</option>
+            <option value="Carsoli">Carsoli</option>
+            <option value="Scurcola Marsicana">Scurcola Marsicana</option>
+            <option value="Magliano de' Marsi">Magliano de' Marsi</option>
+          </select>
+          <p id="citySelectorMeta">Focus su Avezzano.</p>
           <strong>Avezzano</strong>
           <p>86 attività attive, 2.840 utenti registrati, 418 coupon usati.</p>
         </div>
@@ -895,7 +909,7 @@
 
     <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
-    <script defer src="events-data.js?v=97"></script>
-    <script defer src="app.js?v=97"></script>
+    <script defer src="events-data.js?v=98"></script>
+    <script defer src="app.js?v=98"></script>
   </body>
 </html>
