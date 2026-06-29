@@ -72,7 +72,7 @@ function schemaDates(event) {
 function eventPage(event) {
   const url = `${baseUrl}/eventi/${event.id}.html`;
   const dates = schemaDates(event);
-  const locality = event.area === "Alba Fucens" ? "Massa d'Albe" : "Avezzano";
+  const locality = event.area === "Alba Fucens" ? "Massa d'Albe" : event.area;
   const schema = {
     "@context": "https://schema.org",
     "@type": "Event",
@@ -119,7 +119,7 @@ function eventPage(event) {
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content="${baseUrl}/assets/social-preview.jpg" />
     <script type="application/ld+json">${schemaJson}</script>
-    <link rel="stylesheet" href="../styles.css?v=98" />
+    <link rel="stylesheet" href="../styles.css?v=99" />
   </head>
   <body class="seo-body">
     <div class="seo-shell">

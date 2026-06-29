@@ -503,7 +503,7 @@ let activeEventCategory = "all";
 const calendarEvents = window.MYAVEZZANO_EVENTS || [];
 const archivedEvents = window.MYAVEZZANO_ARCHIVED_EVENTS || [];
 const summerEvents = calendarEvents.filter((item) => item.date >= "2026-06-21" && item.date <= "2026-09-22");
-const coverageTowns = ["Avezzano", "Alba Fucens", "Celano", "Tagliacozzo", "Pescina", "Luco dei Marsi", "Trasacco", "Carsoli", "Scurcola Marsicana", "Magliano de' Marsi"];
+const coverageTowns = ["Avezzano", "Alba Fucens", "Celano", "Tagliacozzo", "Pescina", "Luco dei Marsi", "Trasacco", "Carsoli", "Borgorose", "Scurcola Marsicana", "Magliano de' Marsi"];
 const CITY_SELECTOR_STORAGE_KEY = "myavezzano_selected_town_v1";
 const townCoordinates = {
   Avezzano: { lat: 42.0326, lng: 13.4256 },
@@ -514,6 +514,7 @@ const townCoordinates = {
   "Luco dei Marsi": { lat: 41.9597, lng: 13.4737 },
   Trasacco: { lat: 41.9578, lng: 13.5325 },
   Carsoli: { lat: 42.0991, lng: 13.0881 },
+  Borgorose: { lat: 42.1906, lng: 13.2347 },
   "Scurcola Marsicana": { lat: 42.0634, lng: 13.3408 },
   "Magliano de' Marsi": { lat: 42.0917, lng: 13.3647 }
 };
