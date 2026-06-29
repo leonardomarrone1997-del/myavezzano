@@ -119,7 +119,7 @@ function eventPage(event) {
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content="${baseUrl}/assets/social-preview.jpg" />
     <script type="application/ld+json">${schemaJson}</script>
-    <link rel="stylesheet" href="../styles.css?v=94" />
+    <link rel="stylesheet" href="../styles.css?v=95" />
   </head>
   <body class="seo-body">
     <div class="seo-shell">
