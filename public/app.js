@@ -214,7 +214,30 @@ const marsicaFoodVenues = [
   { name: "Sarni", category: "Ristorante", area: "Magliano de' Marsi", distance: "Magliano de' Marsi", lat: 42.094891, lng: 13.346537, address: "Magliano de' Marsi", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Ristorante a Magliano de' Marsi nella mappa dei comuni vicini." }
 ];
 
-let mapPlaces = businesses.concat(userSubmittedBusinesses, marsicaFoodVenues, [
+const marsicaTownImages = {
+  "Celano": "https://commons.wikimedia.org/wiki/Special:FilePath/Celano%20-%20Castello%20Piccolomini.jpg",
+  "Tagliacozzo": "https://commons.wikimedia.org/wiki/Special:FilePath/TagliacozzoobeliscoMarsica2.jpg",
+  "Pescina": "https://commons.wikimedia.org/wiki/Special:FilePath/Pescina%20view.jpg",
+  "Luco dei Marsi": "https://commons.wikimedia.org/wiki/Special:FilePath/Luco%20dei%20Marsi%20Chiesa%20San%20Giovanni%20Battista%201.jpg",
+  "Trasacco": "https://commons.wikimedia.org/wiki/Special:FilePath/Trasacco.jpg",
+  "Carsoli": "https://commons.wikimedia.org/wiki/Special:FilePath/Italien%20vicino%20Autostrada%2024%2004%20%28RaBoe%29.jpg",
+  "Scurcola Marsicana": "https://commons.wikimedia.org/wiki/Special:FilePath/Scurcola%20Marsicana%20view.jpg",
+  "Magliano de' Marsi": "https://commons.wikimedia.org/wiki/Special:FilePath/Magliano%20De%27%20Marsi%202013%20by-RaBoe%205.jpg"
+};
+
+marsicaFoodVenues.forEach((place) => {
+  const townImage = marsicaTownImages[place.area];
+  if (townImage && !place.photo) {
+    place.image = townImage;
+    place.photoCredit = "Wikimedia Commons - immagine del comune";
+  }
+});
+
+function curatedMapPlaces() {
+  return businesses.concat(userSubmittedBusinesses, marsicaFoodVenues);
+}
+
+let mapPlaces = curatedMapPlaces().concat([
   {
     name: "Moon Club",
     category: "Discoteca",
@@ -2632,6 +2655,12 @@ function createMapIcon(place) {
   });
 }
 
+function placePhotoLabel(place) {
+  if (place.photo) return "Foto reale";
+  if (place.photoCredit?.includes("Wikimedia Commons")) return "Foto del comune";
+  return "";
+}
+
 function renderMapBusinessList() {
   if (!mapViewRendered && !document.body.classList.contains("view-map")) return;
   const term = document.querySelector("#searchInput")?.value.trim() || "";
@@ -2642,7 +2671,7 @@ function renderMapBusinessList() {
       <span class="destination-copy">
         <strong>${place.name}</strong>
         <span>${place.category} - ${formatDistance(place)}</span>
-        <small>${[place.address, place.phone, place.photo ? "Foto reale" : "", place.stats].filter(Boolean).join(" - ")}</small>
+        <small>${[place.address, place.phone, placePhotoLabel(place), place.stats].filter(Boolean).join(" - ")}</small>
       </span>
     </button>
   `).join("");
@@ -2670,7 +2699,7 @@ function rebuildMapMarkers() {
 function applyImportedPlaces(places, statusText) {
   if (!places.length) return;
 
-  const curated = businesses.concat(userSubmittedBusinesses).map((place, index) => ({
+  const curated = curatedMapPlaces().map((place, index) => ({
     ...place,
     id: place.id || `curated-${index}`
   }));
@@ -2794,7 +2823,7 @@ function selectMapPlace(placeId, shouldPan = true) {
 
   document.querySelector("#mapCard").innerHTML = `
     <strong>${place.name}</strong>
-      <span>${[place.category, place.phone, place.photo ? "foto reale" : "", formatDistance(place)].filter(Boolean).join(" · ")}</span>
+      <span>${[place.category, place.phone, placePhotoLabel(place).toLowerCase(), formatDistance(place)].filter(Boolean).join(" · ")}</span>
   `;
   document.querySelector("#navigationLink").href = navigationUrl(place);
   document.querySelector("#mapStatus").textContent = userPosition
