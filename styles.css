@@ -3728,6 +3728,7 @@ body.view-feed .topbar > div:first-child {
 .shortcut-card:has(.shortcut-icon-coupon) { --shortcut-accent: #14b8a6; }
 .shortcut-card:has(.shortcut-icon-serate) { --shortcut-accent: #a855f7; }
 .shortcut-card:has(.shortcut-icon-eventi) { --shortcut-accent: #ec4899; }
+.shortcut-card:has(.shortcut-icon-mappa) { --shortcut-accent: #0ea5e9; }
 
 .shortcut-icon-cena {
   --shortcut-icon-light: url("assets/home-actions/cena-light.png");
@@ -3752,6 +3753,11 @@ body.view-feed .topbar > div:first-child {
 .shortcut-icon-eventi {
   --shortcut-icon-light: url("assets/home-actions/eventi-light.png");
   --shortcut-icon-dark: url("assets/home-actions/eventi-dark.png");
+}
+
+.shortcut-icon-mappa {
+  --shortcut-icon-light: url("assets/app-icon.svg");
+  --shortcut-icon-dark: url("assets/app-icon.svg");
 }
 
 .right-rail {
@@ -7222,7 +7228,7 @@ body.theme-dark .campaign-steps article {
 
 .agenda-event {
   display: grid;
-  grid-template-columns: 74px minmax(0, 1fr);
+  grid-template-columns: 118px 74px minmax(0, 1fr);
   gap: 16px;
   min-height: 158px;
   padding: 14px;
@@ -7231,6 +7237,27 @@ body.theme-dark .campaign-steps article {
   background: var(--card);
   box-shadow: 0 8px 22px rgba(18, 48, 71, .07);
   transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+.agenda-event-media {
+  position: relative;
+  align-self: stretch;
+  min-height: 112px;
+  margin: 0;
+  border-radius: 7px;
+  overflow: hidden;
+  background-color: rgba(8, 47, 73, .08);
+  background-position: center;
+  background-size: cover;
+}
+
+.agenda-event-media figcaption {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 .agenda-event:hover {
@@ -7447,6 +7474,11 @@ body.theme-dark .agenda-price {
     gap: 11px;
     min-height: 0;
     padding: 10px;
+  }
+
+  .agenda-event-media {
+    grid-column: 1 / -1;
+    min-height: 150px;
   }
 
   .agenda-date {
@@ -7782,6 +7814,27 @@ body.theme-dark .admin-control-toggle.is-on b {
 
 .seo-event-detail .seo-hero {
   min-height: 0;
+}
+
+.seo-event-image {
+  margin: 0 0 22px;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: #f8fafc;
+}
+
+.seo-event-image img {
+  display: block;
+  width: 100%;
+  max-height: 360px;
+  object-fit: cover;
+}
+
+.seo-event-image figcaption {
+  padding: 9px 12px;
+  color: var(--muted);
+  font-size: 12px;
 }
 
 .seo-event-summary {

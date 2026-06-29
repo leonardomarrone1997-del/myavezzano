@@ -60,7 +60,7 @@
         ]
       }
     </script>
-    <link rel="stylesheet" href="styles.css?v=99" />
+    <link rel="stylesheet" href="styles.css?v=100" />
   </head>
 <body class="view-feed">
     <a class="skip-link" href="#mainContent">Vai al contenuto</a>
@@ -230,8 +230,9 @@
               <h2>Scegli cosa fare oggi</h2>
               <p>Eventi, sconti e luoghi utili in un'unica schermata semplice.</p>
               <div class="command-actions">
-                <button class="primary-action" data-view-target="map" type="button">Esplora mappa</button>
-                <button class="ghost" data-action="install-app" type="button">Installa app</button>
+                <button class="primary-action" data-view-target="events" type="button">Eventi</button>
+                <button class="ghost" data-view-target="map" type="button">Mappa</button>
+                <button class="ghost" data-view-target="coupons" type="button">Coupon</button>
               </div>
             </div>
           </section>
@@ -310,7 +311,7 @@
             <aside class="panel map-panel">
               <div class="panel-head">
                 <h2>Destinazioni</h2>
-                <span class="pill" id="realBusinessCount">Demo</span>
+                <span class="pill" id="realBusinessCount">Locali</span>
               </div>
               <div id="mapBusinessList" class="business-list"></div>
             </aside>
@@ -580,12 +581,12 @@
                   <input id="merchantBusinessCategory" type="text" placeholder="Bar, ristorante, negozio..." />
                 </label>
                 <label class="field">
-                  <span>Metodo di pagamento demo</span>
-                  <input id="merchantPaymentMethod" type="text" placeholder="Carta demo **** 4242" />
+                  <span>Metodo di pagamento</span>
+                  <input id="merchantPaymentMethod" type="text" placeholder="Carta o riferimento pagamento" />
                 </label>
                 <button class="primary-action full-button" id="confirmMerchantPayment" type="button">Paga e crea negozio</button>
               </div>
-              <p class="legal">Checkout demo: nessun addebito reale. In produzione andrà collegato Stripe, Nexi o un altro gateway di pagamento.</p>
+              <p class="legal">Il pagamento sara completato tramite gateway sicuro collegato al servizio commerciale.</p>
             </section>
           </div>
 
@@ -596,7 +597,7 @@
                 <h2 id="merchantSubscriptionTitle">Piano Pro</h2>
                 <p id="merchantSubscriptionMeta">Dashboard negozio abilitata.</p>
               </div>
-              <button class="ghost" id="cancelMerchantPlan" type="button">Annulla demo</button>
+              <button class="ghost" id="cancelMerchantPlan" type="button">Annulla piano</button>
             </section>
 
             <div class="merchant-layout">
@@ -647,7 +648,7 @@
                     <option value="nearby">Utenti vicino al negozio</option>
                     <option value="saved">Utenti che salvano coupon</option>
                     <option value="events">Utenti interessati a eventi</option>
-                    <option value="all">Tutti gli utenti demo</option>
+                    <option value="all">Tutti gli utenti</option>
                   </select>
                 </label>
                 <div class="auth-feedback" id="merchantNotificationFeedback" role="status" aria-live="polite"></div>
@@ -879,7 +880,7 @@
         <button class="primary-action full-button" id="loginAccount" type="button" hidden>Accedi</button>
         <button class="ghost full-button" id="recoverPassword" type="button" hidden>Recupera password</button>
         <button class="ghost full-button logout-button" id="logoutAccount" type="button" hidden>Esci dall'account</button>
-        <p class="legal">Accesso admin demo: admin@myavezzano.it / Admin123!</p>
+        <p class="legal" id="adminDemoHint" data-demo-only hidden>Accesso admin di sviluppo disponibile solo in ambiente locale.</p>
       </section>
     </div>
 
@@ -910,7 +911,7 @@
 
     <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
-    <script defer src="events-data.js?v=99"></script>
-    <script defer src="app.js?v=99"></script>
+    <script defer src="events-data.js?v=100"></script>
+    <script defer src="app.js?v=100"></script>
   </body>
 </html>

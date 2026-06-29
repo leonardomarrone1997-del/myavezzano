@@ -185,32 +185,32 @@ const userSubmittedBusinesses = [
 ];
 
 const marsicaFoodVenues = [
-  { name: "Madonna delle Vigne", category: "Ristorante", area: "Celano", distance: "Celano", lat: 42.084098, lng: 13.544784, address: "Celano", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Ristorante a Celano inserito nella demo Marsica di MyAvezzano." },
-  { name: "Cittadella", category: "Ristorante", area: "Celano", distance: "Celano", lat: 42.083916, lng: 13.546127, address: "Via Michele Carusi 30, Celano", phone: "+39 0863 791293", website: "http://www.ristorantecittadella.it/", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Ristorante a Celano inserito nella demo Marsica di MyAvezzano." },
+  { name: "Madonna delle Vigne", category: "Ristorante", area: "Celano", distance: "Celano", lat: 42.084098, lng: 13.544784, address: "Celano", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Ristorante a Celano inserito nella rete Marsica di MyAvezzano." },
+  { name: "Cittadella", category: "Ristorante", area: "Celano", distance: "Celano", lat: 42.083916, lng: 13.546127, address: "Via Michele Carusi 30, Celano", phone: "+39 0863 791293", website: "http://www.ristorantecittadella.it/", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Ristorante a Celano inserito nella rete Marsica di MyAvezzano." },
   { name: "La Locanda Del Castello", category: "Ristorante", area: "Celano", distance: "Celano", lat: 42.085161, lng: 13.5459, address: "Via Porta Nuova 19, Celano", phone: "+39 327 7013313", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Ristorante a Celano vicino agli eventi del centro storico." },
-  { name: "Il Fortino Ristorante Hotel", category: "Ristorante", area: "Celano", distance: "Celano", lat: 42.07049, lng: 13.553207, address: "Celano", phone: "+39 339 4080595", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Ristorante e hotel a Celano nella rete demo Marsica." },
+  { name: "Il Fortino Ristorante Hotel", category: "Ristorante", area: "Celano", distance: "Celano", lat: 42.07049, lng: 13.553207, address: "Celano", phone: "+39 339 4080595", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Ristorante e hotel a Celano nella rete Marsica." },
   { name: "Locomotiva", category: "Ristorante", area: "Tagliacozzo", distance: "Tagliacozzo", lat: 42.070499, lng: 13.25467, address: "Tagliacozzo", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Ristorante a Tagliacozzo utile prima o dopo gli spettacoli del festival." },
-  { name: "La Pergola D'Oro", category: "Ristorante", area: "Tagliacozzo", distance: "Tagliacozzo", lat: 42.067029, lng: 13.25276, address: "Tagliacozzo", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Ristorante a Tagliacozzo inserito nella mappa demo." },
+  { name: "La Pergola D'Oro", category: "Ristorante", area: "Tagliacozzo", distance: "Tagliacozzo", lat: 42.067029, lng: 13.25276, address: "Tagliacozzo", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Ristorante a Tagliacozzo inserito nella mappa MyAvezzano." },
   { name: "La Parigina", category: "Ristorante", area: "Tagliacozzo", distance: "Tagliacozzo", lat: 42.067032, lng: 13.25094, address: "Tagliacozzo", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Locale a Tagliacozzo collegato agli eventi estivi della Marsica." },
-  { name: "Ristorante Pizzeria Al Mulino", category: "Ristorante", area: "Tagliacozzo", distance: "Tagliacozzo", lat: 42.064901, lng: 13.281294, address: "Tagliacozzo", phone: "+39 0863 610826", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80", caption: "Ristorante pizzeria a Tagliacozzo nella demo MyAvezzano." },
+  { name: "Ristorante Pizzeria Al Mulino", category: "Ristorante", area: "Tagliacozzo", distance: "Tagliacozzo", lat: 42.064901, lng: 13.281294, address: "Tagliacozzo", phone: "+39 0863 610826", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80", caption: "Ristorante pizzeria a Tagliacozzo nella rete MyAvezzano." },
   { name: "Pizzeria La Tavernetta", category: "Ristorante", area: "Tagliacozzo", distance: "Tagliacozzo", lat: 42.065008, lng: 13.283288, address: "Tagliacozzo", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80", caption: "Pizzeria a Tagliacozzo nella mappa dei locali limitrofi." },
-  { name: "Bar Tre Scalini", category: "Bar", area: "Pescina", distance: "Pescina", lat: 42.02647, lng: 13.659987, address: "SP 17 del Parco Nazionale d'Abruzzo 1, Pescina", website: "https://www.facebook.com/CocktailWineCoffee/", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80", caption: "Bar a Pescina inserito nella demo Marsica." },
-  { name: "Agriturismo Antica Locanda del Giovenco", category: "Ristorante", area: "Pescina", distance: "Pescina", lat: 42.028471, lng: 13.663936, address: "Via Romolo Tranquilli, Pescina", phone: "+39 333 9654746", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Agriturismo e ristorante a Pescina nella rete demo Marsica." },
-  { name: "Caffe dei Marsi", category: "Bar", area: "Pescina", distance: "Pescina", lat: 42.027056, lng: 13.648103, address: "Via Serafino Rinaldi 160, Pescina", phone: "+39 338 9299806", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80", caption: "Bar a Pescina nella mappa demo dei comuni limitrofi." },
+  { name: "Bar Tre Scalini", category: "Bar", area: "Pescina", distance: "Pescina", lat: 42.02647, lng: 13.659987, address: "SP 17 del Parco Nazionale d'Abruzzo 1, Pescina", website: "https://www.facebook.com/CocktailWineCoffee/", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80", caption: "Bar a Pescina inserito nella rete Marsica." },
+  { name: "Agriturismo Antica Locanda del Giovenco", category: "Ristorante", area: "Pescina", distance: "Pescina", lat: 42.028471, lng: 13.663936, address: "Via Romolo Tranquilli, Pescina", phone: "+39 333 9654746", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Agriturismo e ristorante a Pescina nella rete Marsica." },
+  { name: "Caffe dei Marsi", category: "Bar", area: "Pescina", distance: "Pescina", lat: 42.027056, lng: 13.648103, address: "Via Serafino Rinaldi 160, Pescina", phone: "+39 338 9299806", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80", caption: "Bar a Pescina nella mappa MyAvezzano dei comuni limitrofi." },
   { name: "Ristorante Valle Del Giovenco", category: "Ristorante", area: "Pescina", distance: "Pescina", lat: 42.028421, lng: 13.646078, address: "Via Serafino Rinaldi 326, Pescina", phone: "+39 0863 842191", website: "http://www.ristorantevalledelgiovenco.it/", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Ristorante a Pescina collegato alla nuova copertura Marsica." },
-  { name: "Marsica", category: "Ristorante", area: "Luco dei Marsi", distance: "Luco dei Marsi", lat: 41.957555, lng: 13.477531, address: "Via Martiri di Capistrello 11, Luco dei Marsi", phone: "+39 0863 528497", website: "http://www.ristorantepizzeriamarsica.it/", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80", caption: "Ristorante pizzeria a Luco dei Marsi nella demo MyAvezzano." },
+  { name: "Marsica", category: "Ristorante", area: "Luco dei Marsi", distance: "Luco dei Marsi", lat: 41.957555, lng: 13.477531, address: "Via Martiri di Capistrello 11, Luco dei Marsi", phone: "+39 0863 528497", website: "http://www.ristorantepizzeriamarsica.it/", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80", caption: "Ristorante pizzeria a Luco dei Marsi nella rete MyAvezzano." },
   { name: "al 75", category: "Ristorante", area: "Trasacco", distance: "Trasacco", lat: 41.958529, lng: 13.534741, address: "Trasacco", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Ristorante a Trasacco nella mappa Marsica." },
-  { name: "Il Tempio", category: "Bar", area: "Trasacco", distance: "Trasacco", lat: 41.958841, lng: 13.533703, address: "Trasacco", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80", caption: "Bar a Trasacco inserito nella demo dei locali limitrofi." },
+  { name: "Il Tempio", category: "Bar", area: "Trasacco", distance: "Trasacco", lat: 41.958841, lng: 13.533703, address: "Trasacco", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80", caption: "Bar a Trasacco inserito nella rete dei locali limitrofi." },
   { name: "Gelateria Alessandra", category: "Gelateria", area: "Trasacco", distance: "Trasacco", lat: 41.958854, lng: 13.534578, address: "Trasacco", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1567206563064-6f60f40a2b57?auto=format&fit=crop&w=600&q=80", caption: "Gelateria a Trasacco nella mappa dei comuni vicini." },
-  { name: "Gnuff", category: "Bar", area: "Trasacco", distance: "Trasacco", lat: 41.958553, lng: 13.535228, address: "Trasacco", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80", caption: "Bar a Trasacco nella demo Marsica." },
-  { name: "La Grotta", category: "Bar", area: "Trasacco", distance: "Trasacco", lat: 41.958843, lng: 13.536181, address: "Trasacco", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80", caption: "Locale a Trasacco inserito nella mappa demo." },
+  { name: "Gnuff", category: "Bar", area: "Trasacco", distance: "Trasacco", lat: 41.958553, lng: 13.535228, address: "Trasacco", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80", caption: "Bar a Trasacco nella rete Marsica." },
+  { name: "La Grotta", category: "Bar", area: "Trasacco", distance: "Trasacco", lat: 41.958843, lng: 13.536181, address: "Trasacco", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80", caption: "Locale a Trasacco inserito nella mappa MyAvezzano." },
   { name: "Il Granaio", category: "Ristorante", area: "Trasacco", distance: "Trasacco", lat: 41.957042, lng: 13.531406, address: "Via Quattro Novembre 49, Trasacco", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Ristorante a Trasacco nella copertura MyAvezzano." },
-  { name: "Fonte Vecchia", category: "Bar", area: "Carsoli", distance: "Carsoli", lat: 42.097606, lng: 13.084703, address: "Via Le Ripi, Carsoli", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80", caption: "Bar a Carsoli nella rete demo dei comuni limitrofi." },
+  { name: "Fonte Vecchia", category: "Bar", area: "Carsoli", distance: "Carsoli", lat: 42.097606, lng: 13.084703, address: "Via Le Ripi, Carsoli", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80", caption: "Bar a Carsoli nella rete dei comuni limitrofi." },
   { name: "C'era Una Volta", category: "Bar", area: "Carsoli", distance: "Carsoli", lat: 42.096463, lng: 13.083415, address: "Carsoli", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=600&q=80", caption: "Locale a Carsoli nella mappa Marsica." },
-  { name: "Bar Passone", category: "Bar", area: "Carsoli", distance: "Carsoli", lat: 42.097715, lng: 13.081677, address: "Carsoli", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80", caption: "Bar a Carsoli inserito nella demo MyAvezzano." },
+  { name: "Bar Passone", category: "Bar", area: "Carsoli", distance: "Carsoli", lat: 42.097715, lng: 13.081677, address: "Carsoli", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80", caption: "Bar a Carsoli inserito nella rete MyAvezzano." },
   { name: "Bar Le Magnolie", category: "Bar", area: "Scurcola Marsicana", distance: "Scurcola Marsicana", lat: 42.0638, lng: 13.34175, address: "Scurcola Marsicana", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80", caption: "Bar a Scurcola Marsicana vicino agli eventi estivi." },
-  { name: "Agriturismo I musicanti di Brema", category: "Ristorante", area: "Scurcola Marsicana", distance: "Scurcola Marsicana", lat: 42.066155, lng: 13.319943, address: "Scurcola Marsicana", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Agriturismo e ristorante a Scurcola Marsicana nella demo Marsica." },
-  { name: "I Cinque Pini", category: "Ristorante", area: "Magliano de' Marsi", distance: "Magliano de' Marsi", lat: 42.091462, lng: 13.365486, address: "Via Avezzano 11, Magliano de' Marsi", phone: "+39 0863 51221", website: "http://www.icinquepini.it/", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80", caption: "Ristorante pizzeria braceria a Magliano de' Marsi nella demo MyAvezzano." },
+  { name: "Agriturismo I musicanti di Brema", category: "Ristorante", area: "Scurcola Marsicana", distance: "Scurcola Marsicana", lat: 42.066155, lng: 13.319943, address: "Scurcola Marsicana", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Agriturismo e ristorante a Scurcola Marsicana nella rete Marsica." },
+  { name: "I Cinque Pini", category: "Ristorante", area: "Magliano de' Marsi", distance: "Magliano de' Marsi", lat: 42.091462, lng: 13.365486, address: "Via Avezzano 11, Magliano de' Marsi", phone: "+39 0863 51221", website: "http://www.icinquepini.it/", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80", caption: "Ristorante pizzeria braceria a Magliano de' Marsi nella rete MyAvezzano." },
   { name: "Sarni", category: "Ristorante", area: "Magliano de' Marsi", distance: "Magliano de' Marsi", lat: 42.094891, lng: 13.346537, address: "Magliano de' Marsi", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Ristorante a Magliano de' Marsi nella mappa dei comuni vicini." }
 ];
 
@@ -287,7 +287,7 @@ let mapPlaces = curatedMapPlaces().concat([
     address: "Avezzano",
     stats: "School of Rock 2026",
     image: "https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=500&q=80",
-    caption: "Sede demo per grandi eventi estivi, concerti e appuntamenti live."
+    caption: "Sede per grandi eventi estivi, concerti e appuntamenti live."
   },
   {
     name: "Castello Orsini",
@@ -331,7 +331,7 @@ let mapPlaces = curatedMapPlaces().concat([
     address: "Corso della Libertà, Avezzano",
     stats: "Prevendite eventi",
     image: "https://images.unsplash.com/photo-1526243741027-444d633d7365?auto=format&fit=crop&w=500&q=80",
-    caption: "Punto prevendita demo per biglietti e informazioni sugli eventi estivi."
+    caption: "Punto prevendita per biglietti e informazioni sugli eventi estivi."
   }
 ]).map((place, index) => ({
   ...place,
@@ -403,6 +403,18 @@ const VISUAL_STYLE_PREVIOUS_THEME_KEY = "myavezzano_visual_style_previous_theme"
 const FX_MODE_STORAGE_KEY = "myavezzano_fx_mode";
 const ADMIN_CONTROL_KEY = "myavezzano_admin_control_v1";
 const NOTIFICATION_READ_KEY = "myavezzano_notification_reads_v1";
+const IS_DEMO = (() => {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const host = window.location.hostname;
+    return params.get("demo") === "1" || localStorage.getItem("myavezzano_demo_mode") === "1" || ["localhost", "127.0.0.1", ""].includes(host);
+  } catch {
+    return false;
+  }
+})();
+const NODE_ENV = IS_DEMO ? "development" : "production";
+window.MYAVEZZANO_IS_DEMO = IS_DEMO;
+window.MYAVEZZANO_NODE_ENV = NODE_ENV;
 
 const categoryImages = {
   "Ristorante": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80",
@@ -421,11 +433,9 @@ const categoryImages = {
 };
 
 const quickActions = [
-  ["CENA", "Ristoranti e tavoli", "map", "cena"],
-  ["APERITIVO", "Drink e locali", "events", "aperitivo"],
-  ["COUPON", "Sconti attivi", "coupons", "coupon"],
-  ["SERATE", "Musica e locali", "events", "serate"],
-  ["EVENTI", "Agenda città", "events", "eventi"]
+  ["EVENTI", "Cosa fare oggi", "events", "eventi"],
+  ["MAPPA", "Locali e luoghi", "map", "mappa"],
+  ["COUPON", "Sconti attivi", "coupons", "coupon"]
 ];
 
 const cityHighlights = [
@@ -500,8 +510,48 @@ const eventCategories = [
 
 let activeEventCategory = "all";
 
-const calendarEvents = window.MYAVEZZANO_EVENTS || [];
-const archivedEvents = window.MYAVEZZANO_ARCHIVED_EVENTS || [];
+const EVENT_FALLBACK_IMAGE = "assets/social-preview.jpg";
+const EVENT_FALLBACK_SOURCE = "Fallback neutro MyAvezzano";
+
+function eventSlug(value = "") {
+  return String(value)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+}
+
+function normalizeEvent(item) {
+  const id = item.id || eventSlug([item.title, item.date, item.place].filter(Boolean).join(" "));
+  const image = item.image || EVENT_FALLBACK_IMAGE;
+  const isRealPhoto = Boolean(item.image && item.isRealPhoto);
+  return {
+    ...item,
+    id,
+    slug: item.slug || id,
+    image,
+    imageAlt: item.imageAlt || `${item.title} - ${item.place}`,
+    imageSource: item.imageSource || (isRealPhoto ? "Fonte evento" : EVENT_FALLBACK_SOURCE),
+    isRealPhoto,
+    sourceUrl: item.sourceUrl || "",
+    updatedAt: item.updatedAt || "2026-06-29"
+  };
+}
+
+function uniqueEvents(items = []) {
+  const seen = new Set();
+  return items.map(normalizeEvent).filter((item) => {
+    const key = [item.slug || item.id, item.date, eventSlug(item.title), eventSlug(item.place)].join("|");
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+const calendarEvents = uniqueEvents(window.MYAVEZZANO_EVENTS || []);
+const archivedEvents = uniqueEvents(window.MYAVEZZANO_ARCHIVED_EVENTS || []);
 const summerEvents = calendarEvents.filter((item) => item.date >= "2026-06-21" && item.date <= "2026-09-22");
 const coverageTowns = ["Avezzano", "Alba Fucens", "Celano", "Tagliacozzo", "Pescina", "Luco dei Marsi", "Trasacco", "Carsoli", "Borgorose", "Scurcola Marsicana", "Magliano de' Marsi"];
 const CITY_SELECTOR_STORAGE_KEY = "myavezzano_selected_town_v1";
@@ -951,6 +1001,12 @@ function renderSmartStrip() {
   `).join("");
 }
 
+function applyEnvironmentVisibility() {
+  document.querySelectorAll("[data-demo-only]").forEach((node) => {
+    node.hidden = !IS_DEMO;
+  });
+}
+
 function cityPulseSnapshot() {
   const adminControl = getAdminControl();
   if (!adminControl.pulseEnabled) return [];
@@ -1279,8 +1335,12 @@ function eventAttendanceCount(item) {
 function eventCardMarkup(item, { compact = false, idPrefix = "event" } = {}) {
   const parts = eventDayParts(item);
   const search = [item.title, item.place, item.area, item.category, item.detail, item.price].join(" ").toLowerCase();
+  const imageLabel = item.isRealPhoto ? item.imageSource : "Immagine neutra";
   return `
     <article class="agenda-event${compact ? " agenda-event-featured" : ""}${item.past ? " is-past" : ""}" id="${idPrefix}-${item.id}" data-search="${search}">
+      <figure class="agenda-event-media lazy-media" ${mediaAttrs(item.image || EVENT_FALLBACK_IMAGE, compact ? 720 : 520)} role="img" aria-label="${item.imageAlt || item.title}">
+        <figcaption>${imageLabel}</figcaption>
+      </figure>
       <time class="agenda-date" datetime="${item.date}">
         <span>${parts.weekday}</span>
         <strong>${parts.day}</strong>
@@ -1350,6 +1410,7 @@ function renderHomeEventFocus() {
       <button class="save-action" data-action="save-event" data-event-id="${item.id}" data-title="${item.title}" type="button">Salva</button>
     </div>
   `;
+  hydrateLazyMedia(panel, true);
 }
 
 function renderWeekendHome() {
@@ -1394,6 +1455,7 @@ function renderTonightAgenda() {
     ? `${todayEvents.length} ${todayEvents.length === 1 ? "evento" : "eventi"} in agenda oggi a ${selectedTownLabel()}.`
     : `Nessun evento oggi: il prossimo è ${eventRangeLabel(visible[0])}.`;
   grid.innerHTML = visible.map((item) => eventCardMarkup(item, { compact: true, idPrefix: "tonight-event" })).join("");
+  hydrateLazyMedia(grid, true);
 }
 
 function renderEventAgenda(filter = activeEventCategory) {
@@ -1410,6 +1472,7 @@ function renderEventAgenda(filter = activeEventCategory) {
   }
 
   grid.innerHTML = eventAgendaMarkup(filtered);
+  hydrateLazyMedia(grid);
 }
 
 function ensureEventsViewRendered() {
@@ -1445,7 +1508,8 @@ function renderSummerHomeBand() {
 }
 
 function renderSummerMetrics() {
-  document.querySelector("#summerEventCount").textContent = summerEvents.length;
+  const scopedSummer = scopedEvents(summerEvents);
+  document.querySelector("#summerEventCount").textContent = scopedSummer.length || summerEvents.length;
   document.querySelector("#summerAvezzanoCount").textContent = summerEvents.filter((item) => item.area === "Avezzano").length;
   document.querySelector("#summerAlbaCount").textContent = summerEvents.filter((item) => item.area === "Alba Fucens").length;
 }
@@ -1488,6 +1552,7 @@ function renderSummerProgram(filter = activeSummerCategory) {
   grid.innerHTML = filtered.length
     ? eventAgendaMarkup(filtered, { idPrefix: "summer-event" })
     : `<div class="agenda-empty"><strong>Nessun evento in questo filtro.</strong><span>Apri l'intero cartellone Estate 2026.</span></div>`;
+  hydrateLazyMedia(grid);
 }
 
 function ensureSummerViewRendered() {
@@ -1499,6 +1564,7 @@ function ensureSummerViewRendered() {
 }
 
 function render() {
+  applyEnvironmentVisibility();
   document.querySelector("#stories").innerHTML = quickActions.map(([title, text, view, icon]) => `
     <button class="shortcut-card" data-view-target="${view}" data-shortcut="${icon}" type="button" aria-label="${title}: ${text}">
       <span class="shortcut-icon shortcut-icon-${icon}" aria-hidden="true"></span>
@@ -2071,7 +2137,7 @@ function renderAdminDashboard() {
   const requests = [
     ...(state.events || []).map((item) => ["Prenotazione", item.title, "Utente"]),
     ...(state.coupons || []).map((item) => ["Coupon", item.title, "Salvato"]),
-    ...(state.campaigns || []).map((item) => ["Campagna", item.title, "Demo"])
+    ...(state.campaigns || []).map((item) => ["Campagna", item.title, "Locale"])
   ];
   const aiInsights = intelligenceInsights();
   const adminControl = getAdminControl();
@@ -2137,13 +2203,15 @@ function renderAdminDashboard() {
       <section class="panel god-command">
         <div>
           <strong>Azioni rapide admin</strong>
-          <span>Strumenti demo per controllo totale del prototipo.</span>
+          <span>Strumenti operativi per controllo contenuti, eventi e comunicazioni.</span>
         </div>
         <div class="composer-actions">
           <button class="ghost" data-admin-action="export-data" type="button">Esporta dati</button>
           <button class="ghost" data-admin-action="sync-content" type="button">Sincronizza contenuti</button>
-          <button class="ghost" data-admin-action="seed-demo" type="button">Ripristina demo</button>
-          <button class="ghost" data-admin-action="clear-demo-state" type="button">Pulisci azioni demo</button>
+          ${IS_DEMO ? `
+            <button class="ghost" data-admin-action="seed-demo" type="button">Ripristina dati sviluppo</button>
+            <button class="ghost" data-admin-action="clear-demo-state" type="button">Pulisci azioni locali</button>
+          ` : ""}
           <button class="ghost" data-admin-action="refresh-ai" type="button">Ricalcola IA</button>
         </div>
       </section>
@@ -2478,7 +2546,7 @@ function handleAdminAction(button) {
     control.broadcasts = [{ message, target, at: new Date().toISOString() }, ...control.broadcasts].slice(0, 20);
     addAdminAudit(control, `Comunicazione inviata a: ${target}`);
     renderAdminDashboard();
-    showToast("Comunicazione registrata e inviata nella demo.", "success");
+    showToast("Comunicazione registrata.", "success");
     return;
   }
 
@@ -2501,9 +2569,13 @@ function handleAdminAction(button) {
   }
 
   if (button.dataset.adminAction === "seed-demo") {
+    if (!IS_DEMO) {
+      showToast("Disponibile solo in ambiente di sviluppo.", "error");
+      return;
+    }
     seedAdminUser().then(() => {
       renderAdminDashboard();
-    showToast("Account admin demo attivato.", "success");
+    showToast("Account admin di sviluppo attivato.", "success");
     });
     return;
   }
@@ -2512,7 +2584,7 @@ function handleAdminAction(button) {
     localStorage.removeItem(DEMO_STATE_KEY);
     renderAdminDashboard();
     renderUserProfile("settings");
-    showToast("Azioni demo pulite.", "success");
+    showToast("Azioni locali pulite.", "success");
     return;
   }
 
@@ -2546,7 +2618,7 @@ function handleAdminAction(button) {
 const legalCopy = {
   privacy: ["Privacy Policy", "MyAvezzano MVP salva dati account, preferenze, coupon ed eventi in storage locale del browser. In produzione i dati saranno trattati su server sicuro con consenso, finalità esplicite e strumenti di cancellazione."],
   terms: ["Termini e condizioni", "Il prototipo mostra funzionalità demo per utenti, commercianti e admin. Coupon, pagamenti, prenotazioni e statistiche non generano obblighi reali finché non saranno collegati a servizi certificati."],
-  cookies: ["Cookie Policy", "La versione statica non usa cookie di tracciamento proprietari. Usa localStorage per sessione, preferenze, cache demo e PWA. Servizi esterni come mappe o immagini possono applicare proprie policy."]
+  cookies: ["Cookie Policy", "La versione statica non usa cookie di tracciamento proprietari. Usa localStorage per sessione, preferenze, cache locale e PWA. Servizi esterni come mappe o immagini possono applicare proprie policy."]
 };
 
 function renderLegalPanel(tab = "privacy") {
@@ -2561,7 +2633,7 @@ function renderLegalPanel(tab = "privacy") {
     <h2>${title}</h2>
     <p>${text}</p>
     <div class="settings-list">
-      <div class="profile-row"><div><strong>Titolare demo</strong><span>MyAvezzano MVP</span></div><span class="pill">Demo</span></div>
+      <div class="profile-row"><div><strong>Titolare account</strong><span>MyAvezzano</span></div><span class="pill">Locale</span></div>
       <div class="profile-row"><div><strong>Ultimo aggiornamento</strong><span>5 giugno 2026</span></div><span class="pill success">Attivo</span></div>
     </div>
   `;
@@ -2726,7 +2798,7 @@ function renderMapBusinessList() {
       </span>
     </button>
   `).join("");
-  document.querySelector("#realBusinessCount").textContent = realPlacesLoaded ? `${places.length} reali` : `${places.length} demo`;
+  document.querySelector("#realBusinessCount").textContent = realPlacesLoaded ? `${places.length} reali` : `${places.length} locali`;
   applySearchFilter();
 }
 
@@ -2844,13 +2916,13 @@ async function loadRealAvezzanoBusinesses(force = false) {
 
     if (!places.length) throw new Error("Nessuna attività trovata");
     localStorage.setItem(OSM_CACHE_KEY, JSON.stringify(places));
-    applyImportedPlaces(places, `${places.length} attività reali importate da OpenStreetMap. Le foto sono reali quando disponibili; in alternativa viene usata l'immagine demo della categoria.`);
+    applyImportedPlaces(places, `${places.length} attività reali importate da OpenStreetMap. Le foto sono reali quando disponibili; in alternativa viene usata un'immagine neutra di categoria.`);
   } catch {
     const cached = cachedOsmPlaces();
     if (cached.length) {
       applyImportedPlaces(cached, `${cached.length} attività caricate dalla cache locale. Importazione online non riuscita.`);
     } else {
-      status.textContent = "Importazione online non riuscita. La demo resta con dati locali; riprova con una connessione attiva.";
+      status.textContent = "Importazione online non riuscita. Il sito resta con dati locali; riprova con una connessione attiva.";
     }
   } finally {
     isLoadingRealPlaces = false;
@@ -2940,6 +3012,8 @@ function refreshTownScopedViews({ panMap = false } = {}) {
   }
 
   if (summerViewRendered || document.body.classList.contains("view-summer")) {
+    renderSummerMetrics();
+    renderSummerNext();
     renderSummerProgram(activeSummerCategory);
   }
 
@@ -3027,7 +3101,7 @@ function initInteractiveMap() {
   if (cached.length) {
     applyImportedPlaces(cached.slice(0, MAX_REAL_PLACES), `${Math.min(cached.length, MAX_REAL_PLACES)} attività caricate dalla cache locale. Usa "Importa attività reali" per aggiornare.`);
   } else {
-    status.textContent = "Demo veloce attiva. Usa Importa attività reali per aggiornare da OpenStreetMap.";
+    status.textContent = "Dati locali attivi. Usa Importa attivita reali per aggiornare da OpenStreetMap.";
   }
   refreshInteractiveMapLayout();
 }
@@ -3583,7 +3657,7 @@ function handleAction(button) {
       return;
     }
     addDemoItem("events", { title });
-    showToast(`Prenotazione demo salvata: ${title}.`, "success");
+    showToast(`Prenotazione salvata: ${title}.`, "success");
     switchView("profile");
     renderProfilePanel("events");
     return;
@@ -3737,8 +3811,8 @@ function handleAction(button) {
   }
 
   if (action === "new-campaign") {
-    addDemoItem("campaigns", { title: "Nuova campagna demo" });
-    showToast("Nuova campagna demo creata.", "success");
+    addDemoItem("campaigns", { title: "Nuova campagna" });
+    showToast("Nuova campagna creata.", "success");
     return;
   }
 
@@ -3763,7 +3837,7 @@ document.querySelector("#closeOnboarding").addEventListener("click", () => {
 
 document.querySelector("#skipOnboarding").addEventListener("click", () => {
   closeOnboarding(true);
-  showToast("Demo guidata completata. Puoi riaprirla da Guida o dal profilo.");
+  showToast("Guida completata. Puoi riaprirla da Guida o dal profilo.");
 });
 
 document.querySelector("#prevOnboarding").addEventListener("click", () => {
@@ -3980,7 +4054,7 @@ document.querySelector("#publishDemo").addEventListener("click", () => {
   const button = document.querySelector("#publishDemo");
   addDemoItem("merchantPosts", { title: "Nuovo contenuto commerciante" });
   button.textContent = "Pubblicato";
-  showToast("Contenuto demo pubblicato nella dashboard commerciante.", "success");
+  showToast("Contenuto pubblicato nella dashboard commerciante.", "success");
   setTimeout(() => { button.textContent = "Pubblica"; }, 1600);
 });
 
@@ -4053,7 +4127,7 @@ document.querySelector("#sendMerchantNotification")?.addEventListener("click", a
   saveMerchantNotifications(notifications);
   addDemoItem("merchantNotifications", { title: draft.title, type: notification.targetLabel });
   renderMerchantNotificationLog();
-  setMerchantNotificationFeedback(`Notifica approvata e inviata via ${channel === "browser" ? "browser" : "web app demo"}.`, "success");
+  setMerchantNotificationFeedback(`Notifica approvata e inviata via ${channel === "browser" ? "browser" : "web app"}.`, "success");
   showToast(`Promo Gold inviata: ${draft.title}`, "success");
 });
 
@@ -4124,14 +4198,15 @@ async function hashPassword(password, salt = randomId("salt")) {
 }
 
 async function seedAdminUser() {
+  if (!IS_DEMO) return;
   const users = getUsers();
   if (users.some((user) => user.role === "admin")) return;
-  const password = await hashPassword("Admin123!");
+  const password = await hashPassword(randomId("admin-pass"));
   users.push({
     id: "admin-demo",
     name: "Admin",
     surname: "MyAvezzano",
-    email: "admin@myavezzano.it",
+    email: `admin-${Date.now()}@local.myavezzano.it`,
     phone: "",
     role: "admin",
     provider: "Email",
@@ -4234,7 +4309,7 @@ function renderMerchantNotificationLog() {
       </div>
       <span class="pill success">${item.status}</span>
     </div>
-  `).join("") : `<p class="muted">Nessuna notifica Gold inviata in questa demo.</p>`;
+  `).join("") : `<p class="muted">Nessuna notifica Gold inviata.</p>`;
 }
 
 function targetLabel(value) {
@@ -4242,8 +4317,8 @@ function targetLabel(value) {
     nearby: "Utenti vicino al negozio",
     saved: "Utenti coupon",
     events: "Utenti eventi",
-    all: "Tutti gli utenti demo"
-  }[value] || "Utenti demo";
+    all: "Tutti gli utenti"
+  }[value] || "Utenti";
 }
 
 async function maybeSendBrowserNotification(title, body) {
@@ -4422,7 +4497,7 @@ document.querySelectorAll("[data-auth-provider]").forEach((button) => {
   button.addEventListener("click", () => {
     completeRegistration(button.dataset.authProvider, {
       name: `${button.dataset.authProvider} User`,
-      email: `${button.dataset.authProvider.toLowerCase()}@demo.myavezzano.it`
+      email: `${button.dataset.authProvider.toLowerCase()}@local.myavezzano.it`
     });
   });
 });
@@ -4638,7 +4713,7 @@ document.querySelectorAll(".start-plan").forEach((button) => {
       return;
     }
 
-    setMerchantFeedback(`Piano ${selectedMerchantPlan.plan} selezionato. Completa il checkout demo.`, "info");
+    setMerchantFeedback(`Piano ${selectedMerchantPlan.plan} selezionato. Completa la richiesta di attivazione.`, "info");
   });
 });
 
@@ -4665,7 +4740,7 @@ document.querySelector("#confirmMerchantPayment").addEventListener("click", () =
   }
 
   if (paymentMethod.length < 4) {
-    setMerchantFeedback("Inserisci un metodo di pagamento demo.", "error");
+    setMerchantFeedback("Inserisci un metodo di pagamento valido.", "error");
     return;
   }
 
@@ -4679,14 +4754,14 @@ document.querySelector("#confirmMerchantPayment").addEventListener("click", () =
     startedAt: new Date().toLocaleDateString("it-IT")
   });
 
-  setMerchantFeedback("Pagamento demo completato. Dashboard negozio attivata.", "success");
+  setMerchantFeedback("Richiesta registrata. Dashboard negozio attivata.", "success");
   setTimeout(renderMerchantArea, 700);
 });
 
 document.querySelector("#cancelMerchantPlan").addEventListener("click", () => {
   localStorage.removeItem(MERCHANT_STORAGE_KEY);
   merchantCheckout.hidden = true;
-  setMerchantFeedback("Abbonamento demo annullato.", "info");
+  setMerchantFeedback("Piano annullato.", "info");
   renderMerchantArea();
 });
 
@@ -4903,7 +4978,7 @@ async function bootApp() {
   applyTheme();
   applyVisualStyle(preferredVisualStyle());
   applyFxMode("light", false);
-  await seedAdminUser();
+  if (IS_DEMO) await seedAdminUser();
   render();
   renderLegalPanel();
   refreshTownScopedViews();
