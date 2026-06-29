@@ -449,11 +449,12 @@ let activeEventCategory = "all";
 const calendarEvents = window.MYAVEZZANO_EVENTS || [];
 const archivedEvents = window.MYAVEZZANO_ARCHIVED_EVENTS || [];
 const summerEvents = calendarEvents.filter((item) => item.date >= "2026-06-21" && item.date <= "2026-09-22");
-const coverageTowns = ["Avezzano", "Alba Fucens", "Celano", "Tagliacozzo", "Pescina", "Luco dei Marsi", "Trasacco", "Scurcola Marsicana", "Magliano dei Marsi"];
+const coverageTowns = ["Avezzano", "Alba Fucens", "Celano", "Tagliacozzo", "Pescina", "Luco dei Marsi", "Trasacco", "Carsoli", "Scurcola Marsicana", "Magliano de' Marsi"];
 const summerCategories = [
   ["Tutti", "Intero cartellone", "all"],
   ["Avezzano", "In città", "avezzano"],
   ["Alba Fucens", "Area archeologica", "alba"],
+  ["Vicino a te", "Marsica", "nearby"],
   ["Musica", "Live e concerti", "musica"],
   ["Teatro", "Spettacoli", "teatro"]
 ];
@@ -1323,6 +1324,7 @@ function summerEventMatchesFilter(item, filter) {
   if (filter === "all") return true;
   if (filter === "avezzano") return item.area === "Avezzano";
   if (filter === "alba") return item.area === "Alba Fucens";
+  if (filter === "nearby") return item.area !== "Avezzano" && coverageTowns.includes(item.area);
   return item.category.toLowerCase() === filter;
 }
 
@@ -1889,6 +1891,65 @@ function adminControlButton(key, label, description, value) {
   `;
 }
 
+function sumBy(items, keyGetter, valueGetter = () => 1) {
+  return items.reduce((acc, item) => {
+    const key = keyGetter(item);
+    if (!key) return acc;
+    acc[key] = (acc[key] || 0) + valueGetter(item);
+    return acc;
+  }, {});
+}
+
+function rankedEntries(map, limit = 3) {
+  return Object.entries(map).sort((a, b) => b[1] - a[1]).slice(0, limit);
+}
+
+function eventWeekdayName(item) {
+  return new Intl.DateTimeFormat("it-IT", { weekday: "long" }).format(eventDate(item.date));
+}
+
+function timeSlotLabel(item) {
+  const hour = Number.parseInt(String(item.time || "").match(/\d{1,2}/)?.[0] || "21", 10);
+  if (hour < 12) return "Mattina";
+  if (hour < 18) return "Pomeriggio";
+  if (hour < 22) return "Sera";
+  return "Notte";
+}
+
+function buildLocalInsights() {
+  const today = currentDateKey();
+  const futureEvents = calendarEvents.filter((item) => (item.endDate || item.date) >= today);
+  const activeEvents = futureEvents.length ? futureEvents : calendarEvents;
+  const areas = sumBy(calendarEvents, (item) => item.area);
+  const venues = sumBy(activeEvents, (item) => item.place, eventAttendanceCount);
+  const weekdays = sumBy(activeEvents, eventWeekdayName, eventAttendanceCount);
+  const categories = sumBy(activeEvents, (item) => item.category, eventAttendanceCount);
+  const slots = sumBy(activeEvents, timeSlotLabel, eventAttendanceCount);
+  const strongestEvent = [...activeEvents].sort((a, b) => eventAttendanceCount(b) - eventAttendanceCount(a))[0];
+  const uncovered = coverageTowns.filter((town) => !areas[town]);
+  const nearbyCount = activeEvents.filter((item) => item.area !== "Avezzano" && coverageTowns.includes(item.area)).length;
+  return {
+    strongestEvent,
+    topVenue: rankedEntries(venues, 1)[0],
+    topDay: rankedEntries(weekdays, 1)[0],
+    topCategory: rankedEntries(categories, 1)[0],
+    topSlot: rankedEntries(slots, 1)[0],
+    topAreas: rankedEntries(areas, 4),
+    uncovered,
+    nearbyCount
+  };
+}
+
+function insightMetric(label, value, detail) {
+  return `
+    <article class="admin-insight-card">
+      <span>${label}</span>
+      <strong>${value}</strong>
+      <small>${detail}</small>
+    </article>
+  `;
+}
+
 function renderAdminDashboard() {
   const root = document.querySelector("#adminDashboard");
   if (!root) return;
@@ -1919,6 +1980,7 @@ function renderAdminDashboard() {
   const pulseSnapshot = cityPulseSnapshot();
   const lastMinuteState = getLastMinuteState();
   const activeLastMinute = lastMinuteDeals.filter((deal) => adminControl.lastMinuteStatus[deal.id] !== "paused" && (lastMinuteState.deadlines[deal.id] || 0) > Date.now()).length;
+  const localInsights = buildLocalInsights();
 
   root.innerHTML = `
     <div class="admin-shell">
@@ -2121,16 +2183,32 @@ function renderAdminDashboard() {
           </label>
           <button class="primary-action" data-admin-action="send-broadcast" type="button" ${adminControl.push ? "" : "disabled"}>Invia comunicazione</button>
         </section>
-        <section class="panel admin-coverage-panel">
+        <section class="panel admin-coverage-panel admin-local-insights">
           <div class="panel-head">
-            <div><p class="eyebrow">Copertura territoriale</p><h2>Avezzano e Marsica</h2></div>
+            <div><p class="eyebrow">Statistiche utili</p><h2>Domanda locale e Marsica</h2></div>
             <span class="pill ${adminControl.nearbyEventsEnabled ? "success" : "warning"}">${adminControl.nearbyEventsEnabled ? "Estensione attiva" : "In pausa"}</span>
           </div>
-          <div class="coverage-town-grid">
-            ${coverageTowns.map((town) => {
-              const count = calendarEvents.filter((item) => item.area === town).length;
-              return `<div class="coverage-town ${count ? "has-events" : ""}"><strong>${town}</strong><span>${count ? `${count} eventi` : "In attesa dati"}</span></div>`;
-            }).join("")}
+          <div class="admin-insight-grid">
+            ${insightMetric("Evento piu caldo", localInsights.strongestEvent?.title || "Da calcolare", localInsights.strongestEvent ? `${eventAttendanceCount(localInsights.strongestEvent)} partecipanti stimati` : "Nessun evento attivo")}
+            ${insightMetric("Locale / luogo piu forte", localInsights.topVenue?.[0] || "Da calcolare", localInsights.topVenue ? `${localInsights.topVenue[1]} interesse stimato` : "Dati in aggiornamento")}
+            ${insightMetric("Giorno migliore", localInsights.topDay?.[0] || "Da calcolare", localInsights.topDay ? `${localInsights.topDay[1]} presenze potenziali` : "Serve piu storico")}
+            ${insightMetric("Categoria trainante", localInsights.topCategory?.[0] || "Da calcolare", localInsights.topCategory ? `${localInsights.topCategory[1]} interazioni potenziali` : "Dati insufficienti")}
+          </div>
+          <div class="admin-insight-split">
+            <div>
+              <strong>Comuni piu coperti</strong>
+              <div class="admin-rank-list">
+                ${localInsights.topAreas.map(([town, count], index) => `<span><b>${index + 1}</b>${town}<em>${count} eventi</em></span>`).join("")}
+              </div>
+            </div>
+            <div>
+              <strong>Azioni consigliate</strong>
+              <div class="admin-action-hints">
+                <span>${localInsights.nearbyCount} eventi vicini: spingi il filtro "Vicino a te" in home.</span>
+                <span>Orario caldo: ${localInsights.topSlot?.[0] || "sera"}.</span>
+                <span>${localInsights.uncovered.length ? `Da completare: ${localInsights.uncovered.slice(0, 3).join(", ")}.` : "Copertura base completa sui comuni impostati."}</span>
+              </div>
+            </div>
           </div>
         </section>
         <section class="panel">
