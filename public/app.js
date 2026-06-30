@@ -512,6 +512,19 @@ let activeEventCategory = "all";
 
 const EVENT_FALLBACK_IMAGE = "assets/social-preview.jpg";
 const EVENT_FALLBACK_SOURCE = "Fallback neutro MyAvezzano";
+const IMPORTANT_EVENT_KEYWORDS = [
+  "fedez",
+  "francesco gabbani",
+  "enrico brignano",
+  "tony hadley",
+  "rita pavone",
+  "fred de palma",
+  "le vibrazioni",
+  "fausto leali",
+  "sal da vinci",
+  "leo gassmann",
+  "bb day"
+];
 
 function eventSlug(value = "") {
   return String(value)
@@ -527,10 +540,14 @@ function normalizeEvent(item) {
   const id = item.id || eventSlug([item.title, item.date, item.place].filter(Boolean).join(" "));
   const image = item.image || EVENT_FALLBACK_IMAGE;
   const isRealPhoto = Boolean(item.image && item.isRealPhoto);
+  const importance = item.importance || (item.featured ? "high" : "normal");
+  const importantByTitle = IMPORTANT_EVENT_KEYWORDS.some((keyword) => String(item.title || "").toLowerCase().includes(keyword));
   return {
     ...item,
     id,
     slug: item.slug || id,
+    importance,
+    featured: Boolean(item.featured || importance === "high" || importantByTitle),
     image,
     imageAlt: item.imageAlt || `${item.title} - ${item.place}`,
     imageSource: item.imageSource || (isRealPhoto ? "Fonte evento" : EVENT_FALLBACK_SOURCE),
@@ -1336,8 +1353,9 @@ function eventCardMarkup(item, { compact = false, idPrefix = "event" } = {}) {
   const parts = eventDayParts(item);
   const search = [item.title, item.place, item.area, item.category, item.detail, item.price].join(" ").toLowerCase();
   const imageLabel = item.isRealPhoto ? item.imageSource : "Immagine neutra";
+  const isImportant = item.featured || item.importance === "high";
   return `
-    <article class="agenda-event${compact ? " agenda-event-featured" : ""}${item.past ? " is-past" : ""}" id="${idPrefix}-${item.id}" data-search="${search}">
+    <article class="agenda-event${compact ? " agenda-event-featured" : ""}${isImportant ? " is-important" : ""}${item.past ? " is-past" : ""}" id="${idPrefix}-${item.id}" data-search="${search}" data-importance="${isImportant ? "high" : "normal"}">
       <figure class="agenda-event-media lazy-media" ${mediaAttrs(item.image || EVENT_FALLBACK_IMAGE, compact ? 720 : 520)} role="img" aria-label="${item.imageAlt || item.title}">
         <figcaption>${imageLabel}</figcaption>
       </figure>
@@ -1354,6 +1372,7 @@ function eventCardMarkup(item, { compact = false, idPrefix = "event" } = {}) {
         <h3>${item.title}</h3>
         <p class="agenda-place">${item.place}</p>
         <p>${item.detail}</p>
+        ${isImportant && !item.past ? `<p class="agenda-importance"><span aria-hidden="true"></span> Evento importante</p>` : ""}
         ${item.past ? "" : `
           <p class="agenda-attendance" data-event-attendance="${item.id}">
             <strong>${eventAttendanceCount(item)}</strong> persone parteciperanno a questo evento

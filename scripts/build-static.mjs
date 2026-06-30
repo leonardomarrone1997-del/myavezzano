@@ -35,6 +35,19 @@ const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (character) => (
 }[character]));
 
 const eventFallbackImage = "assets/social-preview.jpg";
+const importantEventKeywords = [
+  "fedez",
+  "francesco gabbani",
+  "enrico brignano",
+  "tony hadley",
+  "rita pavone",
+  "fred de palma",
+  "le vibrazioni",
+  "fausto leali",
+  "sal da vinci",
+  "leo gassmann",
+  "bb day"
+];
 
 function eventSlug(value = "") {
   return String(value)
@@ -56,10 +69,14 @@ function normalizeEvent(event) {
   const id = event.id || eventSlug([event.title, event.date, event.place].filter(Boolean).join(" "));
   const image = event.image || eventFallbackImage;
   const isRealPhoto = Boolean(event.image && event.isRealPhoto);
+  const importance = event.importance || (event.featured ? "high" : "normal");
+  const importantByTitle = importantEventKeywords.some((keyword) => String(event.title || "").toLowerCase().includes(keyword));
   return {
     ...event,
     id,
     slug: event.slug || id,
+    importance,
+    featured: Boolean(event.featured || importance === "high" || importantByTitle),
     image,
     imageAlt: event.imageAlt || `${event.title} - ${event.place}`,
     imageSource: event.imageSource || (isRealPhoto ? "Fonte evento" : "Fallback neutro MyAvezzano"),
@@ -151,6 +168,7 @@ function eventPage(event) {
   const price = escapeHtml(event.price);
   const imageAlt = escapeHtml(event.imageAlt);
   const imageSource = escapeHtml(event.imageSource);
+  const isImportant = event.featured || event.importance === "high";
 
   return `<!doctype html>
 <html lang="it">
@@ -172,7 +190,7 @@ function eventPage(event) {
     <script type="application/ld+json">${schemaJson}</script>
     <link rel="stylesheet" href="../styles.css?v=100" />
   </head>
-  <body class="seo-body">
+  <body class="seo-body${isImportant ? " seo-event-important" : ""}">
     <div class="seo-shell">
       <header class="seo-header">
         <a class="seo-brand" href="../index.html"><img src="../assets/app-icon.svg" alt="MyAvezzano" /><span>MyAvezzano</span></a>
@@ -185,7 +203,7 @@ function eventPage(event) {
             <img src="${imageUrl}" alt="${imageAlt}" loading="eager" decoding="async" onerror="this.onerror=null;this.src='../assets/social-preview.jpg';" />
             <figcaption>${imageSource}${event.isRealPhoto && event.sourceUrl ? ` - <a href="${escapeHtml(event.sourceUrl)}" rel="nofollow noreferrer" target="_blank">fonte</a>` : ""}</figcaption>
           </figure>
-          <p class="seo-kicker">${escapeHtml(event.category)} · ${escapeHtml(event.area)}</p>
+          <p class="seo-kicker">${escapeHtml(event.category)} · ${escapeHtml(event.area)}${isImportant ? ` <span class="seo-important-badge">Evento importante</span>` : ""}</p>
           <h1>${title}</h1>
           <p>${description}</p>
           <div class="seo-event-summary">

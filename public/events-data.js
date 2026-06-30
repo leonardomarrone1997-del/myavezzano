@@ -396,7 +396,10 @@ window.MYAVEZZANO_EVENTS = [
     "imageSource": "Fallback neutro MyAvezzano",
     "isRealPhoto": false,
     "sourceUrl": "",
-    "updatedAt": "2026-06-29"
+    "updatedAt": "2026-06-30",
+    "importance": "high",
+    "featured": true,
+    "importanceLabel": "Evento importante"
   },
   {
     "id": "ulisse-donne",
@@ -918,7 +921,10 @@ window.MYAVEZZANO_EVENTS = [
     "imageSource": "Fallback neutro MyAvezzano",
     "isRealPhoto": false,
     "sourceUrl": "",
-    "updatedAt": "2026-06-29"
+    "updatedAt": "2026-06-30",
+    "importance": "high",
+    "featured": true,
+    "importanceLabel": "Evento importante"
   },
   {
     "id": "pescina-miele-parco-2",
@@ -1044,7 +1050,10 @@ window.MYAVEZZANO_EVENTS = [
     "imageSource": "Fallback neutro MyAvezzano",
     "isRealPhoto": false,
     "sourceUrl": "",
-    "updatedAt": "2026-06-29"
+    "updatedAt": "2026-06-30",
+    "importance": "high",
+    "featured": true,
+    "importanceLabel": "Evento importante"
   },
   {
     "id": "tagliacozzo-belinda-davids",
@@ -1152,7 +1161,10 @@ window.MYAVEZZANO_EVENTS = [
     "imageSource": "Fallback neutro MyAvezzano",
     "isRealPhoto": false,
     "sourceUrl": "",
-    "updatedAt": "2026-06-29"
+    "updatedAt": "2026-06-30",
+    "importance": "high",
+    "featured": true,
+    "importanceLabel": "Evento importante"
   },
   {
     "id": "tagliacozzo-tony-hadley",
@@ -1170,7 +1182,10 @@ window.MYAVEZZANO_EVENTS = [
     "imageSource": "Fallback neutro MyAvezzano",
     "isRealPhoto": false,
     "sourceUrl": "",
-    "updatedAt": "2026-06-29"
+    "updatedAt": "2026-06-30",
+    "importance": "high",
+    "featured": true,
+    "importanceLabel": "Evento importante"
   },
   {
     "id": "tagliacozzo-de-andre",
@@ -1242,7 +1257,10 @@ window.MYAVEZZANO_EVENTS = [
     "imageSource": "Fallback neutro MyAvezzano",
     "isRealPhoto": false,
     "sourceUrl": "",
-    "updatedAt": "2026-06-29"
+    "updatedAt": "2026-06-30",
+    "importance": "high",
+    "featured": true,
+    "importanceLabel": "Evento importante"
   },
   {
     "id": "luco-fred-de-palma",
@@ -1260,7 +1278,10 @@ window.MYAVEZZANO_EVENTS = [
     "imageSource": "Fallback neutro MyAvezzano",
     "isRealPhoto": false,
     "sourceUrl": "",
-    "updatedAt": "2026-06-29"
+    "updatedAt": "2026-06-30",
+    "importance": "high",
+    "featured": true,
+    "importanceLabel": "Evento importante"
   },
   {
     "id": "luco-le-vibrazioni",
@@ -1278,7 +1299,10 @@ window.MYAVEZZANO_EVENTS = [
     "imageSource": "Fallback neutro MyAvezzano",
     "isRealPhoto": false,
     "sourceUrl": "",
-    "updatedAt": "2026-06-29"
+    "updatedAt": "2026-06-30",
+    "importance": "high",
+    "featured": true,
+    "importanceLabel": "Evento importante"
   },
   {
     "id": "carsoli-fausto-leali",
@@ -1296,7 +1320,10 @@ window.MYAVEZZANO_EVENTS = [
     "imageSource": "Fallback neutro MyAvezzano",
     "isRealPhoto": false,
     "sourceUrl": "",
-    "updatedAt": "2026-06-29"
+    "updatedAt": "2026-06-30",
+    "importance": "high",
+    "featured": true,
+    "importanceLabel": "Evento importante"
   },
   {
     "id": "celano-fedez-summer-fest",
@@ -1314,7 +1341,10 @@ window.MYAVEZZANO_EVENTS = [
     "imageSource": "Fallback neutro MyAvezzano",
     "isRealPhoto": false,
     "sourceUrl": "",
-    "updatedAt": "2026-06-29"
+    "updatedAt": "2026-06-30",
+    "importance": "high",
+    "featured": true,
+    "importanceLabel": "Evento importante"
   },
   {
     "id": "tagliacozzo-aldo-cazzullo-francesco",
@@ -1350,7 +1380,10 @@ window.MYAVEZZANO_EVENTS = [
     "imageSource": "Fallback neutro MyAvezzano",
     "isRealPhoto": false,
     "sourceUrl": "",
-    "updatedAt": "2026-06-29"
+    "updatedAt": "2026-06-30",
+    "importance": "high",
+    "featured": true,
+    "importanceLabel": "Evento importante"
   },
   {
     "id": "trasacco-sal-da-vinci",
@@ -1368,7 +1401,10 @@ window.MYAVEZZANO_EVENTS = [
     "imageSource": "Fallback neutro MyAvezzano",
     "isRealPhoto": false,
     "sourceUrl": "",
-    "updatedAt": "2026-06-29"
+    "updatedAt": "2026-06-30",
+    "importance": "high",
+    "featured": true,
+    "importanceLabel": "Evento importante"
   },
   {
     "id": "trasacco-centri-estivi",
