@@ -119,7 +119,7 @@ function eventPage(event) {
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content="${baseUrl}/assets/social-preview.jpg" />
     <script type="application/ld+json">${schemaJson}</script>
-    <link rel="stylesheet" href="../styles.css?v=94" />
+    <link rel="stylesheet" href="../styles.css?v=95" />
   </head>
   <body class="seo-body">
     <div class="seo-shell">
@@ -130,11 +130,11 @@ function eventPage(event) {
       <nav class="seo-breadcrumb" aria-label="Percorso pagina"><a href="../index.html">Home</a><span>/</span><a href="../eventi.html">Eventi</a><span>/</span><span>${title}</span></nav>
       <main class="seo-event-detail">
         <section class="seo-hero">
-          <p class="seo-kicker">${escapeHtml(event.category)} · ${escapeHtml(event.area)}</p>
+          <p class="seo-kicker">${escapeHtml(event.category)} Â· ${escapeHtml(event.area)}</p>
           <h1>${title}</h1>
           <p>${description}</p>
           <div class="seo-event-summary">
-            <div><span>Data e ora</span><strong>${dateLabel} · ${time}</strong></div>
+            <div><span>Data e ora</span><strong>${dateLabel} Â· ${time}</strong></div>
             <div><span>Luogo</span><strong>${place}</strong></div>
             <div><span>Indicazioni</span><strong>${price}</strong></div>
             <div><span>Area</span><strong>${escapeHtml(event.area)}</strong></div>
