@@ -2376,14 +2376,14 @@ function renderAdminDashboard() {
             <span class="pill ${adminControl.nearbyEventsEnabled ? "success" : "warning"}">${adminControl.nearbyEventsEnabled ? "Estensione attiva" : "In pausa"}</span>
           </div>
           <div class="admin-insight-grid">
-            ${insightMetric("Evento piu caldo", localInsights.strongestEvent?.title || "Da calcolare", localInsights.strongestEvent ? `${eventAttendanceCount(localInsights.strongestEvent)} partecipanti stimati` : "Nessun evento attivo")}
-            ${insightMetric("Locale / luogo piu forte", localInsights.topVenue?.[0] || "Da calcolare", localInsights.topVenue ? `${localInsights.topVenue[1]} interesse stimato` : "Dati in aggiornamento")}
-            ${insightMetric("Giorno migliore", localInsights.topDay?.[0] || "Da calcolare", localInsights.topDay ? `${localInsights.topDay[1]} presenze potenziali` : "Serve piu storico")}
+            ${insightMetric("Evento più caldo", localInsights.strongestEvent?.title || "Da calcolare", localInsights.strongestEvent ? `${eventAttendanceCount(localInsights.strongestEvent)} partecipanti stimati` : "Nessun evento attivo")}
+            ${insightMetric("Locale / luogo più forte", localInsights.topVenue?.[0] || "Da calcolare", localInsights.topVenue ? `${localInsights.topVenue[1]} interesse stimato` : "Dati in aggiornamento")}
+            ${insightMetric("Giorno migliore", localInsights.topDay?.[0] || "Da calcolare", localInsights.topDay ? `${localInsights.topDay[1]} presenze potenziali` : "Serve più storico")}
             ${insightMetric("Categoria trainante", localInsights.topCategory?.[0] || "Da calcolare", localInsights.topCategory ? `${localInsights.topCategory[1]} interazioni potenziali` : "Dati insufficienti")}
           </div>
           <div class="admin-insight-split">
             <div>
-              <strong>Comuni piu coperti</strong>
+              <strong>Comuni più coperti</strong>
               <div class="admin-rank-list">
                 ${localInsights.topAreas.map(([town, count], index) => `<span><b>${index + 1}</b>${town}<em>${count} eventi</em></span>`).join("")}
               </div>
@@ -3120,7 +3120,7 @@ function initInteractiveMap() {
   if (cached.length) {
     applyImportedPlaces(cached.slice(0, MAX_REAL_PLACES), `${Math.min(cached.length, MAX_REAL_PLACES)} attività caricate dalla cache locale. Usa "Importa attività reali" per aggiornare.`);
   } else {
-    status.textContent = "Dati locali attivi. Usa Importa attivita reali per aggiornare da OpenStreetMap.";
+    status.textContent = "Dati locali attivi. Usa Importa attività reali per aggiornare da OpenStreetMap.";
   }
   refreshInteractiveMapLayout();
 }
@@ -4056,7 +4056,7 @@ document.addEventListener("submit", (event) => {
     return;
   }
   if (users.some((item) => item.id !== user.id && item.email.toLowerCase() === nextEmail)) {
-    showToast("Questa email e gia usata da un altro account.", "error");
+    showToast("Questa email è già usata da un altro account.", "error");
     return;
   }
   user.name = String(form.get("name")).trim();
@@ -4575,7 +4575,7 @@ createAccountButton.addEventListener("click", async () => {
   }
 
   if (getUsers().some((user) => user.email.toLowerCase() === email)) {
-    setFeedback("Esiste gia un account con questa email. Vai al login.", "error");
+    setFeedback("Esiste già un account con questa email. Vai al login.", "error");
     setAuthMode("login");
     return;
   }
