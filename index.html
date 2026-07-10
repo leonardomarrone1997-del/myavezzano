@@ -147,14 +147,7 @@
                 <span>Avezzano</span>
               </div>
             </div>
-            <div class="theme-mode-group" aria-label="Tema">
-              <label class="visual-theme-picker" for="visualThemeSelect">
-                <span>Stile</span>
-                <select id="visualThemeSelect" aria-label="Scegli stile interfaccia">
-                  <option value="classic">Classico</option>
-                  <option value="city-night">City Night</option>
-                </select>
-              </label>
+            <div class="theme-mode-group" aria-label="Tema giorno e notte">
               <button class="theme-toggle" id="themeToggle" type="button" aria-label="Attiva tema notturno" aria-pressed="false">
                 <span aria-hidden="true"></span>
                 <strong id="themeToggleLabel">Notte</strong>
@@ -252,13 +245,23 @@
               <section class="feed-list" id="feedList"></section>
             </section>
             <aside class="right-rail">
-              <div class="profile-card">
-                <img src="assets/app-icon.svg" alt="MyAvezzano" />
-                <div>
-                  <strong>MyAvezzano</strong>
-                  <span>La tua guida rapida per vivere Avezzano</span>
+              <div class="profile-card home-account-card">
+                <div class="home-account-main">
+                  <img id="homeProfileAvatar" src="assets/app-icon.svg" alt="MyAvezzano" />
+                  <div>
+                    <strong id="homeProfileName">Area personale</strong>
+                    <span id="homeProfileCopy">Accedi per salvare coupon, eventi e luoghi preferiti.</span>
+                  </div>
                 </div>
-                <button class="ghost compact-button" id="openSignupMini" type="button">Accedi</button>
+                <div class="home-account-stats" aria-label="Riepilogo account">
+                  <span><b id="homeProfileCoupons">0</b><small>Coupon</small></span>
+                  <span><b id="homeProfileEvents">0</b><small>Eventi</small></span>
+                  <span><b id="homeProfilePoints">0</b><small>Punti</small></span>
+                </div>
+                <div class="home-account-actions">
+                  <button class="ghost compact-button" id="openSignupMini" type="button">Accedi</button>
+                  <button class="light-action compact-button" data-view-target="profile" type="button">Profilo</button>
+                </div>
               </div>
               <div class="panel accent-panel">
                 <p class="eyebrow">Nuova apertura</p>
@@ -399,7 +402,7 @@
             </div>
             <button class="primary-action" data-action="scan-qr" type="button">Scansiona QR</button>
           </div>
-          <div class="city-night-coupon-tabs" aria-label="Filtra coupon">
+          <div class="coupon-filter-tabs" aria-label="Filtra coupon">
             <button class="active" data-action="city-coupon-filter" data-coupon-filter="all" type="button">Tutti</button>
             <button data-action="city-coupon-filter" data-coupon-filter="ristoranti" type="button">Ristoranti</button>
             <button data-action="city-coupon-filter" data-coupon-filter="bar" type="button">Bar</button>

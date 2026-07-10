@@ -398,8 +398,6 @@ const wikidataImageCache = new Map();
 const DEMO_STATE_KEY = "myavezzano_demo_state";
 const ONBOARDING_KEY = "myavezzano_onboarding_seen";
 const THEME_STORAGE_KEY = "myavezzano_theme";
-const VISUAL_STYLE_STORAGE_KEY = "myavezzano_visual_style";
-const VISUAL_STYLE_PREVIOUS_THEME_KEY = "myavezzano_visual_style_previous_theme";
 const FX_MODE_STORAGE_KEY = "myavezzano_fx_mode";
 const ADMIN_CONTROL_KEY = "myavezzano_admin_control_v1";
 const NOTIFICATION_READ_KEY = "myavezzano_notification_reads_v1";
@@ -2025,7 +2023,6 @@ function defaultAdminControl() {
     pulseEnabled: true,
     lastMinuteEnabled: true,
     nearbyEventsEnabled: true,
-    cityNightEnabled: true,
     featuredEvent: "street-green-fest",
     lastSync: null,
     broadcasts: [],
@@ -2204,7 +2201,6 @@ function renderAdminDashboard() {
           ${adminControlButton("pulseEnabled", "Avezzano ora", "Mostra lo stato operativo delle zone cittadine", adminControl.pulseEnabled)}
           ${adminControlButton("lastMinuteEnabled", "Ultimo momento", "Pubblica le disponibilita a tempo limitato", adminControl.lastMinuteEnabled)}
           ${adminControlButton("nearbyEventsEnabled", "Eventi vicino a te", "Estende il calendario ai comuni della Marsica", adminControl.nearbyEventsEnabled)}
-          ${adminControlButton("cityNightEnabled", "Tema City Night", "Rende disponibile lo stile alternativo agli utenti", adminControl.cityNightEnabled)}
         </div>
       </section>
       <section class="panel intelligence-panel">
@@ -2474,8 +2470,7 @@ function handleAdminAction(button) {
       push: "Notifiche push",
       pulseEnabled: "Avezzano ora",
       lastMinuteEnabled: "Ultimo momento",
-      nearbyEventsEnabled: "Eventi vicino a te",
-      cityNightEnabled: "Tema City Night"
+      nearbyEventsEnabled: "Eventi vicino a te"
     };
     addAdminAudit(control, `${controlLabels[key] || key}: ${control[key] ? "attivo" : "disattivo"}`);
     renderCityPulse();
@@ -2483,7 +2478,6 @@ function handleAdminAction(button) {
     renderNotificationState();
     eventsViewRendered = false;
     renderWeekendHome();
-    applyVisualStyle(preferredVisualStyle());
     if (!document.querySelector("#notificationMenu")?.hasAttribute("hidden")) renderNotificationMenu();
     renderAdminDashboard();
     showToast("Controllo piattaforma aggiornato.", "success");
@@ -3256,53 +3250,6 @@ function animateGlobalSurfaces() {
   animateActiveView();
 }
 
-function preferredVisualStyle() {
-  return localStorage.getItem(VISUAL_STYLE_STORAGE_KEY) === "city-night" ? "city-night" : "classic";
-}
-
-function applyVisualStyle(style = preferredVisualStyle(), syncColorTheme = true) {
-  const available = getAdminControl().cityNightEnabled;
-  const nextStyle = style === "city-night" && available ? "city-night" : "classic";
-  if (style === "city-night" && !available) localStorage.setItem(VISUAL_STYLE_STORAGE_KEY, "classic");
-  const isCityNight = nextStyle === "city-night";
-  document.body.classList.toggle("visual-theme-city-night", isCityNight);
-  document.documentElement.dataset.visualStyle = nextStyle;
-
-  const select = document.querySelector("#visualThemeSelect");
-  const themeToggle = document.querySelector("#themeToggle");
-  if (select) {
-    select.value = nextStyle;
-    select.disabled = !available;
-  }
-  if (themeToggle) {
-    themeToggle.disabled = isCityNight;
-    themeToggle.title = isCityNight ? "City Night usa la modalità notturna" : "Cambia tema giorno o notte";
-  }
-
-  if (!syncColorTheme) return;
-  if (isCityNight) {
-    if (!document.body.classList.contains("theme-dark")) {
-      localStorage.setItem(VISUAL_STYLE_PREVIOUS_THEME_KEY, preferredTheme());
-    }
-    localStorage.setItem(THEME_STORAGE_KEY, "dark");
-    applyTheme("dark");
-  } else {
-    const previousTheme = localStorage.getItem(VISUAL_STYLE_PREVIOUS_THEME_KEY);
-    if (previousTheme === "light" || previousTheme === "dark") {
-      localStorage.setItem(THEME_STORAGE_KEY, previousTheme);
-      localStorage.removeItem(VISUAL_STYLE_PREVIOUS_THEME_KEY);
-      applyTheme(previousTheme);
-    }
-  }
-}
-
-function changeVisualStyle(event) {
-  const nextStyle = event.target.value === "city-night" ? "city-night" : "classic";
-  localStorage.setItem(VISUAL_STYLE_STORAGE_KEY, nextStyle);
-  applyVisualStyle(nextStyle);
-  showToast(nextStyle === "city-night" ? "Stile City Night attivato." : "Stile classico ripristinato.", "success");
-}
-
 function preferredTheme() {
   const stored = localStorage.getItem(THEME_STORAGE_KEY);
   if (stored === "dark" || stored === "light") return stored;
@@ -3742,7 +3689,7 @@ function handleAction(button) {
 
   if (action === "city-coupon-filter") {
     const filter = button.dataset.couponFilter || "all";
-    document.querySelectorAll(".city-night-coupon-tabs button").forEach((item) => {
+    document.querySelectorAll(".coupon-filter-tabs button").forEach((item) => {
       item.classList.toggle("active", item === button);
     });
     let visible = 0;
@@ -4402,11 +4349,28 @@ function openSignup(mode = "register") {
 
 function updateAuthUi() {
   const user = getStoredUser();
+  const levelState = citizenLevelState(user);
   const accountLabel = user ? "Account" : "Entra";
   const miniLabel = user ? "Account" : "Accedi";
+  const homeAvatar = document.querySelector("#homeProfileAvatar");
+  const homeName = document.querySelector("#homeProfileName");
+  const homeCopy = document.querySelector("#homeProfileCopy");
+  const homeCoupons = document.querySelector("#homeProfileCoupons");
+  const homeEvents = document.querySelector("#homeProfileEvents");
+  const homePoints = document.querySelector("#homeProfilePoints");
 
   document.querySelector("#openSignup").textContent = accountLabel;
   document.querySelector("#openSignupMini").textContent = miniLabel;
+  if (homeAvatar) homeAvatar.src = user?.avatar || "assets/app-icon.svg";
+  if (homeName) homeName.textContent = user ? user.name : "Area personale";
+  if (homeCopy) {
+    homeCopy.textContent = user
+      ? `${levelState.level}: coupon, eventi e reminder in un solo posto.`
+      : "Accedi per salvare coupon, eventi e luoghi preferiti.";
+  }
+  if (homeCoupons) homeCoupons.textContent = user ? profileCouponRows().length : 0;
+  if (homeEvents) homeEvents.textContent = user ? profileEventRows().length : 0;
+  if (homePoints) homePoints.textContent = user ? levelState.points.toLocaleString("it-IT") : 0;
   signupCopy.textContent = user
     ? `Ciao ${user.name}, il tuo account ${user.role === "admin" ? "admin" : "utente"} è attivo.`
     : "Crea il tuo account per salvare eventi, coupon, nuove aperture e reminder cittadini.";
@@ -4995,7 +4959,9 @@ function initWebglAura() {
 
 async function bootApp() {
   applyTheme();
-  applyVisualStyle(preferredVisualStyle());
+  document.documentElement.dataset.visualStyle = "classic";
+  localStorage.removeItem("myavezzano_visual_style");
+  localStorage.removeItem("myavezzano_visual_style_previous_theme");
   applyFxMode("light", false);
   if (IS_DEMO) await seedAdminUser();
   render();
@@ -5033,7 +4999,6 @@ async function bootApp() {
 }
 
 document.querySelector("#themeToggle")?.addEventListener("click", toggleTheme);
-document.querySelector("#visualThemeSelect")?.addEventListener("change", changeVisualStyle);
 document.querySelector("#citySelector")?.addEventListener("change", (event) => setActiveTown(event.target.value));
 
 bootApp();
