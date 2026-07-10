@@ -400,6 +400,7 @@ const ONBOARDING_KEY = "myavezzano_onboarding_seen";
 const THEME_STORAGE_KEY = "myavezzano_theme";
 const FX_MODE_STORAGE_KEY = "myavezzano_fx_mode";
 const ADMIN_CONTROL_KEY = "myavezzano_admin_control_v1";
+const QA_BOT_STORAGE_KEY = "myavezzano_qa_bot_v1";
 const NOTIFICATION_READ_KEY = "myavezzano_notification_reads_v1";
 const IS_DEMO = (() => {
   try {
@@ -2132,6 +2133,156 @@ function insightMetric(label, value, detail) {
   `;
 }
 
+function getQaBotReport() {
+  return readJson(QA_BOT_STORAGE_KEY, null);
+}
+
+function qaStatus(score) {
+  if (score >= 88) return "success";
+  if (score >= 70) return "warning";
+  return "danger";
+}
+
+function qaSeverityLabel(severity) {
+  return {
+    critical: "Critico",
+    warning: "Attenzione",
+    info: "Nota"
+  }[severity] || "Nota";
+}
+
+function buildQaBotReport() {
+  const issues = [];
+  const addIssue = (severity, area, title, detail) => {
+    issues.push({ severity, area, title, detail });
+  };
+
+  const mainPages = [
+    ["Home", "index.html", "#feedView"],
+    ["Eventi", "index.html#events", "#eventsView"],
+    ["Coupon", "coupon.html", "#couponsView"],
+    ["Mappa", "mappa.html", "#mapView"],
+    ["Attività locali", "attivita-locali.html", "#mapView"]
+  ];
+  const missingPageTargets = mainPages.filter(([, , selector]) => !document.querySelector(selector));
+  if (missingPageTargets.length) {
+    addIssue("critical", "Pagine", "Target pagina non trovato", missingPageTargets.map(([label]) => label).join(", "));
+  }
+
+  const couponCodes = coupons.map((item) => item[5]).filter(Boolean);
+  const duplicateCouponCodes = couponCodes.filter((code, index) => couponCodes.indexOf(code) !== index);
+  const couponsWithoutQr = coupons.filter((item) => !String(item[4] || "").endsWith(".svg"));
+  const couponsWithoutCategory = coupons.filter((item) => !item[6]);
+  if (!coupons.length) addIssue("critical", "Coupon", "Nessun coupon configurato", "La sezione coupon risulterebbe vuota.");
+  if (duplicateCouponCodes.length) addIssue("critical", "Coupon", "Codici coupon duplicati", [...new Set(duplicateCouponCodes)].join(", "));
+  if (couponsWithoutQr.length) addIssue("warning", "Coupon", "QR coupon mancante o non SVG", `${couponsWithoutQr.length} coupon da controllare.`);
+  if (couponsWithoutCategory.length) addIssue("warning", "Coupon", "Categoria coupon mancante", `${couponsWithoutCategory.length} coupon senza filtro.`);
+
+  const eventKeys = new Set();
+  let duplicateEvents = 0;
+  calendarEvents.forEach((item) => {
+    const key = [item.slug || item.id, item.date, eventSlug(item.title), eventSlug(item.place)].join("|");
+    if (eventKeys.has(key)) duplicateEvents += 1;
+    eventKeys.add(key);
+    ["title", "date", "time", "place", "area", "category", "image", "imageAlt", "updatedAt"].forEach((field) => {
+      if (!item[field]) addIssue("warning", "Eventi", `Campo evento mancante: ${field}`, item.title || item.id || "Evento senza titolo");
+    });
+    if (item.isRealPhoto && !item.sourceUrl) {
+      addIssue("warning", "Eventi", "Foto reale senza fonte", item.title);
+    }
+  });
+  if (!calendarEvents.length) addIssue("critical", "Eventi", "Nessun evento attivo", "Home e calendario perderebbero valore.");
+  if (duplicateEvents) addIssue("critical", "Eventi", "Possibili eventi duplicati", `${duplicateEvents} duplicati rilevati.`);
+
+  const placesWithoutCoords = mapPlaces.filter((place) => !Number.isFinite(place.lat) || !Number.isFinite(place.lng));
+  const placesWithoutImage = mapPlaces.filter((place) => !place.image && !place.photo);
+  if (!mapPlaces.length) addIssue("critical", "Mappa", "Nessuna attività in mappa", "La navigazione locale risulterebbe vuota.");
+  if (placesWithoutCoords.length) addIssue("critical", "Mappa", "Coordinate mancanti", `${placesWithoutCoords.length} attività senza latitudine/longitudine.`);
+  if (placesWithoutImage.length) addIssue("warning", "Mappa", "Foto attività mancanti", `${placesWithoutImage.length} attività senza immagine.`);
+
+  const missingSeoEvents = calendarEvents.filter((item) => !item.slug || !item.imageAlt || !item.updatedAt);
+  const realPhotoEvents = calendarEvents.filter((item) => item.isRealPhoto).length;
+  const fallbackEvents = calendarEvents.length - realPhotoEvents;
+  if (missingSeoEvents.length) addIssue("warning", "SEO", "Metadati evento incompleti", `${missingSeoEvents.length} eventi da rifinire.`);
+  if (fallbackEvents > realPhotoEvents) {
+    addIssue("info", "Immagini", "Molti eventi usano fallback neutro", `${fallbackEvents} eventi senza foto reale.`);
+  }
+
+  const critical = issues.filter((item) => item.severity === "critical").length;
+  const warning = issues.filter((item) => item.severity === "warning").length;
+  const info = issues.filter((item) => item.severity === "info").length;
+  const score = Math.max(0, Math.min(100, 100 - critical * 14 - warning * 6 - info * 2));
+  const checks = [
+    { label: "Pagine", value: `${mainPages.length + calendarEvents.length}`, detail: `${mainPages.length} sezioni + ${calendarEvents.length} pagine evento previste`, status: missingPageTargets.length ? "warning" : "success" },
+    { label: "Coupon", value: coupons.length, detail: `${couponCodes.length} codici QR controllati`, status: couponsWithoutQr.length || duplicateCouponCodes.length ? "warning" : "success" },
+    { label: "Eventi", value: calendarEvents.length, detail: `${summerEvents.length} nel programma Estate 2026`, status: duplicateEvents ? "warning" : "success" },
+    { label: "Mappa", value: mapPlaces.length, detail: `${coverageTowns.length} comuni predisposti`, status: placesWithoutCoords.length ? "warning" : "success" },
+    { label: "Foto reali", value: realPhotoEvents, detail: `${fallbackEvents} fallback neutri`, status: fallbackEvents > realPhotoEvents ? "warning" : "success" },
+    { label: "SEO eventi", value: calendarEvents.length, detail: "slug, alt, updatedAt e schede evento", status: missingSeoEvents.length ? "warning" : "success" }
+  ];
+  const recommendations = [
+    critical ? "Correggere prima i problemi critici: possono bloccare pagine, mappa o coupon." : "Nessun blocco critico rilevato.",
+    warning ? "Rifinire immagini, fonti e metadati prima del prossimo deploy pubblico." : "I controlli principali sono coerenti.",
+    fallbackEvents ? "Sostituire gradualmente i fallback con foto reali e fonti verificate." : "Le immagini evento sono ben coperte."
+  ];
+
+  return {
+    score,
+    status: qaStatus(score),
+    generatedAt: new Date().toISOString(),
+    checks,
+    issues,
+    recommendations,
+    summary: { critical, warning, info }
+  };
+}
+
+function saveQaBotReport(report = buildQaBotReport()) {
+  writeJson(QA_BOT_STORAGE_KEY, report);
+  return report;
+}
+
+function qaBotMarkup(report) {
+  const issuePreview = report.issues.slice(0, 6);
+  return `
+    <section class="panel admin-qa-panel">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">QA Bot IA</p>
+          <h2>Test pagine, coupon e contenuti</h2>
+        </div>
+        <span class="pill ${report.status}">${report.score}/100</span>
+      </div>
+      <div class="qa-bot-summary">
+        ${report.checks.map((check) => `
+          <article class="qa-bot-check ${check.status}">
+            <span>${check.label}</span>
+            <strong>${check.value}</strong>
+            <small>${check.detail}</small>
+          </article>
+        `).join("")}
+      </div>
+      <div class="qa-bot-actions">
+        <button class="primary-action compact-button" data-admin-action="run-qa-bot" type="button">Esegui test</button>
+        <button class="ghost compact-button" data-admin-action="export-qa-report" type="button">Esporta report</button>
+        <small>Ultimo test: ${report.generatedAt ? new Date(report.generatedAt).toLocaleString("it-IT") : "non ancora eseguito"}</small>
+      </div>
+      <div class="qa-bot-issues">
+        ${issuePreview.length ? issuePreview.map((issue) => `
+          <div class="qa-bot-issue ${issue.severity}">
+            <b>${qaSeverityLabel(issue.severity)}</b>
+            <span>${issue.area} · ${issue.title}</span>
+            <small>${issue.detail}</small>
+          </div>
+        `).join("") : `<p class="admin-empty-copy">Nessun problema rilevante: pronto per una verifica manuale finale.</p>`}
+      </div>
+      <div class="qa-bot-recommendations">
+        ${report.recommendations.map((item) => `<span>${item}</span>`).join("")}
+      </div>
+    </section>
+  `;
+}
+
 function renderAdminDashboard() {
   const root = document.querySelector("#adminDashboard");
   if (!root) return;
@@ -2163,6 +2314,7 @@ function renderAdminDashboard() {
   const lastMinuteState = getLastMinuteState();
   const activeLastMinute = lastMinuteDeals.filter((deal) => adminControl.lastMinuteStatus[deal.id] !== "paused" && (lastMinuteState.deadlines[deal.id] || 0) > Date.now()).length;
   const localInsights = buildLocalInsights();
+  const qaReport = getQaBotReport() || buildQaBotReport();
 
   root.innerHTML = `
     <div class="admin-shell">
@@ -2184,6 +2336,7 @@ function renderAdminDashboard() {
         <div><span>Zone monitorate</span><strong>${pulseSnapshot.length}</strong></div>
         <div><span>Ultimo momento</span><strong>${activeLastMinute}</strong></div>
         <div><span>Comuni predisposti</span><strong>${coverageTowns.length}</strong></div>
+        <div><span>QA Bot</span><strong>${qaReport.score}/100</strong></div>
       </section>
       <section class="panel admin-platform-panel">
         <div class="panel-head">
@@ -2231,6 +2384,7 @@ function renderAdminDashboard() {
         </div>
       </section>
       <div class="admin-grid">
+        ${qaBotMarkup(qaReport)}
         <section class="panel admin-live-control">
           <div class="panel-head">
             <div>
@@ -2442,6 +2596,7 @@ function handleAdminAction(button) {
       demoState: getDemoState(),
       merchant: getMerchantSubscription(),
       adminControl: getAdminControl(),
+      qaBot: getQaBotReport(),
       exportedAt: new Date().toISOString()
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
@@ -2569,6 +2724,31 @@ function handleAdminAction(button) {
     addAdminAudit(control, "Eventi, mappa e coupon sincronizzati");
     renderAdminDashboard();
     showToast("Contenuti sincronizzati.", "success");
+    return;
+  }
+
+  if (button.dataset.adminAction === "run-qa-bot") {
+    const report = saveQaBotReport();
+    const control = getAdminControl();
+    addAdminAudit(control, `QA Bot completato: ${report.score}/100`);
+    renderAdminDashboard();
+    showToast(`QA Bot completato: ${report.score}/100.`, report.score >= 70 ? "success" : "error");
+    return;
+  }
+
+  if (button.dataset.adminAction === "export-qa-report") {
+    const report = getQaBotReport() || saveQaBotReport();
+    const blob = new Blob([JSON.stringify(report, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `myavezzano-qa-report-${new Date().toISOString().slice(0, 10)}.json`;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 500);
+    const control = getAdminControl();
+    addAdminAudit(control, "Report QA Bot esportato");
+    renderAdminDashboard();
+    showToast("Report QA Bot esportato.", "success");
     return;
   }
 
