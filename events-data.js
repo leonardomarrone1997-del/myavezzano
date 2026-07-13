@@ -272,6 +272,24 @@ window.MYAVEZZANO_EVENTS = [
     "updatedAt": "2026-06-29"
   },
   {
+    "id": "mixology-beer-competition-tagliacozzo-2026",
+    "title": "Mixology Beer Competition 2026",
+    "date": "2026-07-11",
+    "time": "Orario da verificare",
+    "place": "Tagliacozzo",
+    "area": "Tagliacozzo",
+    "category": "Segnalazione",
+    "detail": "Evento birra segnalato da fonte di settore: competizione dedicata a mixology e birra. Inserito tra le segnalazioni locali per non perdere feste, sagre e serate fuori dai cartelloni principali.",
+    "price": "Da verificare",
+    "slug": "mixology-beer-competition-tagliacozzo-2026",
+    "image": "assets/social-preview.jpg",
+    "imageAlt": "Mixology Beer Competition 2026 - Tagliacozzo",
+    "imageSource": "Fonte da verificare - fallback neutro MyAvezzano",
+    "isRealPhoto": false,
+    "sourceUrl": "https://www.giornaledellabirra.it/eventi/aperte-le-iscrizioni-alla-seconda-edizione-della-mixology-beer-competition-2026-a-tagliacozzo/",
+    "updatedAt": "2026-07-13"
+  },
+  {
     "id": "nando-citarella",
     "title": "Nando Citarella e i Tamburi del Vesuvio",
     "date": "2026-07-12",

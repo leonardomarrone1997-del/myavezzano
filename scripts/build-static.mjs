@@ -101,6 +101,7 @@ function eventAttendanceCount(event) {
     Ambiente: 92,
     Motori: 168,
     Musica: 184,
+    Segnalazione: 112,
     Sport: 226,
     Teatro: 74
   }[event.category] || 68;

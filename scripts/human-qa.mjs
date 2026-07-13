@@ -224,6 +224,16 @@ async function runHumanScenario(browser, viewportName, viewport) {
     return title || "evento salvato";
   });
 
+  await safeStep(run, "Controlla segnalazioni locali", async () => {
+    await page.selectOption("#citySelector", "all");
+    await wait(300);
+    await navigateHuman(page, "events");
+    await clickHuman(page, "[data-event-filter='segnalazioni']");
+    const visible = await page.locator("#eventsGrid .agenda-event").count();
+    if (!visible) run.issue("warning", "Eventi", "Segnalazioni locali vuote", "Feste, sagre e serate potrebbero non essere intercettate.");
+    return `${visible} segnalazioni visibili`;
+  });
+
   await safeStep(run, "Apre registrazione e crea account test", async () => {
     await clickHuman(page, "#openSignup");
     await expectVisible(run, page, "#authOverlay .signup-panel", "Modal registrazione");

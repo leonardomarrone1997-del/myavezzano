@@ -500,6 +500,7 @@ const eventCategories = [
   ["Vicino a te", "Marsica e paesi vicini", "nearby"],
   ["Avezzano", "Eventi in città", "avezzano"],
   ["Alba Fucens", "Area immediata", "alba"],
+  ["Segnalazioni", "Feste, sagre e serate", "segnalazioni"],
   ["Teatro", "Spettacoli e classici", "teatro"],
   ["Musica", "Concerti e tribute", "musica"],
   ["Sport", "Gare e attività", "sport"],
@@ -1333,7 +1334,16 @@ function eventMatchesFilter(item, filter) {
   if (filter === "summer") return summerEvents.some((event) => event.id === item.id);
   if (filter === "avezzano") return item.area === "Avezzano";
   if (filter === "alba") return item.area === "Alba Fucens";
+  if (filter === "segnalazioni") return isLocalSignalEvent(item);
   return item.category.toLowerCase() === filter;
+}
+
+function isLocalSignalEvent(item) {
+  const text = [item.category, item.title, item.detail, item.price, item.place]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+  return /\b(segnalazione|sagra|festa|feste|serata|serate|birra|beer|street food|degustazione|pro loco|notte bianca)\b/.test(text);
 }
 
 function eventAttendanceCount(item) {
@@ -1341,6 +1351,7 @@ function eventAttendanceCount(item) {
     Ambiente: 92,
     Motori: 168,
     Musica: 184,
+    Segnalazione: 112,
     Sport: 226,
     Teatro: 74
   }[item.category] || 68;
@@ -2193,6 +2204,10 @@ function buildQaBotReport() {
   });
   if (!calendarEvents.length) addIssue("critical", "Eventi", "Nessun evento attivo", "Home e calendario perderebbero valore.");
   if (duplicateEvents) addIssue("critical", "Eventi", "Possibili eventi duplicati", `${duplicateEvents} duplicati rilevati.`);
+  const localSignalEvents = calendarEvents.filter(isLocalSignalEvent);
+  if (!localSignalEvents.length) {
+    addIssue("warning", "Eventi", "Nessuna segnalazione locale", "Feste, sagre e serate fuori cartellone potrebbero non emergere.");
+  }
 
   const placesWithoutCoords = mapPlaces.filter((place) => !Number.isFinite(place.lat) || !Number.isFinite(place.lng));
   const placesWithoutImage = mapPlaces.filter((place) => !place.image && !place.photo);
@@ -2216,6 +2231,7 @@ function buildQaBotReport() {
     { label: "Pagine", value: `${mainPages.length + calendarEvents.length}`, detail: `${mainPages.length} sezioni + ${calendarEvents.length} pagine evento previste`, status: missingPageTargets.length ? "warning" : "success" },
     { label: "Coupon", value: coupons.length, detail: `${couponCodes.length} codici QR controllati`, status: couponsWithoutQr.length || duplicateCouponCodes.length ? "warning" : "success" },
     { label: "Eventi", value: calendarEvents.length, detail: `${summerEvents.length} nel programma Estate 2026`, status: duplicateEvents ? "warning" : "success" },
+    { label: "Segnalazioni", value: localSignalEvents.length, detail: "feste, sagre e serate intercettate", status: localSignalEvents.length ? "success" : "warning" },
     { label: "Mappa", value: mapPlaces.length, detail: `${coverageTowns.length} comuni predisposti`, status: placesWithoutCoords.length ? "warning" : "success" },
     { label: "Foto reali", value: realPhotoEvents, detail: `${fallbackEvents} fallback neutri`, status: fallbackEvents > realPhotoEvents ? "warning" : "success" },
     { label: "SEO eventi", value: calendarEvents.length, detail: "slug, alt, updatedAt e schede evento", status: missingSeoEvents.length ? "warning" : "success" }

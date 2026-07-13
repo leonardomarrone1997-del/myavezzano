@@ -1351,6 +1351,15 @@ body.theme-dark .theme-toggle span::before {
   color: var(--blue);
 }
 .event-chip.active span { color: var(--muted); }
+.event-chip[data-event-filter="segnalazioni"] {
+  border-color: rgba(245, 158, 11, .32);
+  background: linear-gradient(180deg, rgba(255, 251, 235, .96), rgba(255, 255, 255, .94));
+}
+.event-chip[data-event-filter="segnalazioni"].active {
+  color: #92400e;
+  border-color: rgba(245, 158, 11, .58);
+  background: linear-gradient(180deg, rgba(254, 243, 199, .95), rgba(255, 247, 237, .96));
+}
 .tonight-panel {
   display: flex;
   justify-content: space-between;
@@ -5067,6 +5076,18 @@ body.theme-dark .preference-chips button {
   background: rgba(15,23,42,.72) !important;
   border-color: rgba(226,232,240,.18) !important;
   color: #f8fafc !important;
+}
+
+body.theme-dark .event-chip[data-event-filter="segnalazioni"] {
+  background: linear-gradient(180deg, rgba(69, 39, 13, .76), rgba(15, 23, 42, .72)) !important;
+  border-color: rgba(251, 191, 36, .36) !important;
+}
+
+body.theme-dark .event-chip[data-event-filter="segnalazioni"].active,
+body.theme-dark .event-chip[data-event-filter="segnalazioni"]:hover {
+  background: linear-gradient(135deg, rgba(146, 64, 14, .72), rgba(15, 23, 42, .82)) !important;
+  border-color: rgba(251, 191, 36, .72) !important;
+  color: #fff7ed !important;
 }
 
 body.theme-dark .event-chip span,
