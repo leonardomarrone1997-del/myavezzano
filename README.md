@@ -63,6 +63,22 @@ Per testare PWA, service worker e storage in modo più fedele:
 
 `http://127.0.0.1:4178/`
 
+## Human QA Bot
+
+Il progetto include un tester automatico basato su Playwright che si comporta come un utente reale:
+
+- apre il sito in browser headless;
+- prova home, mappa, eventi, coupon, Estate 2026, profilo e area commercianti;
+- cambia comune, apre notifiche, cambia tema, filtra coupon, salva un evento e crea un account test;
+- ripete il giro su desktop e mobile;
+- genera report Markdown, JSON e screenshot in `reports/`.
+
+Comando:
+
+`npm run qa:human`
+
+Il comando esegue prima `npm run build`, avvia la PWA statica da `public/` e produce un punteggio finale. Se trova problemi critici termina con exit code diverso da zero, così può essere usato prima di commit, push o deploy.
+
 ## Accessi demo
 
 - Admin: `admin@myavezzano.it`

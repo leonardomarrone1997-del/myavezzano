@@ -7,7 +7,8 @@
     "dev": "npx serve .",
     "preview": "npx serve .",
     "build": "node scripts/build-static.mjs",
-    "check": "echo \"Static project: run the QA checklist in DEPLOYMENT.md before deploying.\""
+    "check": "echo \"Static project: run the QA checklist in DEPLOYMENT.md before deploying.\"",
+    "qa:human": "npm run build && node scripts/human-qa.mjs"
   },
   "keywords": [
     "myavezzano",
@@ -19,6 +20,7 @@
   "author": "MyAvezzano",
   "license": "UNLICENSED",
   "devDependencies": {
+    "playwright": "^1.61.1",
     "serve": "^14.2.4"
   }
 }
