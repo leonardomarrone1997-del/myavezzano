@@ -550,6 +550,7 @@ let activeEventCategory = "all";
 
 const EVENT_FALLBACK_IMAGE = "assets/social-preview.jpg";
 const EVENT_FALLBACK_SOURCE = "Fallback neutro MyAvezzano";
+const AVEZZANO_WEATHER_ENDPOINT = "https://api.open-meteo.com/v1/forecast?latitude=42.0326&longitude=13.4256&current=temperature_2m,weather_code&timezone=Europe%2FRome";
 const IMPORTANT_EVENT_KEYWORDS = [
   "fedez",
   "francesco gabbani",
@@ -3344,9 +3345,7 @@ function refreshInteractiveMapLayout() {
 function updateCitySelectorUi() {
   const selector = document.querySelector("#citySelector");
   const meta = document.querySelector("#citySelectorMeta");
-  const weatherTown = document.querySelector(".weather-widget div span");
   if (selector) selector.value = activeTown;
-  if (weatherTown) weatherTown.textContent = selectedTownLabel();
   if (!meta) return;
 
   const places = scopedPlaces(mapPlaces);
@@ -3356,6 +3355,40 @@ function updateCitySelectorUi() {
   meta.textContent = activeTown === "all"
     ? `${places.length} ${placeLabel} e ${futureEvents.length} ${eventLabel} nella Marsica.`
     : `${places.length} ${placeLabel} e ${futureEvents.length} ${eventLabel} su ${activeTown}.`;
+}
+
+function weatherCodeLabel(code) {
+  if ([0, 1].includes(code)) return "Sereno";
+  if ([2, 3].includes(code)) return "Nuvoloso";
+  if ([45, 48].includes(code)) return "Nebbia";
+  if ([51, 53, 55, 56, 57].includes(code)) return "Pioviggine";
+  if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return "Pioggia";
+  if ([71, 73, 75, 77, 85, 86].includes(code)) return "Neve";
+  if ([95, 96, 99].includes(code)) return "Temporale";
+  return "Meteo";
+}
+
+async function updateAvezzanoWeather() {
+  const temp = document.querySelector("#weatherTemperature");
+  const summary = document.querySelector("#weatherSummary");
+  const widget = document.querySelector(".weather-widget");
+  if (!temp || !summary) return;
+
+  try {
+    const response = await fetch(AVEZZANO_WEATHER_ENDPOINT, { cache: "no-store" });
+    if (!response.ok) throw new Error("Meteo non disponibile");
+    const data = await response.json();
+    const current = data.current || {};
+    const value = Number(current.temperature_2m);
+    if (!Number.isFinite(value)) throw new Error("Temperatura non valida");
+    temp.textContent = `${Math.round(value)}°C`;
+    summary.textContent = `${weatherCodeLabel(Number(current.weather_code))} ad Avezzano`;
+    widget?.classList.add("is-live");
+  } catch {
+    temp.textContent = "--°C";
+    summary.textContent = "Meteo Avezzano";
+    widget?.classList.remove("is-live");
+  }
 }
 
 function refreshTownScopedViews({ panMap = false } = {}) {
@@ -5321,6 +5354,7 @@ async function bootApp() {
   render();
   renderLegalPanel();
   refreshTownScopedViews();
+  updateAvezzanoWeather();
   selectMapPlace(selectedPlace.id, false);
   updateAuthUi();
 

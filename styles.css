@@ -10596,6 +10596,91 @@ body.theme-dark .topbar > .top-actions .guide-button span {
   border-color: rgba(103,232,249,.25);
 }
 
+/* Home clarity pass: readable cards, real utility focus, stable avatars */
+body:not(.theme-dark) #feedView .home-quick-actions .shortcut-card,
+body:not(.theme-dark) .home-event-focus,
+body:not(.theme-dark) .weekend-home,
+body:not(.theme-dark) .summer-home-band {
+  background: rgba(255, 255, 255, .94);
+  border-color: rgba(15, 23, 42, .12);
+  color: #0f172a;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, .08);
+}
+
+body:not(.theme-dark) #feedView .home-quick-actions .shortcut-card strong,
+body:not(.theme-dark) #feedView .shortcut-copy strong,
+body:not(.theme-dark) .home-event-main h2,
+body:not(.theme-dark) .weekend-event-row strong {
+  color: #0f172a;
+}
+
+body:not(.theme-dark) #feedView .home-quick-actions .shortcut-card small,
+body:not(.theme-dark) #feedView .shortcut-copy small,
+body:not(.theme-dark) .home-event-main p,
+body:not(.theme-dark) .weekend-event-row small {
+  color: #334155;
+}
+
+#feedView .stories {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+#feedView .home-quick-actions .shortcut-card {
+  min-height: 84px;
+}
+
+#feedView .city-now-grid,
+#feedView .home-command-center,
+#feedView .smart-strip,
+#feedView .day-plan,
+#feedView .feed-list,
+#feedView .accent-panel,
+#feedView .campaign-mini-panel {
+  display: none;
+}
+
+#feedView .utility-shell {
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+  margin-top: 14px;
+}
+
+#feedView .utility-column {
+  min-height: 0;
+}
+
+.weather-widget.is-live .weather-icon {
+  background: radial-gradient(circle at 36% 34%, #fff7ad 0 28%, #facc15 29% 58%, #38bdf8 59% 100%);
+  box-shadow: 0 0 0 5px rgba(250, 204, 21, .16);
+}
+
+.prestige-ring,
+.home-account-main img,
+.profile-photo img {
+  aspect-ratio: 1 / 1;
+}
+
+.prestige-ring img,
+.home-account-main img {
+  object-fit: contain;
+  object-position: center;
+  background: #fff;
+}
+
+.top-profile-status {
+  min-width: 0;
+}
+
+.top-profile-copy {
+  min-width: 0;
+}
+
+.top-profile-copy strong,
+.top-profile-copy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 @media (max-width: 1180px) {
   .topbar > .top-actions {
     width: 100%;
