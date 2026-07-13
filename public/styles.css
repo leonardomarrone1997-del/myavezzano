@@ -10881,3 +10881,366 @@ body:not(.theme-dark) .weekend-event-row small {
     grid-column: 1 / -1;
   }
 }
+
+/* Hub-inspired visual direction: clean editorial layout, soft depth, clearer hierarchy */
+:root {
+  --hub-bg: #f5f7fb;
+  --hub-surface: rgba(255, 255, 255, .92);
+  --hub-surface-solid: #ffffff;
+  --hub-line: rgba(15, 23, 42, .09);
+  --hub-ink: #0f172a;
+  --hub-muted: #64748b;
+  --hub-primary: #1458f5;
+  --hub-primary-2: #00a6a6;
+  --hub-shadow: 0 20px 60px rgba(15, 23, 42, .10);
+  --hub-shadow-soft: 0 10px 30px rgba(15, 23, 42, .075);
+}
+
+body:not(.theme-dark) {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(20, 88, 245, .08), transparent 32%),
+    radial-gradient(circle at 88% 10%, rgba(0, 166, 166, .08), transparent 30%),
+    var(--hub-bg);
+}
+
+body:not(.theme-dark)::before {
+  opacity: .30;
+  filter: blur(28px) saturate(1.02);
+}
+
+body:not(.theme-dark)::after {
+  opacity: .28;
+  background-size: 56px 56px;
+  mask-image: linear-gradient(180deg, rgba(0,0,0,.38), transparent 70%);
+}
+
+.main {
+  max-width: 1480px;
+}
+
+.sidebar {
+  border-color: var(--hub-line);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.86));
+  box-shadow: 18px 0 46px rgba(15, 23, 42, .07);
+}
+
+.brand {
+  padding: 6px 6px 16px;
+}
+
+.brand-mark {
+  box-shadow: 0 14px 32px rgba(20, 88, 245, .16);
+}
+
+.nav {
+  gap: 7px;
+}
+
+.nav-item {
+  min-height: 42px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  color: #536073;
+  background: transparent;
+  transition: transform .18s ease, background .18s ease, color .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.nav-item::before {
+  width: 26px;
+  height: 26px;
+  border-radius: 9px;
+  background: rgba(15, 23, 42, .045);
+  display: inline-grid;
+  place-items: center;
+}
+
+.nav-item.active,
+.nav-item:hover {
+  color: var(--hub-ink);
+  border-color: rgba(20, 88, 245, .12);
+  background: #fff;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, .07);
+  transform: translateX(2px);
+}
+
+.nav-item.active::before,
+.nav-item:hover::before {
+  background: linear-gradient(135deg, rgba(20, 88, 245, .12), rgba(0, 166, 166, .10));
+}
+
+.side-card {
+  border: 1px solid var(--hub-line);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: var(--hub-shadow-soft);
+}
+
+.topbar {
+  min-height: clamp(360px, 38vw, 520px);
+  padding: clamp(24px, 4vw, 54px);
+  border: 1px solid rgba(255,255,255,.78);
+  border-radius: 24px;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.88) 0%, rgba(255,255,255,.76) 42%, rgba(255,255,255,.20) 100%),
+    var(--avezzano-bg) !important;
+  box-shadow: var(--hub-shadow);
+}
+
+.topbar::before {
+  opacity: .42;
+}
+
+.topbar > div:first-child {
+  max-width: min(760px, 100%);
+}
+
+.topbar .eyebrow {
+  width: fit-content;
+  padding: 7px 10px;
+  border: 1px solid rgba(20, 88, 245, .12);
+  border-radius: 999px;
+  background: rgba(255,255,255,.78);
+  color: var(--hub-primary);
+  box-shadow: 0 8px 20px rgba(20, 88, 245, .08);
+}
+
+.topbar h1 {
+  max-width: 11ch;
+  margin-top: 14px;
+  color: var(--hub-ink);
+  letter-spacing: 0;
+}
+
+.topbar-copy {
+  max-width: 58ch;
+  color: #475569;
+  font-size: clamp(15px, 1.35vw, 18px);
+  line-height: 1.65;
+}
+
+.city-signature {
+  border: 1px solid rgba(15, 23, 42, .08);
+  border-radius: 14px;
+  background: rgba(255,255,255,.78);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, .06);
+}
+
+.topbar > .top-actions {
+  border: 1px solid rgba(255,255,255,.84);
+  border-radius: 18px;
+  background: rgba(255,255,255,.88);
+  box-shadow: 0 18px 42px rgba(15, 23, 42, .11);
+  backdrop-filter: blur(16px) saturate(1.1);
+  -webkit-backdrop-filter: blur(16px) saturate(1.1);
+}
+
+.topbar > .top-actions .weather-widget,
+.topbar > .top-actions .theme-toggle,
+.topbar > .top-actions .guide-button,
+.topbar > .top-actions .top-profile-status,
+.topbar > .top-actions .notification-button,
+.topbar > .top-actions #openSignup {
+  border: 1px solid rgba(15, 23, 42, .08);
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: none;
+}
+
+.topbar > .top-actions #openSignup,
+.primary-action,
+.summer-home-action {
+  border: 0;
+  background: linear-gradient(135deg, var(--hub-primary), #245bdb);
+  color: #fff;
+  box-shadow: 0 16px 34px rgba(20, 88, 245, .24);
+}
+
+.topbar > .top-actions #openSignup:hover,
+.primary-action:hover,
+.summer-home-action:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 20px 44px rgba(20, 88, 245, .30);
+}
+
+.panel,
+.post,
+.event-card,
+.coupon-card,
+.reward-card,
+.profile-card,
+.profile-detail-panel,
+.profile-action-card,
+.home-event-focus,
+.weekend-home,
+.summer-home-band,
+.shortcut-card,
+.map-panel,
+.map-card,
+.merchant-pricing-hero,
+.admin-hero {
+  border: 1px solid var(--hub-line);
+  border-radius: 18px;
+  background: var(--hub-surface);
+  box-shadow: var(--hub-shadow-soft);
+  backdrop-filter: blur(10px) saturate(1.04);
+  -webkit-backdrop-filter: blur(10px) saturate(1.04);
+}
+
+.panel:hover,
+.event-card:hover,
+.coupon-card:hover,
+.profile-action-card:hover,
+#feedView .home-quick-actions .shortcut-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 48px rgba(15, 23, 42, .12);
+}
+
+#feedView .home-quick-actions {
+  margin-top: 18px;
+}
+
+#feedView .home-quick-actions .shortcut-card {
+  min-height: 96px;
+  padding: 16px;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.98), rgba(247,250,255,.94));
+}
+
+#feedView .home-quick-actions .shortcut-icon {
+  border-radius: 14px;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, .09);
+}
+
+.home-event-focus {
+  border-left: 4px solid var(--hub-primary);
+}
+
+.weekend-home {
+  border-left: 4px solid var(--hub-primary-2);
+}
+
+.summer-home-band {
+  border-left: 4px solid #ff6b4a;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.95), rgba(255,247,237,.86));
+}
+
+.event-card h2,
+.coupon-card h2,
+.panel h2,
+.home-event-main h2 {
+  color: var(--hub-ink);
+}
+
+.event-card p,
+.coupon-card p,
+.panel p {
+  color: var(--hub-muted);
+}
+
+body.theme-dark {
+  --hub-bg: #070b16;
+  --hub-surface: rgba(11, 18, 32, .88);
+  --hub-surface-solid: #0b1220;
+  --hub-line: rgba(226, 232, 240, .12);
+  --hub-ink: #f8fafc;
+  --hub-muted: #b6c3d4;
+  --hub-shadow: 0 24px 70px rgba(0, 0, 0, .38);
+  --hub-shadow-soft: 0 14px 40px rgba(0, 0, 0, .28);
+}
+
+body.theme-dark .sidebar,
+body.theme-dark .side-card,
+body.theme-dark .panel,
+body.theme-dark .post,
+body.theme-dark .event-card,
+body.theme-dark .coupon-card,
+body.theme-dark .reward-card,
+body.theme-dark .profile-card,
+body.theme-dark .profile-detail-panel,
+body.theme-dark .profile-action-card,
+body.theme-dark .home-event-focus,
+body.theme-dark .weekend-home,
+body.theme-dark .summer-home-band,
+body.theme-dark .shortcut-card,
+body.theme-dark .map-panel,
+body.theme-dark .map-card,
+body.theme-dark .merchant-pricing-hero,
+body.theme-dark .admin-hero {
+  border-color: var(--hub-line);
+  background: var(--hub-surface);
+  box-shadow: var(--hub-shadow-soft);
+}
+
+body.theme-dark .topbar {
+  background:
+    linear-gradient(90deg, rgba(7,11,22,.90) 0%, rgba(7,11,22,.72) 48%, rgba(7,11,22,.24) 100%),
+    var(--avezzano-bg) !important;
+  border-color: rgba(226,232,240,.12);
+}
+
+body.theme-dark .topbar .eyebrow,
+body.theme-dark .city-signature,
+body.theme-dark .topbar > .top-actions,
+body.theme-dark .topbar > .top-actions .weather-widget,
+body.theme-dark .topbar > .top-actions .theme-toggle,
+body.theme-dark .topbar > .top-actions .guide-button,
+body.theme-dark .topbar > .top-actions .top-profile-status,
+body.theme-dark .topbar > .top-actions .notification-button {
+  border-color: rgba(226,232,240,.12) !important;
+  background: rgba(11,18,32,.82) !important;
+}
+
+body.theme-dark .topbar h1,
+body.theme-dark .event-card h2,
+body.theme-dark .coupon-card h2,
+body.theme-dark .panel h2,
+body.theme-dark .home-event-main h2 {
+  color: #f8fafc;
+}
+
+body.theme-dark .topbar-copy,
+body.theme-dark .event-card p,
+body.theme-dark .coupon-card p,
+body.theme-dark .panel p {
+  color: #cbd5e1;
+}
+
+@media (max-width: 920px) {
+  .topbar {
+    min-height: auto;
+    padding: 22px;
+    border-radius: 20px;
+  }
+
+  .topbar h1 {
+    max-width: 12ch;
+  }
+}
+
+@media (max-width: 560px) {
+  .topbar {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .topbar .eyebrow {
+    font-size: 10px;
+  }
+
+  .topbar-copy {
+    font-size: 14px;
+  }
+
+  .panel,
+  .event-card,
+  .coupon-card,
+  .profile-card,
+  .home-event-focus,
+  .weekend-home,
+  .summer-home-band,
+  #feedView .home-quick-actions .shortcut-card {
+    border-radius: 14px;
+  }
+}
