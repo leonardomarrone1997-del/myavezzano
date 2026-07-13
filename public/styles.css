@@ -10396,10 +10396,210 @@ body.theme-dark .home-account-stats b {
   color: #f8fafc;
 }
 
+/* Final polish: two-theme header, lighter tabs and clearer account panel */
+.topbar > .top-actions {
+  width: min(610px, 100%);
+  grid-template-columns: minmax(132px, 1.05fr) minmax(104px, .74fr) minmax(96px, .70fr) minmax(150px, 1.18fr) 44px minmax(88px, .68fr);
+  gap: 8px;
+}
+
+.topbar > .top-actions .theme-mode-group {
+  min-width: 0;
+}
+
+.topbar > .top-actions .theme-toggle {
+  min-height: 44px;
+  justify-content: flex-start;
+  gap: 9px;
+  padding: 6px 10px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.70);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.72);
+}
+
+.topbar > .top-actions .theme-toggle strong {
+  display: grid;
+  gap: 1px;
+  line-height: 1.05;
+}
+
+.topbar > .top-actions .theme-toggle small {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.topbar > .top-actions .theme-toggle b {
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.topbar > .top-actions .guide-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.62);
+}
+
+.topbar > .top-actions .guide-button span {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background:
+    linear-gradient(135deg, rgba(14,165,233,.18), rgba(16,185,129,.18)),
+    var(--paper);
+  border: 1px solid rgba(14,116,144,.22);
+  position: relative;
+}
+
+.topbar > .top-actions .guide-button span::before {
+  content: "?";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #0e7490;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.home-account-card {
+  position: relative;
+  gap: 13px;
+  padding: 16px;
+  border: 1px solid rgba(14,116,144,.16);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.92), rgba(248,250,252,.86)),
+    var(--paper);
+}
+
+.home-account-kicker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.home-account-kicker b {
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: rgba(14,165,233,.10);
+  color: #0e7490;
+  font-size: 10px;
+}
+
+.home-account-main {
+  grid-template-columns: 56px minmax(0, 1fr);
+}
+
+.home-account-main img {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.86);
+}
+
+.home-account-main strong {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 16px;
+}
+
+.home-account-main span {
+  font-size: 12px;
+  line-height: 1.42;
+}
+
+.home-account-stats span {
+  border-radius: 8px;
+  background: rgba(241,245,249,.74);
+}
+
+.home-account-actions {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.coupon-filter-tabs,
+.event-categories {
+  gap: 7px;
+}
+
+.coupon-filter-tabs button,
+.event-chip {
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+.coupon-filter-tabs button {
+  min-height: 32px;
+  background: rgba(248,250,252,.74);
+}
+
+.coupon-filter-tabs button.active {
+  background: #0e7490;
+  border-color: rgba(14,116,144,.34);
+}
+
+.event-chip {
+  padding: 12px;
+  background: rgba(255,255,255,.72);
+}
+
+.event-chip.active {
+  background: rgba(14,165,233,.10);
+  border-color: rgba(14,116,144,.28);
+  color: #0e7490;
+}
+
+body.theme-dark .topbar > .top-actions .theme-toggle,
+body.theme-dark .topbar > .top-actions .guide-button,
+body.theme-dark .home-account-card {
+  background: rgba(15,23,42,.74);
+  border-color: rgba(226,232,240,.16);
+}
+
+body.theme-dark .topbar > .top-actions .theme-toggle b,
+body.theme-dark .home-account-main strong {
+  color: #f8fafc;
+}
+
+body.theme-dark .home-account-kicker b {
+  background: rgba(103,232,249,.12);
+  color: #67e8f9;
+}
+
+body.theme-dark .home-account-stats span,
+body.theme-dark .coupon-filter-tabs button,
+body.theme-dark .event-chip {
+  background: rgba(15,23,42,.58);
+  border-color: rgba(226,232,240,.14);
+}
+
+body.theme-dark .event-chip.active,
+body.theme-dark .coupon-filter-tabs button.active {
+  background: rgba(14,165,233,.18);
+  border-color: rgba(103,232,249,.34);
+  color: #e0f2fe;
+}
+
+body.theme-dark .topbar > .top-actions .guide-button span {
+  background: rgba(14,165,233,.12);
+  border-color: rgba(103,232,249,.25);
+}
+
 @media (max-width: 1180px) {
   .topbar > .top-actions {
     width: 100%;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     justify-self: stretch;
   }
 }
@@ -10417,6 +10617,13 @@ body.theme-dark .home-account-stats b {
   .topbar > .top-actions .top-profile-status {
     grid-column: span 2;
   }
+
+  .topbar > .top-actions .theme-mode-group,
+  .topbar > .top-actions .guide-button,
+  .topbar > .top-actions .notification-button,
+  .topbar > .top-actions #openSignup {
+    grid-column: span 1;
+  }
 }
 
 @media (max-width: 760px) {
@@ -10427,6 +10634,10 @@ body.theme-dark .home-account-stats b {
   .topbar > .top-actions .weather-widget,
   .topbar > .top-actions .top-profile-status {
     grid-column: 1 / -1;
+  }
+
+  .home-account-actions {
+    grid-template-columns: 1fr;
   }
 
   .topbar > .top-actions .notification-button,

@@ -3601,6 +3601,8 @@ function animateGlobalSurfaces() {
 }
 
 function preferredTheme() {
+  localStorage.removeItem("myavezzano_visual_style");
+  localStorage.removeItem("myavezzano_visual_style_previous_theme");
   const stored = localStorage.getItem(THEME_STORAGE_KEY);
   if (stored === "dark" || stored === "light") return stored;
   return "light";
@@ -4705,6 +4707,7 @@ function updateAuthUi() {
   const homeAvatar = document.querySelector("#homeProfileAvatar");
   const homeName = document.querySelector("#homeProfileName");
   const homeCopy = document.querySelector("#homeProfileCopy");
+  const homeStatus = document.querySelector("#homeProfileStatus");
   const homeCoupons = document.querySelector("#homeProfileCoupons");
   const homeEvents = document.querySelector("#homeProfileEvents");
   const homePoints = document.querySelector("#homeProfilePoints");
@@ -4713,10 +4716,11 @@ function updateAuthUi() {
   document.querySelector("#openSignupMini").textContent = miniLabel;
   if (homeAvatar) homeAvatar.src = user?.avatar || "assets/app-icon.svg";
   if (homeName) homeName.textContent = user ? user.name : "Area personale";
+  if (homeStatus) homeStatus.textContent = user ? "Collegato" : "Non collegato";
   if (homeCopy) {
     homeCopy.textContent = user
-      ? `${levelState.level}: coupon, eventi e reminder in un solo posto.`
-      : "Accedi per salvare coupon, eventi e luoghi preferiti.";
+      ? `${levelState.level}: salvataggi, coupon e reminder sempre pronti.`
+      : "Accedi per avere coupon, eventi e guida rapida sempre a portata.";
   }
   if (homeCoupons) homeCoupons.textContent = user ? profileCouponRows().length : 0;
   if (homeEvents) homeEvents.textContent = user ? profileEventRows().length : 0;

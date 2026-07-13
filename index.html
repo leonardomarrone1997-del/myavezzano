@@ -150,10 +150,10 @@
             <div class="theme-mode-group" aria-label="Tema giorno e notte">
               <button class="theme-toggle" id="themeToggle" type="button" aria-label="Attiva tema notturno" aria-pressed="false">
                 <span aria-hidden="true"></span>
-                <strong id="themeToggleLabel">Notte</strong>
+                <strong><small>Tema</small><b id="themeToggleLabel">Notte</b></strong>
               </button>
             </div>
-            <button class="ghost guide-button" data-action="open-onboarding" type="button">Guida</button>
+            <button class="ghost guide-button" data-action="open-onboarding" type="button"><span aria-hidden="true"></span>Guida</button>
             <button class="top-profile-status" id="topProfileStatus" type="button" aria-label="Apri profilo">
               <span class="prestige-ring" aria-hidden="true">
                 <img id="topProfileAvatar" src="assets/app-icon.svg" alt="" />
@@ -246,6 +246,10 @@
             </section>
             <aside class="right-rail">
               <div class="profile-card home-account-card">
+                <div class="home-account-kicker">
+                  <span>Area utente</span>
+                  <b id="homeProfileStatus">Non collegato</b>
+                </div>
                 <div class="home-account-main">
                   <img id="homeProfileAvatar" src="assets/app-icon.svg" alt="MyAvezzano" />
                   <div>
@@ -261,6 +265,7 @@
                 <div class="home-account-actions">
                   <button class="ghost compact-button" id="openSignupMini" type="button">Accedi</button>
                   <button class="light-action compact-button" data-view-target="profile" type="button">Profilo</button>
+                  <button class="ghost compact-button" data-action="open-onboarding" type="button">Guida</button>
                 </div>
               </div>
               <div class="panel accent-panel">
