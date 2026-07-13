@@ -184,7 +184,60 @@ const userSubmittedBusinesses = [
   }
 ];
 
-let mapPlaces = businesses.concat(userSubmittedBusinesses, [
+const marsicaFoodVenues = [
+  { name: "Madonna delle Vigne", category: "Ristorante", area: "Celano", distance: "Celano", lat: 42.084098, lng: 13.544784, address: "Celano", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Ristorante a Celano inserito nella rete Marsica di MyAvezzano." },
+  { name: "Cittadella", category: "Ristorante", area: "Celano", distance: "Celano", lat: 42.083916, lng: 13.546127, address: "Via Michele Carusi 30, Celano", phone: "+39 0863 791293", website: "http://www.ristorantecittadella.it/", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Ristorante a Celano inserito nella rete Marsica di MyAvezzano." },
+  { name: "La Locanda Del Castello", category: "Ristorante", area: "Celano", distance: "Celano", lat: 42.085161, lng: 13.5459, address: "Via Porta Nuova 19, Celano", phone: "+39 327 7013313", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Ristorante a Celano vicino agli eventi del centro storico." },
+  { name: "Il Fortino Ristorante Hotel", category: "Ristorante", area: "Celano", distance: "Celano", lat: 42.07049, lng: 13.553207, address: "Celano", phone: "+39 339 4080595", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Ristorante e hotel a Celano nella rete Marsica." },
+  { name: "Locomotiva", category: "Ristorante", area: "Tagliacozzo", distance: "Tagliacozzo", lat: 42.070499, lng: 13.25467, address: "Tagliacozzo", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Ristorante a Tagliacozzo utile prima o dopo gli spettacoli del festival." },
+  { name: "La Pergola D'Oro", category: "Ristorante", area: "Tagliacozzo", distance: "Tagliacozzo", lat: 42.067029, lng: 13.25276, address: "Tagliacozzo", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Ristorante a Tagliacozzo inserito nella mappa MyAvezzano." },
+  { name: "La Parigina", category: "Ristorante", area: "Tagliacozzo", distance: "Tagliacozzo", lat: 42.067032, lng: 13.25094, address: "Tagliacozzo", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Locale a Tagliacozzo collegato agli eventi estivi della Marsica." },
+  { name: "Ristorante Pizzeria Al Mulino", category: "Ristorante", area: "Tagliacozzo", distance: "Tagliacozzo", lat: 42.064901, lng: 13.281294, address: "Tagliacozzo", phone: "+39 0863 610826", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80", caption: "Ristorante pizzeria a Tagliacozzo nella rete MyAvezzano." },
+  { name: "Pizzeria La Tavernetta", category: "Ristorante", area: "Tagliacozzo", distance: "Tagliacozzo", lat: 42.065008, lng: 13.283288, address: "Tagliacozzo", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80", caption: "Pizzeria a Tagliacozzo nella mappa dei locali limitrofi." },
+  { name: "Bar Tre Scalini", category: "Bar", area: "Pescina", distance: "Pescina", lat: 42.02647, lng: 13.659987, address: "SP 17 del Parco Nazionale d'Abruzzo 1, Pescina", website: "https://www.facebook.com/CocktailWineCoffee/", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80", caption: "Bar a Pescina inserito nella rete Marsica." },
+  { name: "Agriturismo Antica Locanda del Giovenco", category: "Ristorante", area: "Pescina", distance: "Pescina", lat: 42.028471, lng: 13.663936, address: "Via Romolo Tranquilli, Pescina", phone: "+39 333 9654746", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Agriturismo e ristorante a Pescina nella rete Marsica." },
+  { name: "Caffe dei Marsi", category: "Bar", area: "Pescina", distance: "Pescina", lat: 42.027056, lng: 13.648103, address: "Via Serafino Rinaldi 160, Pescina", phone: "+39 338 9299806", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80", caption: "Bar a Pescina nella mappa MyAvezzano dei comuni limitrofi." },
+  { name: "Ristorante Valle Del Giovenco", category: "Ristorante", area: "Pescina", distance: "Pescina", lat: 42.028421, lng: 13.646078, address: "Via Serafino Rinaldi 326, Pescina", phone: "+39 0863 842191", website: "http://www.ristorantevalledelgiovenco.it/", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Ristorante a Pescina collegato alla nuova copertura Marsica." },
+  { name: "Marsica", category: "Ristorante", area: "Luco dei Marsi", distance: "Luco dei Marsi", lat: 41.957555, lng: 13.477531, address: "Via Martiri di Capistrello 11, Luco dei Marsi", phone: "+39 0863 528497", website: "http://www.ristorantepizzeriamarsica.it/", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80", caption: "Ristorante pizzeria a Luco dei Marsi nella rete MyAvezzano." },
+  { name: "al 75", category: "Ristorante", area: "Trasacco", distance: "Trasacco", lat: 41.958529, lng: 13.534741, address: "Trasacco", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Ristorante a Trasacco nella mappa Marsica." },
+  { name: "Il Tempio", category: "Bar", area: "Trasacco", distance: "Trasacco", lat: 41.958841, lng: 13.533703, address: "Trasacco", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80", caption: "Bar a Trasacco inserito nella rete dei locali limitrofi." },
+  { name: "Gelateria Alessandra", category: "Gelateria", area: "Trasacco", distance: "Trasacco", lat: 41.958854, lng: 13.534578, address: "Trasacco", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1567206563064-6f60f40a2b57?auto=format&fit=crop&w=600&q=80", caption: "Gelateria a Trasacco nella mappa dei comuni vicini." },
+  { name: "Gnuff", category: "Bar", area: "Trasacco", distance: "Trasacco", lat: 41.958553, lng: 13.535228, address: "Trasacco", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80", caption: "Bar a Trasacco nella rete Marsica." },
+  { name: "La Grotta", category: "Bar", area: "Trasacco", distance: "Trasacco", lat: 41.958843, lng: 13.536181, address: "Trasacco", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80", caption: "Locale a Trasacco inserito nella mappa MyAvezzano." },
+  { name: "Il Granaio", category: "Ristorante", area: "Trasacco", distance: "Trasacco", lat: 41.957042, lng: 13.531406, address: "Via Quattro Novembre 49, Trasacco", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Ristorante a Trasacco nella copertura MyAvezzano." },
+  { name: "Fonte Vecchia", category: "Bar", area: "Carsoli", distance: "Carsoli", lat: 42.097606, lng: 13.084703, address: "Via Le Ripi, Carsoli", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80", caption: "Bar a Carsoli nella rete dei comuni limitrofi." },
+  { name: "C'era Una Volta", category: "Bar", area: "Carsoli", distance: "Carsoli", lat: 42.096463, lng: 13.083415, address: "Carsoli", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=600&q=80", caption: "Locale a Carsoli nella mappa Marsica." },
+  { name: "Bar Passone", category: "Bar", area: "Carsoli", distance: "Carsoli", lat: 42.097715, lng: 13.081677, address: "Carsoli", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80", caption: "Bar a Carsoli inserito nella rete MyAvezzano." },
+  { name: "Bar Le Magnolie", category: "Bar", area: "Scurcola Marsicana", distance: "Scurcola Marsicana", lat: 42.0638, lng: 13.34175, address: "Scurcola Marsicana", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80", caption: "Bar a Scurcola Marsicana vicino agli eventi estivi." },
+  { name: "Agriturismo I musicanti di Brema", category: "Ristorante", area: "Scurcola Marsicana", distance: "Scurcola Marsicana", lat: 42.066155, lng: 13.319943, address: "Scurcola Marsicana", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Agriturismo e ristorante a Scurcola Marsicana nella rete Marsica." },
+  { name: "I Cinque Pini", category: "Ristorante", area: "Magliano de' Marsi", distance: "Magliano de' Marsi", lat: 42.091462, lng: 13.365486, address: "Via Avezzano 11, Magliano de' Marsi", phone: "+39 0863 51221", website: "http://www.icinquepini.it/", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80", caption: "Ristorante pizzeria braceria a Magliano de' Marsi nella rete MyAvezzano." },
+  { name: "Sarni", category: "Ristorante", area: "Magliano de' Marsi", distance: "Magliano de' Marsi", lat: 42.094891, lng: 13.346537, address: "Magliano de' Marsi", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Ristorante a Magliano de' Marsi nella mappa dei comuni vicini." }
+];
+
+const marsicaTownImages = {
+  "Celano": "https://commons.wikimedia.org/wiki/Special:FilePath/Celano%20-%20Castello%20Piccolomini.jpg",
+  "Tagliacozzo": "https://commons.wikimedia.org/wiki/Special:FilePath/TagliacozzoobeliscoMarsica2.jpg",
+  "Pescina": "https://commons.wikimedia.org/wiki/Special:FilePath/Pescina%20view.jpg",
+  "Luco dei Marsi": "https://commons.wikimedia.org/wiki/Special:FilePath/Luco%20dei%20Marsi%20Chiesa%20San%20Giovanni%20Battista%201.jpg",
+  "Trasacco": "https://commons.wikimedia.org/wiki/Special:FilePath/Trasacco.jpg",
+  "Carsoli": "https://commons.wikimedia.org/wiki/Special:FilePath/Italien%20vicino%20Autostrada%2024%2004%20%28RaBoe%29.jpg",
+  "Scurcola Marsicana": "https://commons.wikimedia.org/wiki/Special:FilePath/Scurcola%20Marsicana%20view.jpg",
+  "Magliano de' Marsi": "https://commons.wikimedia.org/wiki/Special:FilePath/Magliano%20De%27%20Marsi%202013%20by-RaBoe%205.jpg"
+};
+
+marsicaFoodVenues.forEach((place) => {
+  const townImage = marsicaTownImages[place.area];
+  if (townImage && !place.photo) {
+    place.image = townImage;
+    place.photoCredit = "Wikimedia Commons - immagine del comune";
+  }
+});
+
+function curatedMapPlaces() {
+  return businesses.concat(userSubmittedBusinesses, marsicaFoodVenues);
+}
+
+let mapPlaces = curatedMapPlaces().concat([
   {
     name: "Moon Club",
     category: "Discoteca",
@@ -234,7 +287,7 @@ let mapPlaces = businesses.concat(userSubmittedBusinesses, [
     address: "Avezzano",
     stats: "School of Rock 2026",
     image: "https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=500&q=80",
-    caption: "Sede demo per grandi eventi estivi, concerti e appuntamenti live."
+    caption: "Sede per grandi eventi estivi, concerti e appuntamenti live."
   },
   {
     name: "Castello Orsini",
@@ -278,7 +331,7 @@ let mapPlaces = businesses.concat(userSubmittedBusinesses, [
     address: "Corso della Libertà, Avezzano",
     stats: "Prevendite eventi",
     image: "https://images.unsplash.com/photo-1526243741027-444d633d7365?auto=format&fit=crop&w=500&q=80",
-    caption: "Punto prevendita demo per biglietti e informazioni sugli eventi estivi."
+    caption: "Punto prevendita per biglietti e informazioni sugli eventi estivi."
   }
 ]).map((place, index) => ({
   ...place,
@@ -345,17 +398,67 @@ const wikidataImageCache = new Map();
 const DEMO_STATE_KEY = "myavezzano_demo_state";
 const ONBOARDING_KEY = "myavezzano_onboarding_seen";
 const THEME_STORAGE_KEY = "myavezzano_theme";
-const VISUAL_STYLE_STORAGE_KEY = "myavezzano_visual_style";
-const VISUAL_STYLE_PREVIOUS_THEME_KEY = "myavezzano_visual_style_previous_theme";
 const FX_MODE_STORAGE_KEY = "myavezzano_fx_mode";
 const ADMIN_CONTROL_KEY = "myavezzano_admin_control_v1";
+const RADAR_EVENT_SEEDS = [
+  {
+    id: "radar-birrart-tagliacozzo",
+    title: "BirrArt / festa della birra",
+    area: "Tagliacozzo",
+    date: "2026-07-17",
+    time: "Serale",
+    category: "Segnalazione",
+    source: "Segnalazioni locali e pagine evento",
+    confidence: 72,
+    reason: "Parole chiave: birra, festa, serata. Comune non coperto dagli eventi ufficiali caricati.",
+    suggestion: "Verificare pagina organizzatore, locandina e orari prima della pubblicazione."
+  },
+  {
+    id: "radar-pro-loco-celano",
+    title: "Serata estiva Pro Loco",
+    area: "Celano",
+    date: "2026-07-18",
+    time: "Da verificare",
+    category: "Festa",
+    source: "Pattern social locali",
+    confidence: 64,
+    reason: "Possibile evento di piazza vicino al weekend, utile per il target Marsica.",
+    suggestion: "Richiedere conferma a organizzatore o pagina comunale."
+  },
+  {
+    id: "radar-street-food-pescina",
+    title: "Street food e musica in piazza",
+    area: "Pescina",
+    date: "2026-07-19",
+    time: "18:00",
+    category: "Food",
+    source: "Monitor parole chiave food/eventi",
+    confidence: 58,
+    reason: "Evento compatibile con ricerche 'cosa fare stasera' e coupon locali.",
+    suggestion: "Controllare locandina, indirizzo esatto e presenza commercianti."
+  }
+];
+const QA_BOT_STORAGE_KEY = "myavezzano_qa_bot_v1";
 const NOTIFICATION_READ_KEY = "myavezzano_notification_reads_v1";
+const IS_DEMO = (() => {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const host = window.location.hostname;
+    return params.get("demo") === "1" || localStorage.getItem("myavezzano_demo_mode") === "1" || ["localhost", "127.0.0.1", ""].includes(host);
+  } catch {
+    return false;
+  }
+})();
+const NODE_ENV = IS_DEMO ? "development" : "production";
+window.MYAVEZZANO_IS_DEMO = IS_DEMO;
+window.MYAVEZZANO_NODE_ENV = NODE_ENV;
 
 const categoryImages = {
   "Ristorante": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80",
   "Bar": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80",
   "Pub": "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=600&q=80",
   "Discoteca": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=600&q=80",
+  "Gelateria": "https://images.unsplash.com/photo-1567206563064-6f60f40a2b57?auto=format&fit=crop&w=600&q=80",
   "Abbigliamento": "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=600&q=80",
   "Palestra": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=600&q=80",
   "Centro estetico": "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=600&q=80",
@@ -367,11 +470,9 @@ const categoryImages = {
 };
 
 const quickActions = [
-  ["CENA", "Ristoranti e tavoli", "map", "cena"],
-  ["APERITIVO", "Drink e locali", "events", "aperitivo"],
-  ["COUPON", "Sconti attivi", "coupons", "coupon"],
-  ["SERATE", "Musica e locali", "events", "serate"],
-  ["EVENTI", "Agenda città", "events", "eventi"]
+  ["EVENTI", "Cosa fare oggi", "events", "eventi"],
+  ["MAPPA", "Locali e luoghi", "map", "mappa"],
+  ["COUPON", "Sconti attivi", "coupons", "coupon"]
 ];
 
 const cityHighlights = [
@@ -437,6 +538,7 @@ const eventCategories = [
   ["Vicino a te", "Marsica e paesi vicini", "nearby"],
   ["Avezzano", "Eventi in città", "avezzano"],
   ["Alba Fucens", "Area immediata", "alba"],
+  ["Segnalazioni", "Feste, sagre e serate", "segnalazioni"],
   ["Teatro", "Spettacoli e classici", "teatro"],
   ["Musica", "Concerti e tribute", "musica"],
   ["Sport", "Gare e attività", "sport"],
@@ -446,10 +548,85 @@ const eventCategories = [
 
 let activeEventCategory = "all";
 
-const calendarEvents = window.MYAVEZZANO_EVENTS || [];
-const archivedEvents = window.MYAVEZZANO_ARCHIVED_EVENTS || [];
+const EVENT_FALLBACK_IMAGE = "assets/social-preview.jpg";
+const EVENT_FALLBACK_SOURCE = "Fallback neutro MyAvezzano";
+const AVEZZANO_WEATHER_ENDPOINT = "https://api.open-meteo.com/v1/forecast?latitude=42.0326&longitude=13.4256&current=temperature_2m,weather_code&timezone=Europe%2FRome";
+const IMPORTANT_EVENT_KEYWORDS = [
+  "fedez",
+  "francesco gabbani",
+  "enrico brignano",
+  "tony hadley",
+  "rita pavone",
+  "fred de palma",
+  "le vibrazioni",
+  "fausto leali",
+  "sal da vinci",
+  "leo gassmann",
+  "bb day"
+];
+
+function eventSlug(value = "") {
+  return String(value)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+}
+
+function normalizeEvent(item) {
+  const id = item.id || eventSlug([item.title, item.date, item.place].filter(Boolean).join(" "));
+  const image = item.image || EVENT_FALLBACK_IMAGE;
+  const isRealPhoto = Boolean(item.image && item.isRealPhoto);
+  const importance = item.importance || (item.featured ? "high" : "normal");
+  const importantByTitle = IMPORTANT_EVENT_KEYWORDS.some((keyword) => String(item.title || "").toLowerCase().includes(keyword));
+  return {
+    ...item,
+    id,
+    slug: item.slug || id,
+    importance,
+    featured: Boolean(item.featured || importance === "high" || importantByTitle),
+    image,
+    imageAlt: item.imageAlt || `${item.title} - ${item.place}`,
+    imageSource: item.imageSource || (isRealPhoto ? "Fonte evento" : EVENT_FALLBACK_SOURCE),
+    isRealPhoto,
+    sourceUrl: item.sourceUrl || "",
+    updatedAt: item.updatedAt || "2026-06-29"
+  };
+}
+
+function uniqueEvents(items = []) {
+  const seen = new Set();
+  return items.map(normalizeEvent).filter((item) => {
+    const key = [item.slug || item.id, item.date, eventSlug(item.title), eventSlug(item.place)].join("|");
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+const calendarEvents = uniqueEvents(window.MYAVEZZANO_EVENTS || []);
+const archivedEvents = uniqueEvents(window.MYAVEZZANO_ARCHIVED_EVENTS || []);
 const summerEvents = calendarEvents.filter((item) => item.date >= "2026-06-21" && item.date <= "2026-09-22");
-const coverageTowns = ["Avezzano", "Alba Fucens", "Celano", "Tagliacozzo", "Pescina", "Luco dei Marsi", "Trasacco", "Carsoli", "Scurcola Marsicana", "Magliano de' Marsi"];
+const coverageTowns = ["Avezzano", "Alba Fucens", "Celano", "Tagliacozzo", "Pescina", "Luco dei Marsi", "Trasacco", "Carsoli", "Borgorose", "Scurcola Marsicana", "Magliano de' Marsi"];
+const CITY_SELECTOR_STORAGE_KEY = "myavezzano_selected_town_v1";
+const townCoordinates = {
+  Avezzano: { lat: 42.0326, lng: 13.4256 },
+  "Alba Fucens": { lat: 42.0784, lng: 13.4111 },
+  Celano: { lat: 42.0837, lng: 13.5481 },
+  Tagliacozzo: { lat: 42.0691, lng: 13.2558 },
+  Pescina: { lat: 42.0263, lng: 13.6568 },
+  "Luco dei Marsi": { lat: 41.9597, lng: 13.4737 },
+  Trasacco: { lat: 41.9578, lng: 13.5325 },
+  Carsoli: { lat: 42.0991, lng: 13.0881 },
+  Borgorose: { lat: 42.1906, lng: 13.2347 },
+  "Scurcola Marsicana": { lat: 42.0634, lng: 13.3408 },
+  "Magliano de' Marsi": { lat: 42.0917, lng: 13.3647 }
+};
+let activeTown = ["all", ...coverageTowns].includes(localStorage.getItem(CITY_SELECTOR_STORAGE_KEY))
+  ? localStorage.getItem(CITY_SELECTOR_STORAGE_KEY)
+  : "Avezzano";
 const summerCategories = [
   ["Tutti", "Intero cartellone", "all"],
   ["Avezzano", "In città", "avezzano"],
@@ -880,6 +1057,12 @@ function renderSmartStrip() {
   `).join("");
 }
 
+function applyEnvironmentVisibility() {
+  document.querySelectorAll("[data-demo-only]").forEach((node) => {
+    node.hidden = !IS_DEMO;
+  });
+}
+
 function cityPulseSnapshot() {
   const adminControl = getAdminControl();
   if (!adminControl.pulseEnabled) return [];
@@ -1100,6 +1283,32 @@ function dateKey(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
+function selectedTownLabel() {
+  return activeTown === "all" ? "Marsica" : activeTown;
+}
+
+function placeTown(place) {
+  const haystack = [place.area, place.distance, place.address, place.caption, place.stats].filter(Boolean).join(" ").toLowerCase();
+  const matched = coverageTowns.find((town) => haystack.includes(town.toLowerCase()));
+  return matched || "Avezzano";
+}
+
+function eventInSelectedTown(item) {
+  return activeTown === "all" || item.area === activeTown;
+}
+
+function placeInSelectedTown(place) {
+  return activeTown === "all" || placeTown(place) === activeTown;
+}
+
+function scopedEvents(items) {
+  return activeTown === "all" ? items : items.filter(eventInSelectedTown);
+}
+
+function scopedPlaces(items) {
+  return activeTown === "all" ? items : items.filter(placeInSelectedTown);
+}
+
 function weekendWindow(referenceKey = currentDateKey()) {
   const reference = eventDate(referenceKey);
   const weekday = reference.getDay();
@@ -1117,7 +1326,7 @@ function eventOverlapsRange(item, start, end) {
 
 function currentWeekendEvents() {
   const { start, end } = weekendWindow();
-  return calendarEvents.filter((item) => eventOverlapsRange(item, start, end));
+  return scopedEvents(calendarEvents.filter((item) => eventOverlapsRange(item, start, end)));
 }
 
 function nearbyEvents() {
@@ -1164,7 +1373,16 @@ function eventMatchesFilter(item, filter) {
   if (filter === "summer") return summerEvents.some((event) => event.id === item.id);
   if (filter === "avezzano") return item.area === "Avezzano";
   if (filter === "alba") return item.area === "Alba Fucens";
+  if (filter === "segnalazioni") return isLocalSignalEvent(item);
   return item.category.toLowerCase() === filter;
+}
+
+function isLocalSignalEvent(item) {
+  const text = [item.category, item.title, item.detail, item.price, item.place]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+  return /\b(segnalazione|sagra|festa|feste|serata|serate|birra|beer|street food|degustazione|pro loco|notte bianca)\b/.test(text);
 }
 
 function eventAttendanceCount(item) {
@@ -1172,6 +1390,7 @@ function eventAttendanceCount(item) {
     Ambiente: 92,
     Motori: 168,
     Musica: 184,
+    Segnalazione: 112,
     Sport: 226,
     Teatro: 74
   }[item.category] || 68;
@@ -1182,8 +1401,13 @@ function eventAttendanceCount(item) {
 function eventCardMarkup(item, { compact = false, idPrefix = "event" } = {}) {
   const parts = eventDayParts(item);
   const search = [item.title, item.place, item.area, item.category, item.detail, item.price].join(" ").toLowerCase();
+  const imageLabel = item.isRealPhoto ? item.imageSource : "Immagine neutra";
+  const isImportant = item.featured || item.importance === "high";
   return `
-    <article class="agenda-event${compact ? " agenda-event-featured" : ""}${item.past ? " is-past" : ""}" id="${idPrefix}-${item.id}" data-search="${search}">
+    <article class="agenda-event${compact ? " agenda-event-featured" : ""}${isImportant ? " is-important" : ""}${item.past ? " is-past" : ""}" id="${idPrefix}-${item.id}" data-search="${search}" data-importance="${isImportant ? "high" : "normal"}">
+      <figure class="agenda-event-media lazy-media" ${mediaAttrs(item.image || EVENT_FALLBACK_IMAGE, compact ? 720 : 520)} role="img" aria-label="${item.imageAlt || item.title}">
+        <figcaption>${imageLabel}</figcaption>
+      </figure>
       <time class="agenda-date" datetime="${item.date}">
         <span>${parts.weekday}</span>
         <strong>${parts.day}</strong>
@@ -1197,6 +1421,7 @@ function eventCardMarkup(item, { compact = false, idPrefix = "event" } = {}) {
         <h3>${item.title}</h3>
         <p class="agenda-place">${item.place}</p>
         <p>${item.detail}</p>
+        ${isImportant && !item.past ? `<p class="agenda-importance"><span aria-hidden="true"></span> Evento importante</p>` : ""}
         ${item.past ? "" : `
           <p class="agenda-attendance" data-event-attendance="${item.id}">
             <strong>${eventAttendanceCount(item)}</strong> persone parteciperanno a questo evento
@@ -1233,8 +1458,9 @@ function renderHomeEventFocus() {
   const panel = document.querySelector("#homeEventFocus");
   if (!panel) return;
   const today = currentDateKey();
-  const todayEvents = calendarEvents.filter((item) => item.date <= today && (item.endDate || item.date) >= today);
-  const item = todayEvents[0] || calendarEvents.find((event) => (event.endDate || event.date) >= today);
+  const townEvents = scopedEvents(calendarEvents);
+  const todayEvents = townEvents.filter((item) => item.date <= today && (item.endDate || item.date) >= today);
+  const item = todayEvents[0] || townEvents.find((event) => (event.endDate || event.date) >= today);
   if (!item) {
     panel.hidden = true;
     return;
@@ -1243,7 +1469,7 @@ function renderHomeEventFocus() {
   panel.hidden = false;
   panel.innerHTML = `
     <div class="home-event-heading">
-      <div><p class="eyebrow">Cosa si fa questa sera?</p><strong>${todayEvents.length ? "In programma oggi" : "Il prossimo appuntamento"}</strong></div>
+      <div><p class="eyebrow">Cosa si fa questa sera?</p><strong>${todayEvents.length ? `Oggi a ${selectedTownLabel()}` : `Prossimo a ${selectedTownLabel()}`}</strong></div>
       <button class="ghost compact-button" data-view-target="events" type="button">Calendario</button>
     </div>
     <div class="home-event-main">
@@ -1252,6 +1478,7 @@ function renderHomeEventFocus() {
       <button class="save-action" data-action="save-event" data-event-id="${item.id}" data-title="${item.title}" type="button">Salva</button>
     </div>
   `;
+  hydrateLazyMedia(panel, true);
 }
 
 function renderWeekendHome() {
@@ -1280,8 +1507,9 @@ function renderTonightAgenda() {
   if (!grid || !heading || !copy) return;
 
   const today = currentDateKey();
-  const todayEvents = calendarEvents.filter((item) => item.date <= today && (item.endDate || item.date) >= today);
-  const visible = todayEvents.length ? todayEvents : calendarEvents.filter((item) => (item.endDate || item.date) >= today).slice(0, 1);
+  const townEvents = scopedEvents(calendarEvents);
+  const todayEvents = townEvents.filter((item) => item.date <= today && (item.endDate || item.date) >= today);
+  const visible = todayEvents.length ? todayEvents : townEvents.filter((item) => (item.endDate || item.date) >= today).slice(0, 1);
 
   if (!visible.length) {
     heading.textContent = "Cartellone 2026 concluso";
@@ -1292,9 +1520,10 @@ function renderTonightAgenda() {
 
   heading.textContent = todayEvents.length ? "In programma oggi" : "Il prossimo appuntamento";
   copy.textContent = todayEvents.length
-    ? `${todayEvents.length} ${todayEvents.length === 1 ? "evento" : "eventi"} in agenda oggi.`
+    ? `${todayEvents.length} ${todayEvents.length === 1 ? "evento" : "eventi"} in agenda oggi a ${selectedTownLabel()}.`
     : `Nessun evento oggi: il prossimo è ${eventRangeLabel(visible[0])}.`;
   grid.innerHTML = visible.map((item) => eventCardMarkup(item, { compact: true, idPrefix: "tonight-event" })).join("");
+  hydrateLazyMedia(grid, true);
 }
 
 function renderEventAgenda(filter = activeEventCategory) {
@@ -1304,13 +1533,14 @@ function renderEventAgenda(filter = activeEventCategory) {
   if (!grid) return;
 
   const source = filter === "archivio" ? archivedEvents : calendarEvents;
-  const filtered = source.filter((item) => eventMatchesFilter(item, filter));
+  const filtered = source.filter((item) => eventMatchesFilter(item, filter)).filter(eventInSelectedTown);
   if (!filtered.length) {
     grid.innerHTML = `<div class="agenda-empty"><strong>Nessun evento in questa categoria.</strong><span>Prova un altro filtro del calendario.</span></div>`;
     return;
   }
 
   grid.innerHTML = eventAgendaMarkup(filtered);
+  hydrateLazyMedia(grid);
 }
 
 function ensureEventsViewRendered() {
@@ -1330,7 +1560,8 @@ function summerEventMatchesFilter(item, filter) {
 
 function nextSummerEvent() {
   const today = currentDateKey();
-  return summerEvents.find((item) => (item.endDate || item.date) >= today) || summerEvents[0];
+  const townEvents = scopedEvents(summerEvents);
+  return townEvents.find((item) => (item.endDate || item.date) >= today) || townEvents[0] || summerEvents[0];
 }
 
 function renderSummerHomeBand() {
@@ -1345,7 +1576,8 @@ function renderSummerHomeBand() {
 }
 
 function renderSummerMetrics() {
-  document.querySelector("#summerEventCount").textContent = summerEvents.length;
+  const scopedSummer = scopedEvents(summerEvents);
+  document.querySelector("#summerEventCount").textContent = scopedSummer.length || summerEvents.length;
   document.querySelector("#summerAvezzanoCount").textContent = summerEvents.filter((item) => item.area === "Avezzano").length;
   document.querySelector("#summerAlbaCount").textContent = summerEvents.filter((item) => item.area === "Alba Fucens").length;
 }
@@ -1384,10 +1616,11 @@ function renderSummerProgram(filter = activeSummerCategory) {
   renderSummerFilters();
   const grid = document.querySelector("#summerGrid");
   if (!grid) return;
-  const filtered = summerEvents.filter((item) => summerEventMatchesFilter(item, filter));
+  const filtered = summerEvents.filter((item) => summerEventMatchesFilter(item, filter)).filter(eventInSelectedTown);
   grid.innerHTML = filtered.length
     ? eventAgendaMarkup(filtered, { idPrefix: "summer-event" })
     : `<div class="agenda-empty"><strong>Nessun evento in questo filtro.</strong><span>Apri l'intero cartellone Estate 2026.</span></div>`;
+  hydrateLazyMedia(grid);
 }
 
 function ensureSummerViewRendered() {
@@ -1399,6 +1632,7 @@ function ensureSummerViewRendered() {
 }
 
 function render() {
+  applyEnvironmentVisibility();
   document.querySelector("#stories").innerHTML = quickActions.map(([title, text, view, icon]) => `
     <button class="shortcut-card" data-view-target="${view}" data-shortcut="${icon}" type="button" aria-label="${title}: ${text}">
       <span class="shortcut-icon shortcut-icon-${icon}" aria-hidden="true"></span>
@@ -1840,11 +2074,12 @@ function defaultAdminControl() {
     pulseEnabled: true,
     lastMinuteEnabled: true,
     nearbyEventsEnabled: true,
-    cityNightEnabled: true,
     featuredEvent: "street-green-fest",
     lastSync: null,
+    lastRadarScan: null,
     broadcasts: [],
     audit: [],
+    eventRadarQueue: RADAR_EVENT_SEEDS.map((item) => ({ ...item, status: "detected", detectedAt: "2026-07-13T08:00:00.000Z" })),
     pulseOverrides: Object.fromEntries(cityPulseZones.map((zone) => [zone.id, "auto"])),
     lastMinuteStatus: Object.fromEntries(lastMinuteDeals.map((deal) => [deal.id, "active"])),
     moderationQueue: [
@@ -1863,6 +2098,7 @@ function getAdminControl() {
     ...stored,
     broadcasts: Array.isArray(stored.broadcasts) ? stored.broadcasts : defaults.broadcasts,
     audit: Array.isArray(stored.audit) ? stored.audit : defaults.audit,
+    eventRadarQueue: Array.isArray(stored.eventRadarQueue) ? stored.eventRadarQueue : defaults.eventRadarQueue,
     moderationQueue: Array.isArray(stored.moderationQueue) ? stored.moderationQueue : defaults.moderationQueue,
     pulseOverrides: { ...defaults.pulseOverrides, ...(stored.pulseOverrides || {}) },
     lastMinuteStatus: { ...defaults.lastMinuteStatus, ...(stored.lastMinuteStatus || {}) }
@@ -1889,6 +2125,34 @@ function adminControlButton(key, label, description, value) {
       <b>${value ? "Attivo" : "Disattivo"}</b>
     </button>
   `;
+}
+
+function radarConfidenceTone(score) {
+  if (score >= 75) return "success";
+  if (score >= 55) return "warning";
+  return "info";
+}
+
+function radarStatusLabel(status) {
+  return {
+    detected: "Da verificare",
+    approved: "Approvato",
+    rejected: "Scartato"
+  }[status] || "Da verificare";
+}
+
+function radarPendingItems(control = getAdminControl()) {
+  return control.eventRadarQueue.filter((item) => item.status === "detected");
+}
+
+function createRadarModerationItem(candidate) {
+  return {
+    id: `radar-${candidate.id}`,
+    type: "Evento radar",
+    title: candidate.title,
+    status: "pending",
+    detail: `${candidate.area} - ${candidate.date} - fonte: ${candidate.source}`
+  };
 }
 
 function sumBy(items, keyGetter, valueGetter = () => 1) {
@@ -1950,6 +2214,212 @@ function insightMetric(label, value, detail) {
   `;
 }
 
+function getQaBotReport() {
+  return readJson(QA_BOT_STORAGE_KEY, null);
+}
+
+function qaStatus(score) {
+  if (score >= 88) return "success";
+  if (score >= 70) return "warning";
+  return "danger";
+}
+
+function qaSeverityLabel(severity) {
+  return {
+    critical: "Critico",
+    warning: "Attenzione",
+    info: "Nota"
+  }[severity] || "Nota";
+}
+
+function buildQaBotReport() {
+  const issues = [];
+  const addIssue = (severity, area, title, detail) => {
+    issues.push({ severity, area, title, detail });
+  };
+
+  const mainPages = [
+    ["Home", "index.html", "#feedView"],
+    ["Eventi", "index.html#events", "#eventsView"],
+    ["Coupon", "coupon.html", "#couponsView"],
+    ["Mappa", "mappa.html", "#mapView"],
+    ["Attività locali", "attivita-locali.html", "#mapView"]
+  ];
+  const missingPageTargets = mainPages.filter(([, , selector]) => !document.querySelector(selector));
+  if (missingPageTargets.length) {
+    addIssue("critical", "Pagine", "Target pagina non trovato", missingPageTargets.map(([label]) => label).join(", "));
+  }
+
+  const couponCodes = coupons.map((item) => item[5]).filter(Boolean);
+  const duplicateCouponCodes = couponCodes.filter((code, index) => couponCodes.indexOf(code) !== index);
+  const couponsWithoutQr = coupons.filter((item) => !String(item[4] || "").endsWith(".svg"));
+  const couponsWithoutCategory = coupons.filter((item) => !item[6]);
+  if (!coupons.length) addIssue("critical", "Coupon", "Nessun coupon configurato", "La sezione coupon risulterebbe vuota.");
+  if (duplicateCouponCodes.length) addIssue("critical", "Coupon", "Codici coupon duplicati", [...new Set(duplicateCouponCodes)].join(", "));
+  if (couponsWithoutQr.length) addIssue("warning", "Coupon", "QR coupon mancante o non SVG", `${couponsWithoutQr.length} coupon da controllare.`);
+  if (couponsWithoutCategory.length) addIssue("warning", "Coupon", "Categoria coupon mancante", `${couponsWithoutCategory.length} coupon senza filtro.`);
+
+  const eventKeys = new Set();
+  let duplicateEvents = 0;
+  calendarEvents.forEach((item) => {
+    const key = [item.slug || item.id, item.date, eventSlug(item.title), eventSlug(item.place)].join("|");
+    if (eventKeys.has(key)) duplicateEvents += 1;
+    eventKeys.add(key);
+    ["title", "date", "time", "place", "area", "category", "image", "imageAlt", "updatedAt"].forEach((field) => {
+      if (!item[field]) addIssue("warning", "Eventi", `Campo evento mancante: ${field}`, item.title || item.id || "Evento senza titolo");
+    });
+    if (item.isRealPhoto && !item.sourceUrl) {
+      addIssue("warning", "Eventi", "Foto reale senza fonte", item.title);
+    }
+  });
+  if (!calendarEvents.length) addIssue("critical", "Eventi", "Nessun evento attivo", "Home e calendario perderebbero valore.");
+  if (duplicateEvents) addIssue("critical", "Eventi", "Possibili eventi duplicati", `${duplicateEvents} duplicati rilevati.`);
+  const localSignalEvents = calendarEvents.filter(isLocalSignalEvent);
+  if (!localSignalEvents.length) {
+    addIssue("warning", "Eventi", "Nessuna segnalazione locale", "Feste, sagre e serate fuori cartellone potrebbero non emergere.");
+  }
+  const radarSignals = getAdminControl().eventRadarQueue || [];
+  const pendingRadarSignals = radarSignals.filter((item) => item.status === "detected");
+  if (!radarSignals.length) {
+    addIssue("warning", "Radar Eventi", "Nessun candidato monitorato", "Il radar non sta proponendo eventi da verificare.");
+  }
+
+  const placesWithoutCoords = mapPlaces.filter((place) => !Number.isFinite(place.lat) || !Number.isFinite(place.lng));
+  const placesWithoutImage = mapPlaces.filter((place) => !place.image && !place.photo);
+  if (!mapPlaces.length) addIssue("critical", "Mappa", "Nessuna attività in mappa", "La navigazione locale risulterebbe vuota.");
+  if (placesWithoutCoords.length) addIssue("critical", "Mappa", "Coordinate mancanti", `${placesWithoutCoords.length} attività senza latitudine/longitudine.`);
+  if (placesWithoutImage.length) addIssue("warning", "Mappa", "Foto attività mancanti", `${placesWithoutImage.length} attività senza immagine.`);
+
+  const missingSeoEvents = calendarEvents.filter((item) => !item.slug || !item.imageAlt || !item.updatedAt);
+  const realPhotoEvents = calendarEvents.filter((item) => item.isRealPhoto).length;
+  const fallbackEvents = calendarEvents.length - realPhotoEvents;
+  if (missingSeoEvents.length) addIssue("warning", "SEO", "Metadati evento incompleti", `${missingSeoEvents.length} eventi da rifinire.`);
+  if (fallbackEvents > realPhotoEvents) {
+    addIssue("info", "Immagini", "Molti eventi usano fallback neutro", `${fallbackEvents} eventi senza foto reale.`);
+  }
+
+  const critical = issues.filter((item) => item.severity === "critical").length;
+  const warning = issues.filter((item) => item.severity === "warning").length;
+  const info = issues.filter((item) => item.severity === "info").length;
+  const score = Math.max(0, Math.min(100, 100 - critical * 14 - warning * 6 - info * 2));
+  const checks = [
+    { label: "Pagine", value: `${mainPages.length + calendarEvents.length}`, detail: `${mainPages.length} sezioni + ${calendarEvents.length} pagine evento previste`, status: missingPageTargets.length ? "warning" : "success" },
+    { label: "Coupon", value: coupons.length, detail: `${couponCodes.length} codici QR controllati`, status: couponsWithoutQr.length || duplicateCouponCodes.length ? "warning" : "success" },
+    { label: "Eventi", value: calendarEvents.length, detail: `${summerEvents.length} nel programma Estate 2026`, status: duplicateEvents ? "warning" : "success" },
+    { label: "Segnalazioni", value: localSignalEvents.length, detail: "feste, sagre e serate intercettate", status: localSignalEvents.length ? "success" : "warning" },
+    { label: "Radar Eventi", value: pendingRadarSignals.length, detail: `${radarSignals.length} candidati monitorati`, status: radarSignals.length ? "success" : "warning" },
+    { label: "Mappa", value: mapPlaces.length, detail: `${coverageTowns.length} comuni predisposti`, status: placesWithoutCoords.length ? "warning" : "success" },
+    { label: "Foto reali", value: realPhotoEvents, detail: `${fallbackEvents} fallback neutri`, status: fallbackEvents > realPhotoEvents ? "warning" : "success" },
+    { label: "SEO eventi", value: calendarEvents.length, detail: "slug, alt, updatedAt e schede evento", status: missingSeoEvents.length ? "warning" : "success" }
+  ];
+  const recommendations = [
+    critical ? "Correggere prima i problemi critici: possono bloccare pagine, mappa o coupon." : "Nessun blocco critico rilevato.",
+    warning ? "Rifinire immagini, fonti e metadati prima del prossimo deploy pubblico." : "I controlli principali sono coerenti.",
+    fallbackEvents ? "Sostituire gradualmente i fallback con foto reali e fonti verificate." : "Le immagini evento sono ben coperte."
+  ];
+
+  return {
+    score,
+    status: qaStatus(score),
+    generatedAt: new Date().toISOString(),
+    checks,
+    issues,
+    recommendations,
+    summary: { critical, warning, info }
+  };
+}
+
+function saveQaBotReport(report = buildQaBotReport()) {
+  writeJson(QA_BOT_STORAGE_KEY, report);
+  return report;
+}
+
+function qaBotMarkup(report) {
+  const issuePreview = report.issues.slice(0, 6);
+  return `
+    <section class="panel admin-qa-panel">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">QA Bot IA</p>
+          <h2>Test pagine, coupon e contenuti</h2>
+        </div>
+        <span class="pill ${report.status}">${report.score}/100</span>
+      </div>
+      <div class="qa-bot-summary">
+        ${report.checks.map((check) => `
+          <article class="qa-bot-check ${check.status}">
+            <span>${check.label}</span>
+            <strong>${check.value}</strong>
+            <small>${check.detail}</small>
+          </article>
+        `).join("")}
+      </div>
+      <div class="qa-bot-actions">
+        <button class="primary-action compact-button" data-admin-action="run-qa-bot" type="button">Esegui test</button>
+        <button class="ghost compact-button" data-admin-action="export-qa-report" type="button">Esporta report</button>
+        <small>Ultimo test: ${report.generatedAt ? new Date(report.generatedAt).toLocaleString("it-IT") : "non ancora eseguito"}</small>
+      </div>
+      <div class="qa-bot-issues">
+        ${issuePreview.length ? issuePreview.map((issue) => `
+          <div class="qa-bot-issue ${issue.severity}">
+            <b>${qaSeverityLabel(issue.severity)}</b>
+            <span>${issue.area} · ${issue.title}</span>
+            <small>${issue.detail}</small>
+          </div>
+        `).join("") : `<p class="admin-empty-copy">Nessun problema rilevante: pronto per una verifica manuale finale.</p>`}
+      </div>
+      <div class="qa-bot-recommendations">
+        ${report.recommendations.map((item) => `<span>${item}</span>`).join("")}
+      </div>
+    </section>
+  `;
+}
+
+function eventRadarMarkup(control) {
+  const queue = control.eventRadarQueue || [];
+  const pending = radarPendingItems(control);
+  return `
+    <section class="panel admin-event-radar">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Cattura Eventi</p>
+          <h2>Radar eventi della zona</h2>
+        </div>
+        <span class="pill ${pending.length ? "warning" : "success"}">${pending.length} da verificare</span>
+      </div>
+      <p class="admin-radar-copy">Monitora segnali locali come feste, sagre, serate, pagine organizzatori e comuni limitrofi. Nulla entra nel calendario pubblico senza approvazione admin.</p>
+      <div class="admin-radar-toolbar">
+        <button class="primary-action compact-button" data-admin-action="run-event-radar" type="button">Scansiona zona</button>
+        <span>Ultima scansione: ${control.lastRadarScan ? new Date(control.lastRadarScan).toLocaleString("it-IT") : "non ancora eseguita"}</span>
+      </div>
+      <div class="admin-radar-list">
+        ${queue.map((item) => `
+          <article class="admin-radar-item ${item.status}">
+            <div class="admin-radar-main">
+              <div>
+                <strong>${item.title}</strong>
+                <span>${item.area} - ${item.date} - ${item.time}</span>
+              </div>
+              <span class="pill ${radarConfidenceTone(item.confidence)}">${item.confidence}% confidenza</span>
+            </div>
+            <p>${item.reason}</p>
+            <small>${item.source} - ${item.suggestion}</small>
+            <div class="admin-radar-footer">
+              <span class="pill ${item.status === "approved" ? "success" : item.status === "rejected" ? "warning" : "info"}">${radarStatusLabel(item.status)}</span>
+              ${item.status === "detected" ? `
+                <div class="admin-row-actions">
+                  <button class="ghost compact-button" data-admin-action="reject-radar-event" data-radar-id="${item.id}" type="button">Scarta</button>
+                  <button class="primary-action compact-button" data-admin-action="approve-radar-event" data-radar-id="${item.id}" type="button">Accetta inserimento</button>
+                </div>
+              ` : ""}
+            </div>
+          </article>
+        `).join("")}
+      </div>
+    </section>
+  `;
+}
+
 function renderAdminDashboard() {
   const root = document.querySelector("#adminDashboard");
   if (!root) return;
@@ -1971,16 +2441,18 @@ function renderAdminDashboard() {
   const requests = [
     ...(state.events || []).map((item) => ["Prenotazione", item.title, "Utente"]),
     ...(state.coupons || []).map((item) => ["Coupon", item.title, "Salvato"]),
-    ...(state.campaigns || []).map((item) => ["Campagna", item.title, "Demo"])
+    ...(state.campaigns || []).map((item) => ["Campagna", item.title, "Locale"])
   ];
   const aiInsights = intelligenceInsights();
   const adminControl = getAdminControl();
   const pendingModeration = adminControl.moderationQueue.filter((item) => item.status === "pending").length;
+  const pendingRadar = radarPendingItems(adminControl).length;
   const featuredEvent = calendarEvents.find((item) => item.id === adminControl.featuredEvent) || calendarEvents[0];
   const pulseSnapshot = cityPulseSnapshot();
   const lastMinuteState = getLastMinuteState();
   const activeLastMinute = lastMinuteDeals.filter((deal) => adminControl.lastMinuteStatus[deal.id] !== "paused" && (lastMinuteState.deadlines[deal.id] || 0) > Date.now()).length;
   const localInsights = buildLocalInsights();
+  const qaReport = getQaBotReport() || buildQaBotReport();
 
   root.innerHTML = `
     <div class="admin-shell">
@@ -1996,12 +2468,14 @@ function renderAdminDashboard() {
         <div><span>Utenti</span><strong>${users.filter((user) => user.status !== "deleted").length}</strong></div>
         <div><span>Attività</span><strong>${mapPlaces.length}</strong></div>
         <div><span>Eventi</span><strong>${calendarEvents.length}</strong></div>
+        <div><span>Radar eventi</span><strong>${pendingRadar}</strong></div>
         <div><span>Da moderare</span><strong>${pendingModeration}</strong></div>
         <div><span>Salvataggi</span><strong>${requests.length}</strong></div>
         <div><span>Comunicazioni</span><strong>${adminControl.broadcasts.length}</strong></div>
         <div><span>Zone monitorate</span><strong>${pulseSnapshot.length}</strong></div>
         <div><span>Ultimo momento</span><strong>${activeLastMinute}</strong></div>
         <div><span>Comuni predisposti</span><strong>${coverageTowns.length}</strong></div>
+        <div><span>QA Bot</span><strong>${qaReport.score}/100</strong></div>
       </section>
       <section class="panel admin-platform-panel">
         <div class="panel-head">
@@ -2019,7 +2493,6 @@ function renderAdminDashboard() {
           ${adminControlButton("pulseEnabled", "Avezzano ora", "Mostra lo stato operativo delle zone cittadine", adminControl.pulseEnabled)}
           ${adminControlButton("lastMinuteEnabled", "Ultimo momento", "Pubblica le disponibilita a tempo limitato", adminControl.lastMinuteEnabled)}
           ${adminControlButton("nearbyEventsEnabled", "Eventi vicino a te", "Estende il calendario ai comuni della Marsica", adminControl.nearbyEventsEnabled)}
-          ${adminControlButton("cityNightEnabled", "Tema City Night", "Rende disponibile lo stile alternativo agli utenti", adminControl.cityNightEnabled)}
         </div>
       </section>
       <section class="panel intelligence-panel">
@@ -2037,17 +2510,21 @@ function renderAdminDashboard() {
       <section class="panel god-command">
         <div>
           <strong>Azioni rapide admin</strong>
-          <span>Strumenti demo per controllo totale del prototipo.</span>
+          <span>Strumenti operativi per controllo contenuti, eventi e comunicazioni.</span>
         </div>
         <div class="composer-actions">
           <button class="ghost" data-admin-action="export-data" type="button">Esporta dati</button>
           <button class="ghost" data-admin-action="sync-content" type="button">Sincronizza contenuti</button>
-          <button class="ghost" data-admin-action="seed-demo" type="button">Ripristina demo</button>
-          <button class="ghost" data-admin-action="clear-demo-state" type="button">Pulisci azioni demo</button>
+          ${IS_DEMO ? `
+            <button class="ghost" data-admin-action="seed-demo" type="button">Ripristina dati sviluppo</button>
+            <button class="ghost" data-admin-action="clear-demo-state" type="button">Pulisci azioni locali</button>
+          ` : ""}
           <button class="ghost" data-admin-action="refresh-ai" type="button">Ricalcola IA</button>
         </div>
       </section>
       <div class="admin-grid">
+        ${eventRadarMarkup(adminControl)}
+        ${qaBotMarkup(qaReport)}
         <section class="panel admin-live-control">
           <div class="panel-head">
             <div>
@@ -2189,14 +2666,14 @@ function renderAdminDashboard() {
             <span class="pill ${adminControl.nearbyEventsEnabled ? "success" : "warning"}">${adminControl.nearbyEventsEnabled ? "Estensione attiva" : "In pausa"}</span>
           </div>
           <div class="admin-insight-grid">
-            ${insightMetric("Evento piu caldo", localInsights.strongestEvent?.title || "Da calcolare", localInsights.strongestEvent ? `${eventAttendanceCount(localInsights.strongestEvent)} partecipanti stimati` : "Nessun evento attivo")}
-            ${insightMetric("Locale / luogo piu forte", localInsights.topVenue?.[0] || "Da calcolare", localInsights.topVenue ? `${localInsights.topVenue[1]} interesse stimato` : "Dati in aggiornamento")}
-            ${insightMetric("Giorno migliore", localInsights.topDay?.[0] || "Da calcolare", localInsights.topDay ? `${localInsights.topDay[1]} presenze potenziali` : "Serve piu storico")}
+            ${insightMetric("Evento più caldo", localInsights.strongestEvent?.title || "Da calcolare", localInsights.strongestEvent ? `${eventAttendanceCount(localInsights.strongestEvent)} partecipanti stimati` : "Nessun evento attivo")}
+            ${insightMetric("Locale / luogo più forte", localInsights.topVenue?.[0] || "Da calcolare", localInsights.topVenue ? `${localInsights.topVenue[1]} interesse stimato` : "Dati in aggiornamento")}
+            ${insightMetric("Giorno migliore", localInsights.topDay?.[0] || "Da calcolare", localInsights.topDay ? `${localInsights.topDay[1]} presenze potenziali` : "Serve più storico")}
             ${insightMetric("Categoria trainante", localInsights.topCategory?.[0] || "Da calcolare", localInsights.topCategory ? `${localInsights.topCategory[1]} interazioni potenziali` : "Dati insufficienti")}
           </div>
           <div class="admin-insight-split">
             <div>
-              <strong>Comuni piu coperti</strong>
+              <strong>Comuni più coperti</strong>
               <div class="admin-rank-list">
                 ${localInsights.topAreas.map(([town, count], index) => `<span><b>${index + 1}</b>${town}<em>${count} eventi</em></span>`).join("")}
               </div>
@@ -2259,6 +2736,7 @@ function handleAdminAction(button) {
       demoState: getDemoState(),
       merchant: getMerchantSubscription(),
       adminControl: getAdminControl(),
+      qaBot: getQaBotReport(),
       exportedAt: new Date().toISOString()
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
@@ -2287,8 +2765,7 @@ function handleAdminAction(button) {
       push: "Notifiche push",
       pulseEnabled: "Avezzano ora",
       lastMinuteEnabled: "Ultimo momento",
-      nearbyEventsEnabled: "Eventi vicino a te",
-      cityNightEnabled: "Tema City Night"
+      nearbyEventsEnabled: "Eventi vicino a te"
     };
     addAdminAudit(control, `${controlLabels[key] || key}: ${control[key] ? "attivo" : "disattivo"}`);
     renderCityPulse();
@@ -2296,7 +2773,6 @@ function handleAdminAction(button) {
     renderNotificationState();
     eventsViewRendered = false;
     renderWeekendHome();
-    applyVisualStyle(preferredVisualStyle());
     if (!document.querySelector("#notificationMenu")?.hasAttribute("hidden")) renderNotificationMenu();
     renderAdminDashboard();
     showToast("Controllo piattaforma aggiornato.", "success");
@@ -2378,7 +2854,7 @@ function handleAdminAction(button) {
     control.broadcasts = [{ message, target, at: new Date().toISOString() }, ...control.broadcasts].slice(0, 20);
     addAdminAudit(control, `Comunicazione inviata a: ${target}`);
     renderAdminDashboard();
-    showToast("Comunicazione registrata e inviata nella demo.", "success");
+    showToast("Comunicazione registrata.", "success");
     return;
   }
 
@@ -2388,6 +2864,62 @@ function handleAdminAction(button) {
     addAdminAudit(control, "Eventi, mappa e coupon sincronizzati");
     renderAdminDashboard();
     showToast("Contenuti sincronizzati.", "success");
+    return;
+  }
+
+  if (button.dataset.adminAction === "run-event-radar") {
+    const control = getAdminControl();
+    const known = new Map((control.eventRadarQueue || []).map((item) => [item.id, item]));
+    control.eventRadarQueue = RADAR_EVENT_SEEDS.map((seed) => ({
+      ...seed,
+      ...(known.get(seed.id) || {}),
+      detectedAt: known.get(seed.id)?.detectedAt || new Date().toISOString()
+    }));
+    control.lastRadarScan = new Date().toISOString();
+    addAdminAudit(control, `Radar eventi aggiornato: ${radarPendingItems(control).length} segnalazioni da verificare`);
+    renderAdminDashboard();
+    showToast("Radar eventi aggiornato. Le nuove segnalazioni restano in attesa di approvazione.", "success");
+    return;
+  }
+
+  if (["approve-radar-event", "reject-radar-event"].includes(button.dataset.adminAction)) {
+    const control = getAdminControl();
+    const candidate = control.eventRadarQueue.find((item) => item.id === button.dataset.radarId);
+    if (!candidate) return;
+    const approved = button.dataset.adminAction === "approve-radar-event";
+    candidate.status = approved ? "approved" : "rejected";
+    candidate.reviewedAt = new Date().toISOString();
+    if (approved && !control.moderationQueue.some((item) => item.id === `radar-${candidate.id}`)) {
+      control.moderationQueue = [createRadarModerationItem(candidate), ...control.moderationQueue];
+    }
+    addAdminAudit(control, `${candidate.title}: ${approved ? "accettato dal Radar Eventi" : "scartato dal Radar Eventi"}`);
+    renderAdminDashboard();
+    showToast(approved ? "Evento accettato e mandato in coda inserimento." : "Segnalazione radar scartata.", approved ? "success" : "info");
+    return;
+  }
+
+  if (button.dataset.adminAction === "run-qa-bot") {
+    const report = saveQaBotReport();
+    const control = getAdminControl();
+    addAdminAudit(control, `QA Bot completato: ${report.score}/100`);
+    renderAdminDashboard();
+    showToast(`QA Bot completato: ${report.score}/100.`, report.score >= 70 ? "success" : "error");
+    return;
+  }
+
+  if (button.dataset.adminAction === "export-qa-report") {
+    const report = getQaBotReport() || saveQaBotReport();
+    const blob = new Blob([JSON.stringify(report, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `myavezzano-qa-report-${new Date().toISOString().slice(0, 10)}.json`;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 500);
+    const control = getAdminControl();
+    addAdminAudit(control, "Report QA Bot esportato");
+    renderAdminDashboard();
+    showToast("Report QA Bot esportato.", "success");
     return;
   }
 
@@ -2401,9 +2933,13 @@ function handleAdminAction(button) {
   }
 
   if (button.dataset.adminAction === "seed-demo") {
+    if (!IS_DEMO) {
+      showToast("Disponibile solo in ambiente di sviluppo.", "error");
+      return;
+    }
     seedAdminUser().then(() => {
       renderAdminDashboard();
-    showToast("Account admin demo attivato.", "success");
+    showToast("Account admin di sviluppo attivato.", "success");
     });
     return;
   }
@@ -2412,7 +2948,7 @@ function handleAdminAction(button) {
     localStorage.removeItem(DEMO_STATE_KEY);
     renderAdminDashboard();
     renderUserProfile("settings");
-    showToast("Azioni demo pulite.", "success");
+    showToast("Azioni locali pulite.", "success");
     return;
   }
 
@@ -2446,7 +2982,7 @@ function handleAdminAction(button) {
 const legalCopy = {
   privacy: ["Privacy Policy", "MyAvezzano MVP salva dati account, preferenze, coupon ed eventi in storage locale del browser. In produzione i dati saranno trattati su server sicuro con consenso, finalità esplicite e strumenti di cancellazione."],
   terms: ["Termini e condizioni", "Il prototipo mostra funzionalità demo per utenti, commercianti e admin. Coupon, pagamenti, prenotazioni e statistiche non generano obblighi reali finché non saranno collegati a servizi certificati."],
-  cookies: ["Cookie Policy", "La versione statica non usa cookie di tracciamento proprietari. Usa localStorage per sessione, preferenze, cache demo e PWA. Servizi esterni come mappe o immagini possono applicare proprie policy."]
+  cookies: ["Cookie Policy", "La versione statica non usa cookie di tracciamento proprietari. Usa localStorage per sessione, preferenze, cache locale e PWA. Servizi esterni come mappe o immagini possono applicare proprie policy."]
 };
 
 function renderLegalPanel(tab = "privacy") {
@@ -2461,7 +2997,7 @@ function renderLegalPanel(tab = "privacy") {
     <h2>${title}</h2>
     <p>${text}</p>
     <div class="settings-list">
-      <div class="profile-row"><div><strong>Titolare demo</strong><span>MyAvezzano MVP</span></div><span class="pill">Demo</span></div>
+      <div class="profile-row"><div><strong>Titolare account</strong><span>MyAvezzano</span></div><span class="pill">Locale</span></div>
       <div class="profile-row"><div><strong>Ultimo aggiornamento</strong><span>5 giugno 2026</span></div><span class="pill success">Attivo</span></div>
     </div>
   `;
@@ -2601,21 +3137,32 @@ function createMapIcon(place) {
   });
 }
 
+function placePhotoLabel(place) {
+  if (place.photo) return "Foto reale";
+  if (place.photoCredit?.includes("Wikimedia Commons")) return "Foto del comune";
+  return "";
+}
+
+function visibleMapPlaces(term = "") {
+  const source = term ? intelligentPlaces(term) : mapPlaces;
+  return scopedPlaces(source);
+}
+
 function renderMapBusinessList() {
   if (!mapViewRendered && !document.body.classList.contains("view-map")) return;
   const term = document.querySelector("#searchInput")?.value.trim() || "";
-  const places = term ? intelligentPlaces(term) : mapPlaces;
+  const places = visibleMapPlaces(term);
   document.querySelector("#mapBusinessList").innerHTML = places.map((place) => `
     <button class="destination-item ${selectedPlace.id === place.id ? "active" : ""}" data-place-id="${place.id}" type="button">
       <img class="destination-logo" src="${smartImageUrl(place.photo || place.logo || place.image, 96)}" alt="" loading="lazy" decoding="async" />
       <span class="destination-copy">
         <strong>${place.name}</strong>
         <span>${place.category} - ${formatDistance(place)}</span>
-        <small>${[place.address, place.phone, place.photo ? "Foto reale" : "", place.stats].filter(Boolean).join(" - ")}</small>
+        <small>${[place.address, place.phone, placePhotoLabel(place), place.stats].filter(Boolean).join(" - ")}</small>
       </span>
     </button>
   `).join("");
-  document.querySelector("#realBusinessCount").textContent = realPlacesLoaded ? `${mapPlaces.length} reali` : "Demo";
+  document.querySelector("#realBusinessCount").textContent = realPlacesLoaded ? `${places.length} reali` : `${places.length} locali`;
   applySearchFilter();
 }
 
@@ -2625,7 +3172,7 @@ function rebuildMapMarkers() {
   mapMarkers.forEach((marker) => marker.remove());
   mapMarkers.clear();
 
-  mapPlaces.forEach((place) => {
+  visibleMapPlaces().forEach((place) => {
     const marker = L.marker([place.lat, place.lng], { icon: createMapIcon(place) }).addTo(interactiveMap);
     marker.bindPopup(`<strong>${place.name}</strong><br>${place.category}<br>${place.address}`, {
       closeButton: false,
@@ -2639,7 +3186,7 @@ function rebuildMapMarkers() {
 function applyImportedPlaces(places, statusText) {
   if (!places.length) return;
 
-  const curated = businesses.concat(userSubmittedBusinesses).map((place, index) => ({
+  const curated = curatedMapPlaces().map((place, index) => ({
     ...place,
     id: place.id || `curated-${index}`
   }));
@@ -2652,13 +3199,14 @@ function applyImportedPlaces(places, statusText) {
   });
 
   mapPlaces = curated.concat(imported).slice(0, MAX_REAL_PLACES);
-  selectedPlace = mapPlaces[0];
+  selectedPlace = visibleMapPlaces()[0] || mapPlaces[0];
   realPlacesLoaded = true;
   renderMapBusinessList();
 
   if (interactiveMap && window.L) {
     rebuildMapMarkers();
-    const bounds = L.latLngBounds(mapPlaces.map((place) => [place.lat, place.lng]));
+    const placesInView = visibleMapPlaces();
+    const bounds = L.latLngBounds((placesInView.length ? placesInView : mapPlaces).map((place) => [place.lat, place.lng]));
     interactiveMap.fitBounds(bounds, { padding: [34, 34], maxZoom: 15 });
   }
 
@@ -2732,13 +3280,13 @@ async function loadRealAvezzanoBusinesses(force = false) {
 
     if (!places.length) throw new Error("Nessuna attività trovata");
     localStorage.setItem(OSM_CACHE_KEY, JSON.stringify(places));
-    applyImportedPlaces(places, `${places.length} attività reali importate da OpenStreetMap. Le foto sono reali quando disponibili; in alternativa viene usata l'immagine demo della categoria.`);
+    applyImportedPlaces(places, `${places.length} attività reali importate da OpenStreetMap. Le foto sono reali quando disponibili; in alternativa viene usata un'immagine neutra di categoria.`);
   } catch {
     const cached = cachedOsmPlaces();
     if (cached.length) {
       applyImportedPlaces(cached, `${cached.length} attività caricate dalla cache locale. Importazione online non riuscita.`);
     } else {
-      status.textContent = "Importazione online non riuscita. La demo resta con dati locali; riprova con una connessione attiva.";
+      status.textContent = "Importazione online non riuscita. Il sito resta con dati locali; riprova con una connessione attiva.";
     }
   } finally {
     isLoadingRealPlaces = false;
@@ -2763,7 +3311,7 @@ function selectMapPlace(placeId, shouldPan = true) {
 
   document.querySelector("#mapCard").innerHTML = `
     <strong>${place.name}</strong>
-      <span>${[place.category, place.phone, place.photo ? "foto reale" : "", formatDistance(place)].filter(Boolean).join(" · ")}</span>
+      <span>${[place.category, place.phone, placePhotoLabel(place).toLowerCase(), formatDistance(place)].filter(Boolean).join(" · ")}</span>
   `;
   document.querySelector("#navigationLink").href = navigationUrl(place);
   document.querySelector("#mapStatus").textContent = userPosition
@@ -2792,6 +3340,100 @@ function refreshInteractiveMapLayout() {
       if (interactiveMap) interactiveMap.invalidateSize();
     }, delay);
   });
+}
+
+function updateCitySelectorUi() {
+  const selector = document.querySelector("#citySelector");
+  const meta = document.querySelector("#citySelectorMeta");
+  if (selector) selector.value = activeTown;
+  if (!meta) return;
+
+  const places = scopedPlaces(mapPlaces);
+  const futureEvents = scopedEvents(calendarEvents).filter((item) => (item.endDate || item.date) >= currentDateKey());
+  const placeLabel = places.length === 1 ? "locale" : "locali";
+  const eventLabel = futureEvents.length === 1 ? "evento" : "eventi";
+  meta.textContent = activeTown === "all"
+    ? `${places.length} ${placeLabel} e ${futureEvents.length} ${eventLabel} nella Marsica.`
+    : `${places.length} ${placeLabel} e ${futureEvents.length} ${eventLabel} su ${activeTown}.`;
+}
+
+function weatherCodeLabel(code) {
+  if ([0, 1].includes(code)) return "Sereno";
+  if ([2, 3].includes(code)) return "Nuvoloso";
+  if ([45, 48].includes(code)) return "Nebbia";
+  if ([51, 53, 55, 56, 57].includes(code)) return "Pioviggine";
+  if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return "Pioggia";
+  if ([71, 73, 75, 77, 85, 86].includes(code)) return "Neve";
+  if ([95, 96, 99].includes(code)) return "Temporale";
+  return "Meteo";
+}
+
+async function updateAvezzanoWeather() {
+  const temp = document.querySelector("#weatherTemperature");
+  const summary = document.querySelector("#weatherSummary");
+  const widget = document.querySelector(".weather-widget");
+  if (!temp || !summary) return;
+
+  try {
+    const response = await fetch(AVEZZANO_WEATHER_ENDPOINT, { cache: "no-store" });
+    if (!response.ok) throw new Error("Meteo non disponibile");
+    const data = await response.json();
+    const current = data.current || {};
+    const value = Number(current.temperature_2m);
+    if (!Number.isFinite(value)) throw new Error("Temperatura non valida");
+    temp.textContent = `${Math.round(value)}°C`;
+    summary.textContent = `${weatherCodeLabel(Number(current.weather_code))} ad Avezzano`;
+    widget?.classList.add("is-live");
+  } catch {
+    temp.textContent = "--°C";
+    summary.textContent = "Meteo Avezzano";
+    widget?.classList.remove("is-live");
+  }
+}
+
+function refreshTownScopedViews({ panMap = false } = {}) {
+  const places = visibleMapPlaces();
+  if (places.length && !places.some((place) => place.id === selectedPlace?.id)) {
+    selectedPlace = places[0];
+  }
+
+  updateCitySelectorUi();
+  renderHomeEventFocus();
+  renderWeekendHome();
+  renderSummerHomeBand();
+
+  if (eventsViewRendered || document.body.classList.contains("view-events")) {
+    renderTonightAgenda();
+    renderEventAgenda(activeEventCategory);
+  }
+
+  if (summerViewRendered || document.body.classList.contains("view-summer")) {
+    renderSummerMetrics();
+    renderSummerNext();
+    renderSummerProgram(activeSummerCategory);
+  }
+
+  if (mapViewRendered || document.body.classList.contains("view-map")) {
+    renderMapBusinessList();
+    rebuildMapMarkers();
+    if (selectedPlace) selectMapPlace(selectedPlace.id, panMap);
+    if (panMap && interactiveMap && activeTown !== "all" && townCoordinates[activeTown]) {
+      interactiveMap.setView([townCoordinates[activeTown].lat, townCoordinates[activeTown].lng], 14);
+    }
+  }
+}
+
+function setActiveTown(town) {
+  activeTown = ["all", ...coverageTowns].includes(town) ? town : "Avezzano";
+  if ((activeEventCategory === "avezzano" && activeTown !== "Avezzano") || (activeEventCategory === "alba" && activeTown !== "Alba Fucens")) {
+    activeEventCategory = "all";
+  }
+  if ((activeSummerCategory === "avezzano" && activeTown !== "Avezzano") || (activeSummerCategory === "alba" && activeTown !== "Alba Fucens")) {
+    activeSummerCategory = "all";
+  }
+  localStorage.setItem(CITY_SELECTOR_STORAGE_KEY, activeTown);
+  refreshTownScopedViews({ panMap: true });
+  showToast(activeTown === "all" ? "Vista impostata su tutta la Marsica." : `Vista impostata su ${activeTown}.`, "success");
 }
 
 async function focusCityPulseZone(zoneId) {
@@ -2855,7 +3497,7 @@ function initInteractiveMap() {
   if (cached.length) {
     applyImportedPlaces(cached.slice(0, MAX_REAL_PLACES), `${Math.min(cached.length, MAX_REAL_PLACES)} attività caricate dalla cache locale. Usa "Importa attività reali" per aggiornare.`);
   } else {
-    status.textContent = "Demo veloce attiva. Usa Importa attività reali per aggiornare da OpenStreetMap.";
+    status.textContent = "Dati locali attivi. Usa Importa attività reali per aggiornare da OpenStreetMap.";
   }
   refreshInteractiveMapLayout();
 }
@@ -2991,54 +3633,9 @@ function animateGlobalSurfaces() {
   animateActiveView();
 }
 
-function preferredVisualStyle() {
-  return localStorage.getItem(VISUAL_STYLE_STORAGE_KEY) === "city-night" ? "city-night" : "classic";
-}
-
-function applyVisualStyle(style = preferredVisualStyle(), syncColorTheme = true) {
-  const available = getAdminControl().cityNightEnabled;
-  const nextStyle = style === "city-night" && available ? "city-night" : "classic";
-  if (style === "city-night" && !available) localStorage.setItem(VISUAL_STYLE_STORAGE_KEY, "classic");
-  const isCityNight = nextStyle === "city-night";
-  document.body.classList.toggle("visual-theme-city-night", isCityNight);
-  document.documentElement.dataset.visualStyle = nextStyle;
-
-  const select = document.querySelector("#visualThemeSelect");
-  const themeToggle = document.querySelector("#themeToggle");
-  if (select) {
-    select.value = nextStyle;
-    select.disabled = !available;
-  }
-  if (themeToggle) {
-    themeToggle.disabled = isCityNight;
-    themeToggle.title = isCityNight ? "City Night usa la modalità notturna" : "Cambia tema giorno o notte";
-  }
-
-  if (!syncColorTheme) return;
-  if (isCityNight) {
-    if (!document.body.classList.contains("theme-dark")) {
-      localStorage.setItem(VISUAL_STYLE_PREVIOUS_THEME_KEY, preferredTheme());
-    }
-    localStorage.setItem(THEME_STORAGE_KEY, "dark");
-    applyTheme("dark");
-  } else {
-    const previousTheme = localStorage.getItem(VISUAL_STYLE_PREVIOUS_THEME_KEY);
-    if (previousTheme === "light" || previousTheme === "dark") {
-      localStorage.setItem(THEME_STORAGE_KEY, previousTheme);
-      localStorage.removeItem(VISUAL_STYLE_PREVIOUS_THEME_KEY);
-      applyTheme(previousTheme);
-    }
-  }
-}
-
-function changeVisualStyle(event) {
-  const nextStyle = event.target.value === "city-night" ? "city-night" : "classic";
-  localStorage.setItem(VISUAL_STYLE_STORAGE_KEY, nextStyle);
-  applyVisualStyle(nextStyle);
-  showToast(nextStyle === "city-night" ? "Stile City Night attivato." : "Stile classico ripristinato.", "success");
-}
-
 function preferredTheme() {
+  localStorage.removeItem("myavezzano_visual_style");
+  localStorage.removeItem("myavezzano_visual_style_previous_theme");
   const stored = localStorage.getItem(THEME_STORAGE_KEY);
   if (stored === "dark" || stored === "light") return stored;
   return "light";
@@ -3411,7 +4008,7 @@ function handleAction(button) {
       return;
     }
     addDemoItem("events", { title });
-    showToast(`Prenotazione demo salvata: ${title}.`, "success");
+    showToast(`Prenotazione salvata: ${title}.`, "success");
     switchView("profile");
     renderProfilePanel("events");
     return;
@@ -3477,7 +4074,7 @@ function handleAction(button) {
 
   if (action === "city-coupon-filter") {
     const filter = button.dataset.couponFilter || "all";
-    document.querySelectorAll(".city-night-coupon-tabs button").forEach((item) => {
+    document.querySelectorAll(".coupon-filter-tabs button").forEach((item) => {
       item.classList.toggle("active", item === button);
     });
     let visible = 0;
@@ -3565,8 +4162,8 @@ function handleAction(button) {
   }
 
   if (action === "new-campaign") {
-    addDemoItem("campaigns", { title: "Nuova campagna demo" });
-    showToast("Nuova campagna demo creata.", "success");
+    addDemoItem("campaigns", { title: "Nuova campagna" });
+    showToast("Nuova campagna creata.", "success");
     return;
   }
 
@@ -3591,7 +4188,7 @@ document.querySelector("#closeOnboarding").addEventListener("click", () => {
 
 document.querySelector("#skipOnboarding").addEventListener("click", () => {
   closeOnboarding(true);
-  showToast("Demo guidata completata. Puoi riaprirla da Guida o dal profilo.");
+  showToast("Guida completata. Puoi riaprirla da Guida o dal profilo.");
 });
 
 document.querySelector("#prevOnboarding").addEventListener("click", () => {
@@ -3791,7 +4388,7 @@ document.addEventListener("submit", (event) => {
     return;
   }
   if (users.some((item) => item.id !== user.id && item.email.toLowerCase() === nextEmail)) {
-    showToast("Questa email e gia usata da un altro account.", "error");
+    showToast("Questa email è già usata da un altro account.", "error");
     return;
   }
   user.name = String(form.get("name")).trim();
@@ -3808,7 +4405,7 @@ document.querySelector("#publishDemo").addEventListener("click", () => {
   const button = document.querySelector("#publishDemo");
   addDemoItem("merchantPosts", { title: "Nuovo contenuto commerciante" });
   button.textContent = "Pubblicato";
-  showToast("Contenuto demo pubblicato nella dashboard commerciante.", "success");
+  showToast("Contenuto pubblicato nella dashboard commerciante.", "success");
   setTimeout(() => { button.textContent = "Pubblica"; }, 1600);
 });
 
@@ -3881,7 +4478,7 @@ document.querySelector("#sendMerchantNotification")?.addEventListener("click", a
   saveMerchantNotifications(notifications);
   addDemoItem("merchantNotifications", { title: draft.title, type: notification.targetLabel });
   renderMerchantNotificationLog();
-  setMerchantNotificationFeedback(`Notifica approvata e inviata via ${channel === "browser" ? "browser" : "web app demo"}.`, "success");
+  setMerchantNotificationFeedback(`Notifica approvata e inviata via ${channel === "browser" ? "browser" : "web app"}.`, "success");
   showToast(`Promo Gold inviata: ${draft.title}`, "success");
 });
 
@@ -3952,14 +4549,15 @@ async function hashPassword(password, salt = randomId("salt")) {
 }
 
 async function seedAdminUser() {
+  if (!IS_DEMO) return;
   const users = getUsers();
   if (users.some((user) => user.role === "admin")) return;
-  const password = await hashPassword("Admin123!");
+  const password = await hashPassword(randomId("admin-pass"));
   users.push({
     id: "admin-demo",
     name: "Admin",
     surname: "MyAvezzano",
-    email: "admin@myavezzano.it",
+    email: `admin-${Date.now()}@local.myavezzano.it`,
     phone: "",
     role: "admin",
     provider: "Email",
@@ -4062,7 +4660,7 @@ function renderMerchantNotificationLog() {
       </div>
       <span class="pill success">${item.status}</span>
     </div>
-  `).join("") : `<p class="muted">Nessuna notifica Gold inviata in questa demo.</p>`;
+  `).join("") : `<p class="muted">Nessuna notifica Gold inviata.</p>`;
 }
 
 function targetLabel(value) {
@@ -4070,8 +4668,8 @@ function targetLabel(value) {
     nearby: "Utenti vicino al negozio",
     saved: "Utenti coupon",
     events: "Utenti eventi",
-    all: "Tutti gli utenti demo"
-  }[value] || "Utenti demo";
+    all: "Tutti gli utenti"
+  }[value] || "Utenti";
 }
 
 async function maybeSendBrowserNotification(title, body) {
@@ -4136,11 +4734,30 @@ function openSignup(mode = "register") {
 
 function updateAuthUi() {
   const user = getStoredUser();
+  const levelState = citizenLevelState(user);
   const accountLabel = user ? "Account" : "Entra";
   const miniLabel = user ? "Account" : "Accedi";
+  const homeAvatar = document.querySelector("#homeProfileAvatar");
+  const homeName = document.querySelector("#homeProfileName");
+  const homeCopy = document.querySelector("#homeProfileCopy");
+  const homeStatus = document.querySelector("#homeProfileStatus");
+  const homeCoupons = document.querySelector("#homeProfileCoupons");
+  const homeEvents = document.querySelector("#homeProfileEvents");
+  const homePoints = document.querySelector("#homeProfilePoints");
 
   document.querySelector("#openSignup").textContent = accountLabel;
   document.querySelector("#openSignupMini").textContent = miniLabel;
+  if (homeAvatar) homeAvatar.src = user?.avatar || "assets/app-icon.svg";
+  if (homeName) homeName.textContent = user ? user.name : "Area personale";
+  if (homeStatus) homeStatus.textContent = user ? "Collegato" : "Non collegato";
+  if (homeCopy) {
+    homeCopy.textContent = user
+      ? `${levelState.level}: salvataggi, coupon e reminder sempre pronti.`
+      : "Accedi per avere coupon, eventi e guida rapida sempre a portata.";
+  }
+  if (homeCoupons) homeCoupons.textContent = user ? profileCouponRows().length : 0;
+  if (homeEvents) homeEvents.textContent = user ? profileEventRows().length : 0;
+  if (homePoints) homePoints.textContent = user ? levelState.points.toLocaleString("it-IT") : 0;
   signupCopy.textContent = user
     ? `Ciao ${user.name}, il tuo account ${user.role === "admin" ? "admin" : "utente"} è attivo.`
     : "Crea il tuo account per salvare eventi, coupon, nuove aperture e reminder cittadini.";
@@ -4250,7 +4867,7 @@ document.querySelectorAll("[data-auth-provider]").forEach((button) => {
   button.addEventListener("click", () => {
     completeRegistration(button.dataset.authProvider, {
       name: `${button.dataset.authProvider} User`,
-      email: `${button.dataset.authProvider.toLowerCase()}@demo.myavezzano.it`
+      email: `${button.dataset.authProvider.toLowerCase()}@local.myavezzano.it`
     });
   });
 });
@@ -4309,7 +4926,7 @@ createAccountButton.addEventListener("click", async () => {
   }
 
   if (getUsers().some((user) => user.email.toLowerCase() === email)) {
-    setFeedback("Esiste gia un account con questa email. Vai al login.", "error");
+    setFeedback("Esiste già un account con questa email. Vai al login.", "error");
     setAuthMode("login");
     return;
   }
@@ -4466,7 +5083,7 @@ document.querySelectorAll(".start-plan").forEach((button) => {
       return;
     }
 
-    setMerchantFeedback(`Piano ${selectedMerchantPlan.plan} selezionato. Completa il checkout demo.`, "info");
+    setMerchantFeedback(`Piano ${selectedMerchantPlan.plan} selezionato. Completa la richiesta di attivazione.`, "info");
   });
 });
 
@@ -4493,7 +5110,7 @@ document.querySelector("#confirmMerchantPayment").addEventListener("click", () =
   }
 
   if (paymentMethod.length < 4) {
-    setMerchantFeedback("Inserisci un metodo di pagamento demo.", "error");
+    setMerchantFeedback("Inserisci un metodo di pagamento valido.", "error");
     return;
   }
 
@@ -4507,14 +5124,14 @@ document.querySelector("#confirmMerchantPayment").addEventListener("click", () =
     startedAt: new Date().toLocaleDateString("it-IT")
   });
 
-  setMerchantFeedback("Pagamento demo completato. Dashboard negozio attivata.", "success");
+  setMerchantFeedback("Richiesta registrata. Dashboard negozio attivata.", "success");
   setTimeout(renderMerchantArea, 700);
 });
 
 document.querySelector("#cancelMerchantPlan").addEventListener("click", () => {
   localStorage.removeItem(MERCHANT_STORAGE_KEY);
   merchantCheckout.hidden = true;
-  setMerchantFeedback("Abbonamento demo annullato.", "info");
+  setMerchantFeedback("Piano annullato.", "info");
   renderMerchantArea();
 });
 
@@ -4729,11 +5346,15 @@ function initWebglAura() {
 
 async function bootApp() {
   applyTheme();
-  applyVisualStyle(preferredVisualStyle());
+  document.documentElement.dataset.visualStyle = "classic";
+  localStorage.removeItem("myavezzano_visual_style");
+  localStorage.removeItem("myavezzano_visual_style_previous_theme");
   applyFxMode("light", false);
-  await seedAdminUser();
+  if (IS_DEMO) await seedAdminUser();
   render();
   renderLegalPanel();
+  refreshTownScopedViews();
+  updateAvezzanoWeather();
   selectMapPlace(selectedPlace.id, false);
   updateAuthUi();
 
@@ -4766,6 +5387,6 @@ async function bootApp() {
 }
 
 document.querySelector("#themeToggle")?.addEventListener("click", toggleTheme);
-document.querySelector("#visualThemeSelect")?.addEventListener("change", changeVisualStyle);
+document.querySelector("#citySelector")?.addEventListener("change", (event) => setActiveTown(event.target.value));
 
 bootApp();
