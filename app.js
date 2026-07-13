@@ -400,6 +400,44 @@ const ONBOARDING_KEY = "myavezzano_onboarding_seen";
 const THEME_STORAGE_KEY = "myavezzano_theme";
 const FX_MODE_STORAGE_KEY = "myavezzano_fx_mode";
 const ADMIN_CONTROL_KEY = "myavezzano_admin_control_v1";
+const RADAR_EVENT_SEEDS = [
+  {
+    id: "radar-birrart-tagliacozzo",
+    title: "BirrArt / festa della birra",
+    area: "Tagliacozzo",
+    date: "2026-07-17",
+    time: "Serale",
+    category: "Segnalazione",
+    source: "Segnalazioni locali e pagine evento",
+    confidence: 72,
+    reason: "Parole chiave: birra, festa, serata. Comune non coperto dagli eventi ufficiali caricati.",
+    suggestion: "Verificare pagina organizzatore, locandina e orari prima della pubblicazione."
+  },
+  {
+    id: "radar-pro-loco-celano",
+    title: "Serata estiva Pro Loco",
+    area: "Celano",
+    date: "2026-07-18",
+    time: "Da verificare",
+    category: "Festa",
+    source: "Pattern social locali",
+    confidence: 64,
+    reason: "Possibile evento di piazza vicino al weekend, utile per il target Marsica.",
+    suggestion: "Richiedere conferma a organizzatore o pagina comunale."
+  },
+  {
+    id: "radar-street-food-pescina",
+    title: "Street food e musica in piazza",
+    area: "Pescina",
+    date: "2026-07-19",
+    time: "18:00",
+    category: "Food",
+    source: "Monitor parole chiave food/eventi",
+    confidence: 58,
+    reason: "Evento compatibile con ricerche 'cosa fare stasera' e coupon locali.",
+    suggestion: "Controllare locandina, indirizzo esatto e presenza commercianti."
+  }
+];
 const QA_BOT_STORAGE_KEY = "myavezzano_qa_bot_v1";
 const NOTIFICATION_READ_KEY = "myavezzano_notification_reads_v1";
 const IS_DEMO = (() => {
@@ -2037,8 +2075,10 @@ function defaultAdminControl() {
     nearbyEventsEnabled: true,
     featuredEvent: "street-green-fest",
     lastSync: null,
+    lastRadarScan: null,
     broadcasts: [],
     audit: [],
+    eventRadarQueue: RADAR_EVENT_SEEDS.map((item) => ({ ...item, status: "detected", detectedAt: "2026-07-13T08:00:00.000Z" })),
     pulseOverrides: Object.fromEntries(cityPulseZones.map((zone) => [zone.id, "auto"])),
     lastMinuteStatus: Object.fromEntries(lastMinuteDeals.map((deal) => [deal.id, "active"])),
     moderationQueue: [
@@ -2057,6 +2097,7 @@ function getAdminControl() {
     ...stored,
     broadcasts: Array.isArray(stored.broadcasts) ? stored.broadcasts : defaults.broadcasts,
     audit: Array.isArray(stored.audit) ? stored.audit : defaults.audit,
+    eventRadarQueue: Array.isArray(stored.eventRadarQueue) ? stored.eventRadarQueue : defaults.eventRadarQueue,
     moderationQueue: Array.isArray(stored.moderationQueue) ? stored.moderationQueue : defaults.moderationQueue,
     pulseOverrides: { ...defaults.pulseOverrides, ...(stored.pulseOverrides || {}) },
     lastMinuteStatus: { ...defaults.lastMinuteStatus, ...(stored.lastMinuteStatus || {}) }
@@ -2083,6 +2124,34 @@ function adminControlButton(key, label, description, value) {
       <b>${value ? "Attivo" : "Disattivo"}</b>
     </button>
   `;
+}
+
+function radarConfidenceTone(score) {
+  if (score >= 75) return "success";
+  if (score >= 55) return "warning";
+  return "info";
+}
+
+function radarStatusLabel(status) {
+  return {
+    detected: "Da verificare",
+    approved: "Approvato",
+    rejected: "Scartato"
+  }[status] || "Da verificare";
+}
+
+function radarPendingItems(control = getAdminControl()) {
+  return control.eventRadarQueue.filter((item) => item.status === "detected");
+}
+
+function createRadarModerationItem(candidate) {
+  return {
+    id: `radar-${candidate.id}`,
+    type: "Evento radar",
+    title: candidate.title,
+    status: "pending",
+    detail: `${candidate.area} - ${candidate.date} - fonte: ${candidate.source}`
+  };
 }
 
 function sumBy(items, keyGetter, valueGetter = () => 1) {
@@ -2208,6 +2277,11 @@ function buildQaBotReport() {
   if (!localSignalEvents.length) {
     addIssue("warning", "Eventi", "Nessuna segnalazione locale", "Feste, sagre e serate fuori cartellone potrebbero non emergere.");
   }
+  const radarSignals = getAdminControl().eventRadarQueue || [];
+  const pendingRadarSignals = radarSignals.filter((item) => item.status === "detected");
+  if (!radarSignals.length) {
+    addIssue("warning", "Radar Eventi", "Nessun candidato monitorato", "Il radar non sta proponendo eventi da verificare.");
+  }
 
   const placesWithoutCoords = mapPlaces.filter((place) => !Number.isFinite(place.lat) || !Number.isFinite(place.lng));
   const placesWithoutImage = mapPlaces.filter((place) => !place.image && !place.photo);
@@ -2232,6 +2306,7 @@ function buildQaBotReport() {
     { label: "Coupon", value: coupons.length, detail: `${couponCodes.length} codici QR controllati`, status: couponsWithoutQr.length || duplicateCouponCodes.length ? "warning" : "success" },
     { label: "Eventi", value: calendarEvents.length, detail: `${summerEvents.length} nel programma Estate 2026`, status: duplicateEvents ? "warning" : "success" },
     { label: "Segnalazioni", value: localSignalEvents.length, detail: "feste, sagre e serate intercettate", status: localSignalEvents.length ? "success" : "warning" },
+    { label: "Radar Eventi", value: pendingRadarSignals.length, detail: `${radarSignals.length} candidati monitorati`, status: radarSignals.length ? "success" : "warning" },
     { label: "Mappa", value: mapPlaces.length, detail: `${coverageTowns.length} comuni predisposti`, status: placesWithoutCoords.length ? "warning" : "success" },
     { label: "Foto reali", value: realPhotoEvents, detail: `${fallbackEvents} fallback neutri`, status: fallbackEvents > realPhotoEvents ? "warning" : "success" },
     { label: "SEO eventi", value: calendarEvents.length, detail: "slug, alt, updatedAt e schede evento", status: missingSeoEvents.length ? "warning" : "success" }
@@ -2299,6 +2374,51 @@ function qaBotMarkup(report) {
   `;
 }
 
+function eventRadarMarkup(control) {
+  const queue = control.eventRadarQueue || [];
+  const pending = radarPendingItems(control);
+  return `
+    <section class="panel admin-event-radar">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Cattura Eventi</p>
+          <h2>Radar eventi della zona</h2>
+        </div>
+        <span class="pill ${pending.length ? "warning" : "success"}">${pending.length} da verificare</span>
+      </div>
+      <p class="admin-radar-copy">Monitora segnali locali come feste, sagre, serate, pagine organizzatori e comuni limitrofi. Nulla entra nel calendario pubblico senza approvazione admin.</p>
+      <div class="admin-radar-toolbar">
+        <button class="primary-action compact-button" data-admin-action="run-event-radar" type="button">Scansiona zona</button>
+        <span>Ultima scansione: ${control.lastRadarScan ? new Date(control.lastRadarScan).toLocaleString("it-IT") : "non ancora eseguita"}</span>
+      </div>
+      <div class="admin-radar-list">
+        ${queue.map((item) => `
+          <article class="admin-radar-item ${item.status}">
+            <div class="admin-radar-main">
+              <div>
+                <strong>${item.title}</strong>
+                <span>${item.area} - ${item.date} - ${item.time}</span>
+              </div>
+              <span class="pill ${radarConfidenceTone(item.confidence)}">${item.confidence}% confidenza</span>
+            </div>
+            <p>${item.reason}</p>
+            <small>${item.source} - ${item.suggestion}</small>
+            <div class="admin-radar-footer">
+              <span class="pill ${item.status === "approved" ? "success" : item.status === "rejected" ? "warning" : "info"}">${radarStatusLabel(item.status)}</span>
+              ${item.status === "detected" ? `
+                <div class="admin-row-actions">
+                  <button class="ghost compact-button" data-admin-action="reject-radar-event" data-radar-id="${item.id}" type="button">Scarta</button>
+                  <button class="primary-action compact-button" data-admin-action="approve-radar-event" data-radar-id="${item.id}" type="button">Accetta inserimento</button>
+                </div>
+              ` : ""}
+            </div>
+          </article>
+        `).join("")}
+      </div>
+    </section>
+  `;
+}
+
 function renderAdminDashboard() {
   const root = document.querySelector("#adminDashboard");
   if (!root) return;
@@ -2325,6 +2445,7 @@ function renderAdminDashboard() {
   const aiInsights = intelligenceInsights();
   const adminControl = getAdminControl();
   const pendingModeration = adminControl.moderationQueue.filter((item) => item.status === "pending").length;
+  const pendingRadar = radarPendingItems(adminControl).length;
   const featuredEvent = calendarEvents.find((item) => item.id === adminControl.featuredEvent) || calendarEvents[0];
   const pulseSnapshot = cityPulseSnapshot();
   const lastMinuteState = getLastMinuteState();
@@ -2346,6 +2467,7 @@ function renderAdminDashboard() {
         <div><span>Utenti</span><strong>${users.filter((user) => user.status !== "deleted").length}</strong></div>
         <div><span>Attività</span><strong>${mapPlaces.length}</strong></div>
         <div><span>Eventi</span><strong>${calendarEvents.length}</strong></div>
+        <div><span>Radar eventi</span><strong>${pendingRadar}</strong></div>
         <div><span>Da moderare</span><strong>${pendingModeration}</strong></div>
         <div><span>Salvataggi</span><strong>${requests.length}</strong></div>
         <div><span>Comunicazioni</span><strong>${adminControl.broadcasts.length}</strong></div>
@@ -2400,6 +2522,7 @@ function renderAdminDashboard() {
         </div>
       </section>
       <div class="admin-grid">
+        ${eventRadarMarkup(adminControl)}
         ${qaBotMarkup(qaReport)}
         <section class="panel admin-live-control">
           <div class="panel-head">
@@ -2740,6 +2863,37 @@ function handleAdminAction(button) {
     addAdminAudit(control, "Eventi, mappa e coupon sincronizzati");
     renderAdminDashboard();
     showToast("Contenuti sincronizzati.", "success");
+    return;
+  }
+
+  if (button.dataset.adminAction === "run-event-radar") {
+    const control = getAdminControl();
+    const known = new Map((control.eventRadarQueue || []).map((item) => [item.id, item]));
+    control.eventRadarQueue = RADAR_EVENT_SEEDS.map((seed) => ({
+      ...seed,
+      ...(known.get(seed.id) || {}),
+      detectedAt: known.get(seed.id)?.detectedAt || new Date().toISOString()
+    }));
+    control.lastRadarScan = new Date().toISOString();
+    addAdminAudit(control, `Radar eventi aggiornato: ${radarPendingItems(control).length} segnalazioni da verificare`);
+    renderAdminDashboard();
+    showToast("Radar eventi aggiornato. Le nuove segnalazioni restano in attesa di approvazione.", "success");
+    return;
+  }
+
+  if (["approve-radar-event", "reject-radar-event"].includes(button.dataset.adminAction)) {
+    const control = getAdminControl();
+    const candidate = control.eventRadarQueue.find((item) => item.id === button.dataset.radarId);
+    if (!candidate) return;
+    const approved = button.dataset.adminAction === "approve-radar-event";
+    candidate.status = approved ? "approved" : "rejected";
+    candidate.reviewedAt = new Date().toISOString();
+    if (approved && !control.moderationQueue.some((item) => item.id === `radar-${candidate.id}`)) {
+      control.moderationQueue = [createRadarModerationItem(candidate), ...control.moderationQueue];
+    }
+    addAdminAudit(control, `${candidate.title}: ${approved ? "accettato dal Radar Eventi" : "scartato dal Radar Eventi"}`);
+    renderAdminDashboard();
+    showToast(approved ? "Evento accettato e mandato in coda inserimento." : "Segnalazione radar scartata.", approved ? "success" : "info");
     return;
   }
 
