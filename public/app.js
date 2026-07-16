@@ -2360,6 +2360,7 @@ function renderMerchantArea() {
     .forEach((item) => { item.disabled = !isGold; });
   setMerchantNotificationFeedback(isGold ? "Canale notifiche pronto. Il filtro contenuti è attivo." : "Le notifiche promozionali sono disponibili solo per account Gold.", isGold ? "success" : "info");
   renderMerchantNotificationLog();
+  renderMerchantBilling(subscription);
 }
 
 function isAdmin(user = getStoredUser()) {
@@ -4972,6 +4973,62 @@ function saveMerchantSubscription(subscription) {
   localStorage.setItem(MERCHANT_STORAGE_KEY, JSON.stringify(subscription));
 }
 
+function merchantInvoiceNumber(subscription = getMerchantSubscription()) {
+  const seed = String(subscription?.startedAt || new Date().toISOString()).replace(/\D/g, "").slice(0, 8) || "20260716";
+  return `MYA-${seed}-${String(subscription?.userId || "B2B").slice(-4).toUpperCase()}`;
+}
+
+function merchantInvoiceRows(subscription = getMerchantSubscription()) {
+  if (!subscription) return [];
+  const price = Number(String(subscription.price).replace(",", ".")) || 0;
+  const vat = +(price * 0.22).toFixed(2);
+  const total = +(price + vat).toFixed(2);
+  return [
+    ["Imponibile", `${price.toFixed(2).replace(".", ",")} EUR`],
+    ["IVA 22%", `${vat.toFixed(2).replace(".", ",")} EUR`],
+    ["Totale documento", `${total.toFixed(2).replace(".", ",")} EUR`]
+  ];
+}
+
+function merchantInvoiceHtml(subscription = getMerchantSubscription()) {
+  if (!subscription) return "";
+  const fiscal = subscription.fiscal || {};
+  const rows = merchantInvoiceRows(subscription);
+  return `<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <title>Fattura ${merchantInvoiceNumber(subscription)} - MyAvezzano</title>
+  <style>
+    body{font-family:Arial,sans-serif;margin:32px;color:#0f172a}
+    .invoice{max-width:820px;margin:auto;border:1px solid #dbe3ef;border-radius:14px;padding:28px}
+    h1{margin:0 0 6px;font-size:28px}.muted{color:#64748b}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:24px 0}
+    table{width:100%;border-collapse:collapse;margin-top:18px}td,th{padding:12px;border-bottom:1px solid #e2e8f0;text-align:left}td:last-child{text-align:right;font-weight:700}
+    .total td{font-size:18px;color:#0e7490}.note{margin-top:22px;font-size:12px;color:#64748b}
+  </style>
+</head>
+<body>
+  <main class="invoice">
+    <p class="muted">MyAvezzano - documento commerciale per area commercianti</p>
+    <h1>Fattura ${merchantInvoiceNumber(subscription)}</h1>
+    <p>Data emissione: ${new Date().toLocaleDateString("it-IT")}</p>
+    <div class="grid">
+      <section><strong>Fornitore</strong><p>MyAvezzano<br/>PWA locale Avezzano<br/>myavezzano.vercel.app</p></section>
+      <section><strong>Cliente</strong><p>${notificationText(subscription.businessName)}<br/>P. IVA ${notificationText(fiscal.vatNumber || "da completare")}<br/>${notificationText(fiscal.billingAddress || "indirizzo da completare")}<br/>SDI/PEC: ${notificationText(fiscal.channel || "da completare")}</p></section>
+    </div>
+    <table>
+      <thead><tr><th>Descrizione</th><th>Importo</th></tr></thead>
+      <tbody>
+        <tr><td>Abbonamento ${notificationText(subscription.plan)} MyAvezzano - ${notificationText(subscription.category)}</td><td>${String(subscription.price).replace(".", ",")} EUR</td></tr>
+        ${rows.map(([label, value]) => `<tr class="${label.includes("Totale") ? "total" : ""}"><td>${label}</td><td>${value}</td></tr>`).join("")}
+      </tbody>
+    </table>
+    <p class="note">Fac-simile generato per riepilogo amministrativo. La fattura elettronica valida fiscalmente viene emessa tramite il provider fiscale collegato al pagamento.</p>
+  </main>
+</body>
+</html>`;
+}
+
 const profanityDictionary = [
   "cazzo", "cazz", "merda", "stronzo", "stronza", "vaffanculo", "fanculo",
   "puttana", "troia", "bastardo", "bastarda", "coglione", "coglioni",
@@ -5027,6 +5084,41 @@ function renderMerchantNotificationLog() {
       <span class="pill success">${item.status}</span>
     </div>
   `).join("") : `<p class="muted">Nessuna notifica Gold inviata.</p>`;
+}
+
+function renderMerchantBilling(subscription = getMerchantSubscription()) {
+  const summary = document.querySelector("#merchantBillingSummary");
+  const preview = document.querySelector("#merchantInvoicePreview");
+  const status = document.querySelector("#merchantBillingStatus");
+  if (!summary || !preview || !subscription) return;
+  const fiscal = subscription.fiscal || {};
+  const invoiceRows = merchantInvoiceRows(subscription);
+  const fiscalComplete = Boolean(fiscal.vatNumber && fiscal.channel && fiscal.billingAddress);
+  if (status) {
+    status.textContent = fiscalComplete ? "Pronta" : "Da completare";
+    status.className = `pill ${fiscalComplete ? "success" : "warning"}`;
+  }
+  summary.innerHTML = `
+    <div><span>Ragione sociale</span><strong>${notificationText(subscription.businessName)}</strong></div>
+    <div><span>Partita IVA</span><strong>${notificationText(fiscal.vatNumber || "Non inserita")}</strong></div>
+    <div><span>SDI / PEC</span><strong>${notificationText(fiscal.channel || "Non inserito")}</strong></div>
+    <div><span>Prossima fattura</span><strong>${subscription.price} EUR/mese + IVA</strong></div>
+  `;
+  preview.innerHTML = `
+    <div class="invoice-paper">
+      <div class="invoice-head">
+        <div><span>Fattura</span><strong>${merchantInvoiceNumber(subscription)}</strong></div>
+        <b>MyAvezzano</b>
+      </div>
+      <div class="invoice-parties">
+        <p><strong>Cliente</strong><br>${notificationText(subscription.businessName)}<br>P. IVA ${notificationText(fiscal.vatNumber || "da completare")}</p>
+        <p><strong>Piano</strong><br>${notificationText(subscription.plan)}<br>${notificationText(subscription.category)}</p>
+      </div>
+      <div class="invoice-lines">
+        ${invoiceRows.map(([label, value]) => `<div><span>${label}</span><strong>${value}</strong></div>`).join("")}
+      </div>
+    </div>
+  `;
 }
 
 function targetLabel(value) {
@@ -5129,7 +5221,7 @@ function updateAuthUi() {
     : "Crea il tuo account per salvare eventi, coupon, nuove aperture e reminder cittadini.";
 
   logoutAccountButton.hidden = !user;
-  document.querySelectorAll(".field, .legal-check, .signup-actions, .divider, #createAccount, #loginAccount, #recoverPassword").forEach((item) => {
+  authOverlay.querySelectorAll(".field, .legal-check, .signup-actions, .divider, #createAccount, #loginAccount, #recoverPassword").forEach((item) => {
     item.hidden = Boolean(user) || item.hidden;
   });
   if (!user) setAuthMode(authMode);
@@ -5460,6 +5552,9 @@ document.querySelector("#confirmMerchantPayment").addEventListener("click", () =
   const businessName = document.querySelector("#merchantBusinessName").value.trim();
   const category = document.querySelector("#merchantBusinessCategory").value.trim();
   const paymentMethod = document.querySelector("#merchantPaymentMethod").value.trim();
+  const vatNumber = document.querySelector("#merchantVatNumber")?.value.trim() || "";
+  const fiscalChannel = document.querySelector("#merchantFiscalChannel")?.value.trim() || "";
+  const billingAddress = document.querySelector("#merchantBillingAddress")?.value.trim() || "";
 
   if (!user) {
     setMerchantFeedback("Accedi prima di completare il pagamento.", "error");
@@ -5482,12 +5577,32 @@ document.querySelector("#confirmMerchantPayment").addEventListener("click", () =
     return;
   }
 
+  if (!/^[0-9]{11}$/.test(vatNumber)) {
+    setMerchantFeedback("Inserisci una partita IVA italiana valida di 11 cifre.", "error");
+    return;
+  }
+
+  if (fiscalChannel.length < 6) {
+    setMerchantFeedback("Inserisci codice SDI oppure PEC per la fatturazione.", "error");
+    return;
+  }
+
+  if (billingAddress.length < 8) {
+    setMerchantFeedback("Inserisci l'indirizzo completo di fatturazione.", "error");
+    return;
+  }
+
   saveMerchantSubscription({
     userId: user.id,
     businessName,
     category,
     plan: selectedMerchantPlan.plan,
     price: selectedMerchantPlan.price,
+    fiscal: {
+      vatNumber,
+      channel: fiscalChannel,
+      billingAddress
+    },
     status: "active",
     startedAt: new Date().toLocaleDateString("it-IT")
   });
@@ -5501,6 +5616,35 @@ document.querySelector("#cancelMerchantPlan").addEventListener("click", () => {
   merchantCheckout.hidden = true;
   setMerchantFeedback("Piano annullato.", "info");
   renderMerchantArea();
+});
+
+document.querySelector("#downloadMerchantInvoice")?.addEventListener("click", () => {
+  const subscription = getMerchantSubscription();
+  if (!subscription) return;
+  const blob = new Blob([merchantInvoiceHtml(subscription)], { type: "text/html;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${merchantInvoiceNumber(subscription)}.html`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+  showToast("Fattura scaricata. Puoi stamparla o salvarla in PDF.", "success");
+});
+
+document.querySelector("#printMerchantInvoice")?.addEventListener("click", () => {
+  const subscription = getMerchantSubscription();
+  if (!subscription) return;
+  const win = window.open("", "_blank", "noopener,noreferrer");
+  if (!win) {
+    showToast("Popup bloccato: usa Scarica fattura.", "error");
+    return;
+  }
+  win.document.write(merchantInvoiceHtml(subscription));
+  win.document.close();
+  win.focus();
+  win.print();
 });
 
 function initWebglAura() {

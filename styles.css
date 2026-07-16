@@ -2009,6 +2009,9 @@ body.theme-dark .qr {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
+.checkout-grid .full-field {
+  grid-column: 1 / -1;
+}
 .checkout-grid .full-button {
   align-self: end;
 }
@@ -2028,6 +2031,84 @@ body.theme-dark .qr {
 }
 .merchant-layout, .admin-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
 .merchant-layout .composer { grid-row: span 2; }
+.merchant-billing-panel {
+  grid-column: span 2;
+}
+.billing-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 14px 0;
+}
+.billing-summary div,
+.invoice-lines div {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+}
+.billing-summary span,
+.invoice-lines span,
+.invoice-head span {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+.billing-summary strong,
+.invoice-lines strong {
+  display: block;
+  margin-top: 5px;
+  overflow-wrap: anywhere;
+}
+.invoice-preview {
+  margin: 12px 0;
+}
+.invoice-paper {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid rgba(14,116,144,.18);
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(248,250,252,.94));
+}
+.invoice-head,
+.invoice-parties {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+}
+.invoice-head strong {
+  display: block;
+  font-size: 22px;
+}
+.invoice-head b {
+  color: #0e7490;
+}
+.invoice-parties p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+.invoice-parties strong {
+  color: var(--ink);
+}
+.invoice-lines {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+body.theme-dark .merchant-billing-panel,
+body.theme-dark .invoice-paper,
+body.theme-dark .billing-summary div,
+body.theme-dark .invoice-lines div {
+  background: rgba(15,23,42,.62);
+  border-color: rgba(226,232,240,.14);
+}
+body.theme-dark .invoice-head b {
+  color: #67e8f9;
+}
 .admin-shell {
   display: grid;
   gap: 18px;
@@ -3650,6 +3731,11 @@ body.theme-dark .topbar::after {
   }
   .price-badge { width: 100%; }
   .checkout-grid { grid-template-columns: 1fr; }
+  .merchant-billing-panel { grid-column: auto; }
+  .billing-summary,
+  .invoice-lines { grid-template-columns: 1fr; }
+  .invoice-head,
+  .invoice-parties { flex-direction: column; }
   .profile-actions-grid { grid-template-columns: 1fr; }
   .admin-hero { align-items: flex-start; flex-direction: column; }
   .site-footer { padding-bottom: 12px; }

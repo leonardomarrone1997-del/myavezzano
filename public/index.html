@@ -599,6 +599,18 @@
                   <span>Metodo di pagamento</span>
                   <input id="merchantPaymentMethod" type="text" placeholder="Carta o riferimento pagamento" />
                 </label>
+                <label class="field">
+                  <span>Partita IVA</span>
+                  <input id="merchantVatNumber" type="text" inputmode="numeric" maxlength="16" placeholder="Es. 01234567890" />
+                </label>
+                <label class="field">
+                  <span>Codice SDI o PEC</span>
+                  <input id="merchantFiscalChannel" type="text" maxlength="80" placeholder="SDI oppure PEC fatturazione" />
+                </label>
+                <label class="field full-field">
+                  <span>Indirizzo fatturazione</span>
+                  <input id="merchantBillingAddress" type="text" placeholder="Via, civico, CAP, comune e provincia" />
+                </label>
                 <button class="primary-action full-button" id="confirmMerchantPayment" type="button">Paga e crea negozio</button>
               </div>
               <p class="legal">Il pagamento sarà completato tramite gateway sicuro collegato al servizio commerciale.</p>
@@ -673,6 +685,22 @@
                 </div>
               </div>
               <div class="notification-log" id="merchantNotificationLog"></div>
+            </section>
+
+            <section class="panel merchant-billing-panel">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Fatturazione B2B</p>
+                  <h2>Documenti fiscali</h2>
+                </div>
+                <span class="pill success" id="merchantBillingStatus">Pronta</span>
+              </div>
+              <div class="billing-summary" id="merchantBillingSummary"></div>
+              <div class="invoice-preview" id="merchantInvoicePreview"></div>
+              <div class="composer-actions">
+                <button class="ghost" id="downloadMerchantInvoice" type="button">Scarica fattura</button>
+                <button class="light-action" id="printMerchantInvoice" type="button">Stampa / PDF</button>
+              </div>
             </section>
 
             <section class="panel">
