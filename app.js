@@ -1643,6 +1643,47 @@ function renderHomeEventFocus() {
   hydrateLazyMedia(panel, true);
 }
 
+function renderHomeLiveBrief() {
+  const panel = document.querySelector("#homeLiveBrief");
+  if (!panel) return;
+  const today = currentDateKey();
+  const nextEvent = sortEventsByCurrentDate(calendarEvents.filter((item) => eventIsHomeCandidate(item, today)), today)[0];
+  const nearbyEvent = sortEventsByCurrentDate(calendarEvents.filter((item) => item.area !== "Avezzano" && coverageTowns.includes(item.area) && eventIsHomeCandidate(item, today)), today)[0];
+  const pulse = cityPulseSnapshot().sort((a, b) => b.score - a.score)[0];
+  const bestDeal = lastMinuteDeals[0];
+  const cards = [
+    {
+      eyebrow: "Agenda",
+      title: nextEvent ? nextEvent.title : "Eventi in aggiornamento",
+      text: nextEvent ? `${nextEvent.area} - ${eventRangeLabel(nextEvent)} - ${nextEvent.time}` : "Apri il calendario per vedere i prossimi appuntamenti.",
+      action: "events",
+      cta: "Apri eventi"
+    },
+    {
+      eyebrow: "Vicino a te",
+      title: nearbyEvent ? nearbyEvent.area : "Marsica",
+      text: nearbyEvent ? nearbyEvent.title : "Scopri eventi, sagre e serate nei comuni limitrofi.",
+      action: "nearby",
+      cta: "Vedi vicino"
+    },
+    {
+      eyebrow: pulse ? pulse.status : "Vantaggi",
+      title: pulse ? pulse.name : bestDeal.title,
+      text: pulse ? pulse.reason : `${bestDeal.place} - ${bestDeal.value}`,
+      action: pulse ? "map" : "coupons",
+      cta: pulse ? "Apri mappa" : "Apri coupon"
+    }
+  ];
+  panel.innerHTML = cards.map((item) => `
+    <article class="home-brief-card">
+      <span>${item.eyebrow}</span>
+      <strong>${item.title}</strong>
+      <small>${item.text}</small>
+      <button ${item.action === "nearby" ? 'data-action="event-category" data-category="Vicino a te" data-event-filter="nearby"' : `data-view-target="${item.action}"`} type="button">${item.cta}</button>
+    </article>
+  `).join("");
+}
+
 function renderWeekendHome() {
   const panel = document.querySelector("#weekendHome");
   const list = document.querySelector("#weekendHomeList");
@@ -1811,6 +1852,7 @@ function render() {
 
   renderSummerHomeBand();
   renderHomeEventFocus();
+  renderHomeLiveBrief();
   renderWeekendHome();
   renderCityPulse();
   renderLastMinuteDeals();

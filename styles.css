@@ -10944,6 +10944,28 @@ body.theme-dark .coupon-filter-tabs button.active {
   color: #e0f2fe;
 }
 
+body.theme-dark .home-brief-card,
+body.theme-dark #feedView .city-pulse-panel,
+body.theme-dark #feedView .last-minute-panel,
+body.theme-dark #feedView .day-plan,
+body.theme-dark #feedView .accent-panel,
+body.theme-dark #feedView .campaign-mini-panel,
+body.theme-dark #feedView .home-command-center {
+  background: rgba(15,23,42,.72);
+  border-color: rgba(226,232,240,.14);
+  box-shadow: none;
+}
+
+body.theme-dark .home-brief-card strong,
+body.theme-dark #feedView .home-command-center h2 {
+  color: #f8fafc;
+}
+
+body.theme-dark .home-brief-card small,
+body.theme-dark #feedView .home-command-center p {
+  color: #cbd5e1;
+}
+
 body.theme-dark .topbar > .top-actions .guide-button span {
   background: rgba(14,165,233,.12);
   border-color: rgba(103,232,249,.25);
@@ -10982,6 +11004,106 @@ body:not(.theme-dark) .weekend-event-row small {
   min-height: 84px;
 }
 
+.home-live-brief {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 12px 0 14px;
+}
+
+.home-brief-card {
+  min-height: 136px;
+  display: grid;
+  align-content: space-between;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid rgba(15,23,42,.10);
+  border-radius: 12px;
+  background: rgba(255,255,255,.90);
+  box-shadow: 0 12px 28px rgba(15,23,42,.07);
+}
+
+.home-brief-card span {
+  color: #0e7490;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.home-brief-card strong {
+  color: #0f172a;
+  font-size: 17px;
+  line-height: 1.08;
+}
+
+.home-brief-card small {
+  color: #475569;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.home-brief-card button {
+  justify-self: start;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid rgba(14,116,144,.18);
+  border-radius: 999px;
+  background: rgba(14,116,144,.08);
+  color: #0e7490;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+#feedView .city-now-grid,
+#feedView .smart-strip,
+#feedView .feed-list {
+  gap: 12px;
+  margin-top: 14px;
+}
+
+#feedView .city-pulse-panel,
+#feedView .last-minute-panel,
+#feedView .day-plan,
+#feedView .accent-panel,
+#feedView .campaign-mini-panel {
+  border-radius: 12px;
+  background: rgba(255,255,255,.88);
+  border-color: rgba(15,23,42,.10);
+  box-shadow: 0 12px 28px rgba(15,23,42,.07);
+}
+
+#feedView .home-command-center {
+  margin: 14px 0;
+  padding: 16px;
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(2,132,199,.10), rgba(15,118,110,.08)),
+    rgba(255,255,255,.88);
+  border: 1px solid rgba(14,116,144,.14);
+}
+
+#feedView .home-command-center .command-copy {
+  width: 100%;
+}
+
+#feedView .home-command-center h2 {
+  font-size: 22px;
+}
+
+#feedView .home-command-center p {
+  max-width: 560px;
+  color: #475569;
+}
+
+#feedView .feed-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+#feedView .feed-list .post-media {
+  min-height: 170px;
+}
+
 #feedView .city-now-grid,
 #feedView .home-command-center,
 #feedView .smart-strip,
@@ -10989,7 +11111,23 @@ body:not(.theme-dark) .weekend-event-row small {
 #feedView .feed-list,
 #feedView .accent-panel,
 #feedView .campaign-mini-panel {
-  display: none;
+  display: block;
+}
+
+#feedView .smart-strip {
+  display: grid;
+}
+
+#feedView .feed-list {
+  display: grid;
+}
+
+#feedView .city-now-grid {
+  display: grid;
+}
+
+#feedView .home-command-center {
+  display: flex;
 }
 
 #feedView .utility-shell {
@@ -11044,6 +11182,14 @@ body:not(.theme-dark) .weekend-event-row small {
 
 @media (max-width: 920px) {
   #feedView .utility-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .home-live-brief {
+    grid-template-columns: 1fr;
+  }
+
+  #feedView .feed-list {
     grid-template-columns: 1fr;
   }
 
