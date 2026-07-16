@@ -872,6 +872,7 @@ function addDemoItem(key, item) {
   }
   state[key] = list;
   saveDemoState(state);
+  renderNotificationState();
   return list.length;
 }
 
@@ -885,6 +886,7 @@ function addDemoItems(key, items) {
   });
   state[key] = list;
   saveDemoState(state);
+  renderNotificationState();
   return list.length;
 }
 
@@ -2085,6 +2087,62 @@ function saveReadNotifications(ids) {
   writeJson(NOTIFICATION_READ_KEY, [...new Set(ids)].slice(-80));
 }
 
+function notificationText(value = "") {
+  return String(value).replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "\"": "&quot;",
+    "'": "&#39;"
+  }[character]));
+}
+
+function notificationDateLabel(item) {
+  if (!item?.date) return "In arrivo";
+  if (eventIsLiveToday(item)) return "Oggi";
+  const date = eventDate(item.date);
+  return new Intl.DateTimeFormat("it-IT", { weekday: "short", day: "numeric", month: "short" }).format(date);
+}
+
+function actionableNotificationItems() {
+  const today = currentDateKey();
+  const state = getDemoState();
+  const upcomingEvents = sortEventsByCurrentDate(calendarEvents.filter((item) => eventIsHomeCandidate(item, today))).slice(0, 2);
+  const merchantItems = getMerchantNotifications().slice(-2).reverse().map((item) => ({
+    id: item.id,
+    title: item.title,
+    text: `${item.targetLabel} - ${item.status}`,
+    tone: "gold",
+    time: "Attività locale",
+    view: "merchant"
+  }));
+  const savedReminderItems = (state.reminders || []).slice(-2).reverse().map((item, index) => ({
+    id: `reminder-${eventSlug(item.title || "evento")}-${index}`,
+    title: item.title || "Reminder evento",
+    text: "Promemoria attivo nel tuo profilo.",
+    tone: "event",
+    time: "Reminder",
+    view: "events"
+  }));
+  const eventItems = upcomingEvents.map((item) => ({
+    id: `event-${item.id}`,
+    title: item.title,
+    text: `${item.area} - ${item.time || "orario in aggiornamento"}`,
+    tone: item.featured ? "gold" : "event",
+    time: notificationDateLabel(item),
+    view: "events"
+  }));
+  const couponItems = coupons.slice(0, 2).map(([title, place, expires, , , couponCode]) => ({
+    id: `coupon-${eventSlug(couponCode || title)}`,
+    title,
+    text: `${place} - ${expires}`,
+    tone: "coupon",
+    time: expires.toLowerCase().includes("oggi") ? "Oggi" : "Coupon",
+    view: "coupons"
+  }));
+  return [...merchantItems, ...savedReminderItems, ...eventItems, ...couponItems].slice(0, 7);
+}
+
 function notificationItems() {
   const user = getStoredUser();
   if (!getAdminControl().push) {
@@ -2097,6 +2155,27 @@ function notificationItems() {
       silent: true
     }];
   }
+  const actionableItems = actionableNotificationItems();
+  return [
+    ...actionableItems,
+    {
+      id: user ? `profile-${user.id}` : "profile-guest",
+      title: user ? `Ciao ${user.name}` : "Profilo non attivo",
+      text: user ? "Il tuo livello cittadino risulta aggiornato." : "Accedi per salvare notifiche e preferenze.",
+      tone: user ? "profile" : "quiet",
+      time: "Profilo",
+      view: user ? "profile" : "feed",
+      silent: true
+    },
+    ...(actionableItems.length ? [] : [{
+      id: "notifications-clear",
+      title: "Nessuna notifica da leggere",
+      text: "Quando arriveranno eventi, coupon o aggiornamenti utili li troverai qui.",
+      tone: "quiet",
+      time: "Adesso",
+      silent: true
+    }])
+  ];
   const merchantItems = getMerchantNotifications().slice(-2).reverse().map((item) => ({
     id: item.id,
     title: item.title,
@@ -2132,7 +2211,10 @@ function renderNotificationState() {
     badge.hidden = unread === 0;
     badge.setAttribute("aria-label", `${unread} notifiche non lette`);
   }
-  if (button) button.setAttribute("aria-label", unread ? `Apri notifiche, ${unread} non lette` : "Apri notifiche");
+  if (button) {
+    button.classList.toggle("has-unread", unread > 0);
+    button.setAttribute("aria-label", unread ? `Apri notifiche, ${unread} non lette` : "Apri notifiche");
+  }
 }
 
 function renderNotificationMenu() {
@@ -2146,12 +2228,12 @@ function renderNotificationMenu() {
   if (summary) summary.textContent = unread ? `${unread} aggiornamenti da leggere` : "Tutto sotto controllo";
   if (markAll) markAll.hidden = unread === 0;
   list.innerHTML = items.map((item) => `
-    <button class="notification-menu-item ${item.tone} ${read.has(item.id) || item.silent ? "is-read" : "is-unread"}" data-notification-open data-notification-id="${item.id}" type="button">
+    <button class="notification-menu-item ${item.tone} ${read.has(item.id) || item.silent ? "is-read" : "is-unread"}" data-notification-open data-notification-id="${notificationText(item.id)}" data-notification-view="${notificationText(item.view || "")}" type="button">
       <span class="notification-item-icon" aria-hidden="true"></span>
       <div>
-        <span class="notification-item-meta"><em>${item.time}</em>${read.has(item.id) || item.silent ? "" : "<i>Nuova</i>"}</span>
-        <strong>${item.title}</strong>
-        <small>${item.text}</small>
+        <span class="notification-item-meta"><em>${notificationText(item.time)}</em>${read.has(item.id) || item.silent ? "" : "<i>Nuova</i>"}</span>
+        <strong>${notificationText(item.title)}</strong>
+        <small>${notificationText(item.text)}</small>
       </div>
     </button>
   `).join("");
@@ -5073,8 +5155,10 @@ document.querySelector("#notificationMenu")?.addEventListener("click", (event) =
   saveReadNotifications([...getReadNotifications(), item.dataset.notificationId]);
   renderNotificationState();
   closeNotificationMenu();
-  if (item.classList.contains("coupon")) switchView("coupons");
-  else if (item.classList.contains("event")) switchView("events");
+  const targetView = item.dataset.notificationView;
+  if (targetView === "coupons") switchView("coupons");
+  else if (targetView === "events") switchView("events");
+  else if (targetView === "merchant") switchView("merchant");
   else switchView(getStoredUser() ? "profile" : "feed");
 });
 
