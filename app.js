@@ -1412,6 +1412,11 @@ function selectedTownLabel() {
   return activeTown === "all" ? "Marsica" : activeTown;
 }
 
+function syncCommandCityLabel() {
+  const commandCityName = document.querySelector("#commandCityName");
+  if (commandCityName) commandCityName.textContent = selectedTownLabel();
+}
+
 function placeTown(place) {
   const haystack = [place.area, place.distance, place.address, place.caption, place.stats].filter(Boolean).join(" ").toLowerCase();
   const matched = coverageTowns.find((town) => haystack.includes(town.toLowerCase()));
@@ -3745,6 +3750,7 @@ function refreshTownScopedViews({ panMap = false } = {}) {
   }
 
   updateCitySelectorUi();
+  syncCommandCityLabel();
   renderHomeEventFocus();
   renderWeekendHome();
   renderSummerHomeBand();
@@ -3778,6 +3784,7 @@ function setActiveTown(town) {
   if ((activeSummerCategory === "avezzano" && activeTown !== "Avezzano") || (activeSummerCategory === "alba" && activeTown !== "Alba Fucens")) {
     activeSummerCategory = "all";
   }
+  syncCommandCityLabel();
   localStorage.setItem(CITY_SELECTOR_STORAGE_KEY, activeTown);
   refreshTownScopedViews({ panMap: true });
   showToast(activeTown === "all" ? "Vista impostata su tutta la Marsica." : `Vista impostata su ${activeTown}.`, "success");

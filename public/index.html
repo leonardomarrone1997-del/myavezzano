@@ -148,6 +148,10 @@
                   <span id="weatherSummary">Meteo Avezzano</span>
                 </div>
               </div>
+              <button class="command-city-pill" data-view-target="map" type="button" aria-label="Apri il comune selezionato in mappa">
+                <span>Comune</span>
+                <strong id="commandCityName">Avezzano</strong>
+              </button>
               <div class="theme-mode-group command-theme" aria-label="Tema giorno e notte">
                 <button class="theme-toggle" id="themeToggle" type="button" aria-label="Attiva tema notturno" aria-pressed="false">
                   <span aria-hidden="true"></span>
@@ -173,6 +177,11 @@
                 </button>
               </div>
               <button class="primary-action command-account" id="openSignup" type="button">Entra</button>
+            </div>
+            <div class="command-primary-strip" aria-label="Azioni principali">
+              <button data-view-target="events" type="button"><span>Oggi</span><strong>Eventi</strong></button>
+              <button data-view-target="map" type="button"><span>Luoghi</span><strong>Mappa</strong></button>
+              <button data-view-target="coupons" type="button"><span>Vantaggi</span><strong>Coupon</strong></button>
             </div>
           </div>
         </header>
@@ -848,10 +857,11 @@
     </div>
 
     <nav class="bottom-nav" aria-label="Navigazione rapida mobile">
-      <button class="bottom-nav-item active" data-view-target="feed" data-view="feed" type="button">Home</button>
-      <button class="bottom-nav-item" data-view-target="map" data-view="map" type="button">Mappa</button>
+      <button class="bottom-nav-item active" data-view-target="feed" data-view="feed" type="button">Oggi</button>
       <button class="bottom-nav-item" data-view-target="events" data-view="events" type="button">Eventi</button>
+      <button class="bottom-nav-item" data-view-target="map" data-view="map" type="button">Mappa</button>
       <button class="bottom-nav-item" data-view-target="coupons" data-view="coupons" type="button">Coupon</button>
+      <button class="bottom-nav-item" data-view-target="profile" data-view="profile" type="button">Profilo</button>
     </nav>
 
     <section class="notification-menu" id="notificationMenu" aria-label="Centro notifiche" hidden>

@@ -11995,3 +11995,207 @@ body.theme-dark .today-more-event span,
 body.theme-dark .next-suggestion small {
   color: #f8fafc;
 }
+
+/* Navigation redesign: two-row command bar + mobile dock */
+.topbar > .top-actions.home-command-bar {
+  width: min(620px, 100%) !important;
+  gap: 9px !important;
+  padding: 10px !important;
+  border: 1px solid rgba(15, 23, 42, .08) !important;
+  border-radius: 20px !important;
+  background: rgba(255, 255, 255, .96) !important;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, .12) !important;
+}
+
+.topbar > .top-actions.home-command-bar .command-status-strip {
+  grid-template-columns: minmax(130px, 1fr) minmax(110px, .72fr) minmax(122px, .72fr) !important;
+  gap: 7px !important;
+}
+
+.topbar > .top-actions.home-command-bar .command-access-strip {
+  grid-template-columns: minmax(0, 1fr) auto minmax(104px, .48fr) !important;
+  gap: 7px !important;
+}
+
+.topbar > .top-actions.home-command-bar .weather-widget,
+.topbar > .top-actions.home-command-bar .command-city-pill,
+.topbar > .top-actions.home-command-bar .theme-mode-group,
+.topbar > .top-actions.home-command-bar .top-profile-status,
+.topbar > .top-actions.home-command-bar .command-small-actions,
+.topbar > .top-actions.home-command-bar #openSignup {
+  grid-column: auto !important;
+}
+
+.command-city-pill,
+.command-primary-strip button {
+  min-width: 0;
+  border: 1px solid rgba(15, 23, 42, .08);
+  border-radius: 16px;
+  background: rgba(248, 250, 252, .94);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+}
+
+.command-city-pill {
+  min-height: 54px;
+  display: grid;
+  align-content: center;
+  gap: 3px;
+  padding: 8px 12px;
+}
+
+.command-city-pill span,
+.command-primary-strip button span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.command-city-pill strong,
+.command-primary-strip button strong {
+  display: block;
+  overflow: hidden;
+  font-size: 13px;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.command-primary-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.command-primary-strip button {
+  min-height: 56px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: transform .18s ease, border-color .18s ease, background .18s ease;
+}
+
+.command-primary-strip button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(37, 99, 235, .24);
+  background: rgba(239, 246, 255, .95);
+}
+
+.command-primary-strip button:first-child {
+  border-color: rgba(37, 99, 235, .22);
+  background: linear-gradient(135deg, rgba(239, 246, 255, .98), rgba(224, 242, 254, .9));
+}
+
+.topbar > .top-actions.home-command-bar .command-small-actions {
+  grid-template-columns: 46px 46px !important;
+}
+
+.topbar > .top-actions.home-command-bar .command-small-actions .guide-button,
+.topbar > .top-actions.home-command-bar .command-small-actions .notification-button {
+  width: 46px !important;
+  min-width: 46px !important;
+  max-width: 46px !important;
+}
+
+.topbar > .top-actions.home-command-bar .weather-widget,
+.topbar > .top-actions.home-command-bar .theme-toggle,
+.topbar > .top-actions.home-command-bar .guide-button,
+.topbar > .top-actions.home-command-bar .top-profile-status,
+.topbar > .top-actions.home-command-bar .notification-button,
+.topbar > .top-actions.home-command-bar #openSignup {
+  min-height: 54px !important;
+  border-radius: 16px !important;
+}
+
+body.theme-dark .topbar > .top-actions.home-command-bar {
+  border-color: rgba(226, 232, 240, .13) !important;
+  background: rgba(7, 17, 31, .94) !important;
+}
+
+body.theme-dark .command-city-pill,
+body.theme-dark .command-primary-strip button {
+  border-color: rgba(226, 232, 240, .12);
+  background: rgba(15, 23, 42, .82);
+  color: #f8fafc;
+}
+
+body.theme-dark .command-primary-strip button:first-child {
+  border-color: rgba(103, 232, 249, .28);
+  background: linear-gradient(135deg, rgba(14, 116, 144, .34), rgba(37, 99, 235, .22));
+}
+
+.bottom-nav {
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+}
+
+.bottom-nav-item {
+  min-width: 0;
+  font-size: 11px !important;
+}
+
+@media (max-width: 760px) {
+  .topbar > .top-actions.home-command-bar {
+    width: 100% !important;
+    padding: 9px !important;
+    border-radius: 18px !important;
+  }
+
+  .topbar > .top-actions.home-command-bar .command-status-strip {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .topbar > .top-actions.home-command-bar .command-status-strip .theme-mode-group {
+    grid-column: 1 / -1 !important;
+  }
+
+  .topbar > .top-actions.home-command-bar .command-access-strip {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+  }
+
+  .topbar > .top-actions.home-command-bar #openSignup {
+    display: none !important;
+  }
+
+  .topbar > .top-actions.home-command-bar .weather-widget,
+  .topbar > .top-actions.home-command-bar .command-city-pill,
+  .topbar > .top-actions.home-command-bar .top-profile-status,
+  .topbar > .top-actions.home-command-bar .command-small-actions {
+    grid-column: auto !important;
+  }
+
+  .command-primary-strip button {
+    min-height: 48px;
+    padding: 8px 9px;
+  }
+
+  .command-primary-strip button span {
+    display: none;
+  }
+
+  .command-primary-strip button strong {
+    font-size: 12px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 420px) {
+  .topbar > .top-actions.home-command-bar .command-status-strip {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .topbar > .top-actions.home-command-bar .command-access-strip {
+    grid-template-columns: minmax(0, 1fr) 98px !important;
+  }
+
+  .topbar > .top-actions.home-command-bar .command-small-actions {
+    grid-template-columns: 44px 44px !important;
+  }
+
+  .topbar > .top-actions.home-command-bar .command-small-actions .guide-button,
+  .topbar > .top-actions.home-command-bar .command-small-actions .notification-button {
+    width: 44px !important;
+    min-width: 44px !important;
+    max-width: 44px !important;
+  }
+}
