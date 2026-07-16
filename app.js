@@ -768,7 +768,7 @@ const pageMeta = {
   admin: {
     eyebrow: "Pannello admin",
     title: "Regia operativa MyAvezzano",
-    copy: "Utenti, contenuti, insight invisibili e strumenti di controllo raccolti in una cabina di comando essenziale."
+    copy: "Utenti, contenuti, segnalazioni e strumenti di controllo raccolti in una cabina di comando essenziale."
   },
   summer: {
     eyebrow: "Programma estivo",
@@ -803,9 +803,9 @@ const citySignatures = {
   coupons: ["AVZ-04", "Valore / QR / punti", "Pass riscattabile", "Attivo"],
   loyalty: ["AVZ-05", "Saldo / premi / progressi", "Credito locale", "Punti"],
   profile: ["AVZ-06", "ID personale / archivio", "Tessera cittadina", "Privato"],
-  merchant: ["AVZ-07", "Scheda / campagne / checkout", "Console business", "B2B"],
+  merchant: ["AVZ-07", "Scheda / campagne / pagamento", "Console business", "B2B"],
   campaign: ["AVZ-MKT", "QR / vetrine / eventi", "Piano città", "Territorio"],
-  admin: ["AVZ-ADM", "Insight / utenti / controllo", "Cabina di regia", "Riservato"],
+  admin: ["AVZ-ADM", "Dati / utenti / controllo", "Cabina di regia", "Riservato"],
   summer: ["AVZ-26", "Estate / tappe / luce", "Itinerario", "2026"],
   legal: ["AVZ-00", "Privacy / termini / cookie", "Registro fiducia", "Chiaro"]
 };
@@ -1101,8 +1101,8 @@ function intelligenceInsights() {
     .sort((a, b) => a.quality - b.quality)
     .slice(0, 5);
   return [
-    [`${missingPhotos} schede senza foto reale`, "Priorita media"],
-    [`${missingPhones} schede senza telefono`, "Priorita alta"],
+    [`${missingPhotos} schede senza foto reale`, "Priorità media"],
+    [`${missingPhones} schede senza telefono`, "Priorità alta"],
     [`${lowQuality.length} schede sotto qualità 60/100`, lowQuality.map((place) => place.name).join(", ") || "Nessuna"],
     ["Ranking invisibile attivo", "Ricerca, mappa e vicino a te usano intenti locali"]
   ];
@@ -1608,7 +1608,7 @@ function renderHomeEventFocus() {
     </div>
     <div class="home-event-main">
       <time datetime="${item.date}"><span>${parts.weekday}</span><strong>${parts.day}</strong><small>${parts.month}</small></time>
-      <div><span class="agenda-tag">${item.category}</span><h2>${item.title}</h2><p>${item.time} · ${item.place}</p></div>
+      <div><span class="agenda-tag">${item.category}</span><h2>${item.title}</h2><p>${item.time} - ${item.place}</p></div>
       <button class="save-action" data-action="save-event" data-event-id="${item.id}" data-title="${item.title}" type="button">Salva</button>
     </div>
     <div class="tonight-plan-strip">
@@ -1644,7 +1644,7 @@ function renderHomeEventFocus() {
       <div class="next-suggestion" aria-label="Prossimo evento consigliato">
         <span>Prossimo consigliato</span>
         <button data-action="save-event" data-event-id="${nextSuggested.id}" data-title="${nextSuggested.title}" type="button">
-          <strong>${eventRangeLabel(nextSuggested)} · ${nextSuggested.area}</strong>
+          <strong>${eventRangeLabel(nextSuggested)} - ${nextSuggested.area}</strong>
           <small>${nextSuggested.title}</small>
         </button>
       </div>
@@ -1703,7 +1703,7 @@ function renderWeekendHome() {
   const { start, end } = weekendWindow();
   panel.hidden = !items.length;
   if (!items.length) return;
-  meta.textContent = `${items.length} ${items.length === 1 ? "appuntamento" : "appuntamenti"} · ${new Intl.DateTimeFormat("it-IT", { day: "numeric", month: "short" }).format(eventDate(start))}-${new Intl.DateTimeFormat("it-IT", { day: "numeric", month: "short" }).format(eventDate(end))}`;
+  meta.textContent = `${items.length} ${items.length === 1 ? "appuntamento" : "appuntamenti"} - ${new Intl.DateTimeFormat("it-IT", { day: "numeric", month: "short" }).format(eventDate(start))}-${new Intl.DateTimeFormat("it-IT", { day: "numeric", month: "short" }).format(eventDate(end))}`;
   const head = panel.querySelector(".weekend-home-head");
   if (head && !head.querySelector("[data-action='save-weekend-plan']")) {
     head.insertAdjacentHTML("beforeend", `<button class="ghost compact-button" data-action="save-weekend-plan" type="button">Salva weekend</button>`);
@@ -1738,7 +1738,7 @@ function renderTonightAgenda() {
   heading.textContent = todayEvents.length ? "In programma oggi" : "Il prossimo appuntamento";
   copy.textContent = todayEvents.length
     ? `${todayEvents.length} ${todayEvents.length === 1 ? "evento" : "eventi"} in agenda oggi a ${selectedTownLabel()}.`
-    : `Nessun evento oggi: il prossimo è ${eventRangeLabel(visible[0])}.`;
+    : `Oggi non risultano eventi per questo comune. Il prossimo appuntamento è ${eventRangeLabel(visible[0])}.`;
   grid.innerHTML = visible.map((item) => eventCardMarkup(item, { compact: true, idPrefix: "tonight-event" })).join("");
   hydrateLazyMedia(grid, true);
 }
@@ -2385,7 +2385,7 @@ function defaultAdminControl() {
     pulseOverrides: Object.fromEntries(cityPulseZones.map((zone) => [zone.id, "auto"])),
     lastMinuteStatus: Object.fromEntries(lastMinuteDeals.map((deal) => [deal.id, "active"])),
     moderationQueue: [
-      { id: "venue-moon-club", type: "Attivita", title: "Moon Club", status: "pending" },
+      { id: "venue-moon-club", type: "Attività", title: "Moon Club", status: "pending" },
       { id: "comment-report", type: "Segnalazione", title: "Commento segnalato", status: "pending" },
       { id: "coupon-fitlab", type: "Coupon", title: "Prova gratuita FitLab", status: "pending" }
     ]
@@ -2714,7 +2714,7 @@ function eventRadarMarkup(control) {
               <span class="pill ${radarConfidenceTone(item.confidence)}">${item.confidence}% confidenza</span>
             </div>
             <div class="admin-radar-signals">
-              <span class="pill ${priorityTone}">Priorita ${priority}</span>
+              <span class="pill ${priorityTone}">Priorità ${priority}</span>
               <span>${item.source}</span>
               <span>Azione: ${item.confidence >= 75 ? "controllo rapido e pubblicazione" : "verifica fonte e luogo"}</span>
             </div>
@@ -2808,15 +2808,15 @@ function renderAdminDashboard() {
           ${adminControlButton("moderation", "Moderazione preventiva", "Controlla i contenuti prima della pubblicazione", adminControl.moderation)}
           ${adminControlButton("push", "Centro notifiche", "Abilita aggiornamenti, badge e comunicazioni agli utenti", adminControl.push)}
           ${adminControlButton("pulseEnabled", "Avezzano ora", "Mostra lo stato operativo delle zone cittadine", adminControl.pulseEnabled)}
-          ${adminControlButton("lastMinuteEnabled", "Ultimo momento", "Pubblica le disponibilita a tempo limitato", adminControl.lastMinuteEnabled)}
+          ${adminControlButton("lastMinuteEnabled", "Ultimo momento", "Pubblica le disponibilità a tempo limitato", adminControl.lastMinuteEnabled)}
           ${adminControlButton("nearbyEventsEnabled", "Eventi vicino a te", "Estende il calendario ai comuni della Marsica", adminControl.nearbyEventsEnabled)}
         </div>
       </section>
       <section class="panel intelligence-panel">
         <div class="panel-head">
           <div>
-            <p class="eyebrow">IA invisibile</p>
-            <h2>MyAvezzano Intelligence Layer</h2>
+            <p class="eyebrow">Analisi locale</p>
+            <h2>Segnali utili della città</h2>
           </div>
           <span class="pill success">Attivo</span>
         </div>
@@ -2872,7 +2872,7 @@ function renderAdminDashboard() {
           <div class="panel-head">
             <div>
               <p class="eyebrow">Ultimo momento</p>
-              <h2>Disponibilita attive</h2>
+              <h2>Disponibilità attive</h2>
             </div>
             <span class="pill ${adminControl.lastMinuteEnabled ? "success" : "warning"}">${adminControl.lastMinuteEnabled ? "Pubblico" : "Sospeso"}</span>
           </div>
@@ -3136,11 +3136,11 @@ function handleAdminAction(button) {
     } else {
       state.deadlines[deal.id] = Date.now() + deal.durationMinutes * 60000;
       localStorage.setItem(LAST_MINUTE_STATE_KEY, JSON.stringify(state));
-      addAdminAudit(control, `${deal.title}: disponibilita ripristinata`);
+      addAdminAudit(control, `${deal.title}: disponibilità ripristinata`);
     }
     renderLastMinuteDeals();
     renderAdminDashboard();
-    showToast("Disponibilita aggiornata.", "success");
+    showToast("Disponibilità aggiornata.", "success");
     return;
   }
 
@@ -3283,7 +3283,7 @@ function handleAdminAction(button) {
 
   if (button.dataset.adminAction === "refresh-ai") {
     renderAdminDashboard();
-    showToast("IA invisibile ricalcolata.", "success");
+    showToast("Analisi locale ricalcolata.", "success");
     return;
   }
 
@@ -3310,7 +3310,7 @@ function handleAdminAction(button) {
 
 const legalCopy = {
   privacy: ["Privacy Policy", "MyAvezzano MVP salva dati account, preferenze, coupon ed eventi in storage locale del browser. In produzione i dati saranno trattati su server sicuro con consenso, finalità esplicite e strumenti di cancellazione."],
-  terms: ["Termini e condizioni", "Il prototipo mostra funzionalità demo per utenti, commercianti e admin. Coupon, pagamenti, prenotazioni e statistiche non generano obblighi reali finché non saranno collegati a servizi certificati."],
+  terms: ["Termini e condizioni", "La versione attuale mostra funzioni locali per utenti, commercianti e amministratori. Coupon, pagamenti, prenotazioni e statistiche diventano operativi solo quando collegati a servizi certificati."],
   cookies: ["Cookie Policy", "La versione statica non usa cookie di tracciamento proprietari. Usa localStorage per sessione, preferenze, cache locale e PWA. Servizi esterni come mappe o immagini possono applicare proprie policy."]
 };
 
@@ -4518,7 +4518,7 @@ function handleAction(button) {
   }
 
   if (action === "upload-media") {
-    showToast("Caricamento demo pronto: in produzione aprirà galleria o fotocamera.");
+    showToast("Caricamento pronto: potrai collegare galleria o fotocamera nella versione finale.");
     return;
   }
 
