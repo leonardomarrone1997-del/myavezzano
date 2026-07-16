@@ -139,35 +139,41 @@
               <span id="pagePulse">Live</span>
             </div>
           </div>
-          <div class="top-actions">
-            <div class="weather-widget" aria-label="Meteo Avezzano">
-              <span class="weather-icon" aria-hidden="true"></span>
-              <div>
-                <strong id="weatherTemperature">--&deg;C</strong>
-                <span id="weatherSummary">Meteo Avezzano</span>
+          <div class="top-actions home-command-bar" aria-label="Strumenti rapidi">
+            <div class="command-status-strip">
+              <div class="weather-widget command-weather" aria-label="Meteo Avezzano">
+                <span class="weather-icon" aria-hidden="true"></span>
+                <div>
+                  <strong id="weatherTemperature">--&deg;C</strong>
+                  <span id="weatherSummary">Meteo Avezzano</span>
+                </div>
+              </div>
+              <div class="theme-mode-group command-theme" aria-label="Tema giorno e notte">
+                <button class="theme-toggle" id="themeToggle" type="button" aria-label="Attiva tema notturno" aria-pressed="false">
+                  <span aria-hidden="true"></span>
+                  <strong><small>Tema</small><b id="themeToggleLabel">Notte</b></strong>
+                </button>
               </div>
             </div>
-            <div class="theme-mode-group" aria-label="Tema giorno e notte">
-              <button class="theme-toggle" id="themeToggle" type="button" aria-label="Attiva tema notturno" aria-pressed="false">
-                <span aria-hidden="true"></span>
-                <strong><small>Tema</small><b id="themeToggleLabel">Notte</b></strong>
+            <div class="command-access-strip">
+              <button class="top-profile-status command-profile" id="topProfileStatus" type="button" aria-label="Apri profilo">
+                <span class="prestige-ring" aria-hidden="true">
+                  <img id="topProfileAvatar" src="assets/app-icon.svg" alt="" />
+                </span>
+                <span class="top-profile-copy">
+                  <strong id="topProfileName">Ospite</strong>
+                  <small id="topProfileLevel">Esploratore - 18%</small>
+                </span>
               </button>
+              <div class="command-small-actions">
+                <button class="ghost guide-button" data-action="open-onboarding" type="button" aria-label="Apri guida"><span aria-hidden="true"></span><b>Guida</b></button>
+                <button class="icon-button notification-button" id="notificationButton" data-action="notifications" type="button" title="Notifiche" aria-label="Apri notifiche" aria-expanded="false">
+                  <span class="notification-glyph" aria-hidden="true"></span>
+                  <span class="notification-badge" id="notificationBadge" aria-label="0 notifiche non lette" hidden>0</span>
+                </button>
+              </div>
+              <button class="primary-action command-account" id="openSignup" type="button">Entra</button>
             </div>
-            <button class="ghost guide-button" data-action="open-onboarding" type="button"><span aria-hidden="true"></span>Guida</button>
-            <button class="top-profile-status" id="topProfileStatus" type="button" aria-label="Apri profilo">
-              <span class="prestige-ring" aria-hidden="true">
-                <img id="topProfileAvatar" src="assets/app-icon.svg" alt="" />
-              </span>
-              <span class="top-profile-copy">
-                <strong id="topProfileName">Ospite</strong>
-                <small id="topProfileLevel">Esploratore - 18%</small>
-              </span>
-            </button>
-            <button class="icon-button notification-button" id="notificationButton" data-action="notifications" type="button" title="Notifiche" aria-label="Apri notifiche" aria-expanded="false">
-              <span class="notification-glyph" aria-hidden="true"></span>
-              <span class="notification-badge" id="notificationBadge" aria-label="0 notifiche non lette" hidden>0</span>
-            </button>
-            <button class="primary-action" id="openSignup" type="button">Entra</button>
           </div>
         </header>
 

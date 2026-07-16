@@ -1035,6 +1035,282 @@ body.theme-dark .theme-toggle span::before {
   text-overflow: ellipsis;
 }
 
+/* Command bar redesign */
+.topbar > .top-actions.home-command-bar {
+  width: min(520px, 100%);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  align-self: start;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, .88);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, .94);
+  box-shadow: 0 24px 58px rgba(15, 23, 42, .16);
+  backdrop-filter: blur(18px) saturate(1.08);
+  -webkit-backdrop-filter: blur(18px) saturate(1.08);
+}
+
+.command-status-strip,
+.command-access-strip,
+.command-small-actions {
+  display: grid;
+  gap: 8px;
+}
+
+.command-status-strip {
+  grid-template-columns: minmax(0, 1fr) minmax(136px, .72fr);
+}
+
+.command-access-strip {
+  grid-template-columns: minmax(0, 1fr) auto minmax(112px, .55fr);
+  align-items: stretch;
+}
+
+.command-small-actions {
+  grid-template-columns: 48px 48px;
+}
+
+.topbar > .top-actions.home-command-bar .weather-widget,
+.topbar > .top-actions.home-command-bar .theme-toggle,
+.topbar > .top-actions.home-command-bar .guide-button,
+.topbar > .top-actions.home-command-bar .top-profile-status,
+.topbar > .top-actions.home-command-bar .notification-button,
+.topbar > .top-actions.home-command-bar #openSignup {
+  min-height: 54px;
+  border: 1px solid rgba(15, 23, 42, .08);
+  border-radius: 18px;
+  background: #fff;
+  color: #0f172a;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, .07);
+}
+
+.topbar > .top-actions.home-command-bar .weather-widget {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+}
+
+.topbar > .top-actions.home-command-bar .weather-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 40% 38%, #facc15 0 34%, transparent 36%),
+    linear-gradient(135deg, #e0f2fe, #f8fafc);
+  box-shadow: inset 0 0 0 1px rgba(14, 116, 144, .12);
+}
+
+.topbar > .top-actions.home-command-bar .weather-widget strong,
+.topbar > .top-actions.home-command-bar .top-profile-copy strong {
+  color: #0f172a;
+  font-size: 13px;
+  line-height: 1.08;
+  white-space: nowrap;
+}
+
+.topbar > .top-actions.home-command-bar .weather-widget span,
+.topbar > .top-actions.home-command-bar .top-profile-copy small {
+  max-width: 100%;
+  color: #64748b;
+  font-size: 10px;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topbar > .top-actions.home-command-bar .theme-mode-group {
+  min-width: 0;
+  min-height: 0;
+}
+
+.topbar > .top-actions.home-command-bar .theme-toggle {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  justify-content: stretch;
+  gap: 9px;
+  padding: 8px 11px;
+}
+
+.topbar > .top-actions.home-command-bar .theme-toggle > span {
+  width: 38px;
+  height: 24px;
+  border-radius: 999px;
+  background: #dbeafe;
+  box-shadow: inset 0 0 0 1px rgba(20, 88, 245, .12);
+}
+
+.topbar > .top-actions.home-command-bar .theme-toggle > span::before {
+  width: 18px;
+  height: 18px;
+  transform: translate(3px, 3px);
+  background: #1458f5;
+}
+
+body.theme-dark .topbar > .top-actions.home-command-bar .theme-toggle > span {
+  background: #0f172a;
+}
+
+body.theme-dark .topbar > .top-actions.home-command-bar .theme-toggle > span::before {
+  transform: translate(17px, 3px);
+  background: #67e8f9;
+}
+
+.topbar > .top-actions.home-command-bar .theme-toggle small {
+  color: #64748b;
+  font-size: 9px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.topbar > .top-actions.home-command-bar .theme-toggle b {
+  color: #0f172a;
+  font-size: 12px;
+}
+
+.topbar > .top-actions.home-command-bar .top-profile-status {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.topbar > .top-actions.home-command-bar .prestige-ring {
+  width: 42px;
+  height: 42px;
+  border-radius: 16px;
+  padding: 2px;
+  background: linear-gradient(135deg, #0ea5e9, #14b8a6);
+  box-shadow: 0 10px 22px rgba(14, 116, 144, .20);
+}
+
+.topbar > .top-actions.home-command-bar .prestige-ring img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 14px;
+  object-fit: cover;
+  background: #fff;
+}
+
+.topbar > .top-actions.home-command-bar .guide-button,
+.topbar > .top-actions.home-command-bar .notification-button {
+  width: 48px;
+  min-width: 48px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+}
+
+.topbar > .top-actions.home-command-bar .guide-button b {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.topbar > .top-actions.home-command-bar .guide-button span {
+  width: 24px;
+  height: 24px;
+  border-radius: 10px;
+  background: #e0f2fe;
+  border-color: rgba(14, 116, 144, .16);
+}
+
+.topbar > .top-actions.home-command-bar .guide-button span::before {
+  color: #0369a1;
+  font-size: 13px;
+}
+
+.topbar > .top-actions.home-command-bar .notification-button {
+  color: #0f172a;
+}
+
+.topbar > .top-actions.home-command-bar .notification-glyph {
+  width: 21px;
+  height: 21px;
+}
+
+.topbar > .top-actions.home-command-bar .notification-badge {
+  top: 7px;
+  right: 7px;
+}
+
+.topbar > .top-actions.home-command-bar #openSignup {
+  min-width: 0;
+  padding: 0 16px;
+  border: 0;
+  background: linear-gradient(135deg, #1458f5, #0ea5e9);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 950;
+  box-shadow: 0 16px 32px rgba(20, 88, 245, .26);
+}
+
+body.theme-dark .topbar > .top-actions.home-command-bar {
+  border-color: rgba(148, 163, 184, .22);
+  background: rgba(7, 17, 31, .90);
+  box-shadow: 0 26px 64px rgba(0, 0, 0, .34);
+}
+
+body.theme-dark .topbar > .top-actions.home-command-bar .weather-widget,
+body.theme-dark .topbar > .top-actions.home-command-bar .theme-toggle,
+body.theme-dark .topbar > .top-actions.home-command-bar .guide-button,
+body.theme-dark .topbar > .top-actions.home-command-bar .top-profile-status,
+body.theme-dark .topbar > .top-actions.home-command-bar .notification-button {
+  border-color: rgba(148, 163, 184, .18);
+  background: rgba(15, 23, 42, .88);
+  color: #f8fafc;
+  box-shadow: none;
+}
+
+body.theme-dark .topbar > .top-actions.home-command-bar .weather-widget strong,
+body.theme-dark .topbar > .top-actions.home-command-bar .top-profile-copy strong,
+body.theme-dark .topbar > .top-actions.home-command-bar .theme-toggle b,
+body.theme-dark .topbar > .top-actions.home-command-bar .notification-button {
+  color: #f8fafc;
+}
+
+body.theme-dark .topbar > .top-actions.home-command-bar .weather-widget span,
+body.theme-dark .topbar > .top-actions.home-command-bar .top-profile-copy small,
+body.theme-dark .topbar > .top-actions.home-command-bar .theme-toggle small {
+  color: #94a3b8;
+}
+
+@media (max-width: 980px) {
+  .topbar > .top-actions.home-command-bar {
+    width: 100%;
+  }
+}
+
+@media (max-width: 620px) {
+  .topbar > .top-actions.home-command-bar {
+    padding: 10px;
+    border-radius: 20px;
+  }
+
+  .command-status-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .command-access-strip {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .topbar > .top-actions.home-command-bar #openSignup {
+    grid-column: 1 / -1;
+  }
+}
+
 .destination-copy .destination-insight {
   margin-top: 3px;
   color: var(--blue-deep);
@@ -11312,4 +11588,94 @@ body.theme-dark .panel p {
   #feedView .home-quick-actions .shortcut-card {
     border-radius: 14px;
   }
+}
+
+/* Final command bar lock */
+.topbar > .top-actions.home-command-bar {
+  width: min(520px, 100%) !important;
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 10px !important;
+  align-self: start !important;
+  padding: 12px !important;
+  border-radius: 24px !important;
+  background: rgba(255, 255, 255, .94) !important;
+}
+
+.topbar > .top-actions.home-command-bar .command-status-strip {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(136px, .72fr) !important;
+  gap: 8px !important;
+}
+
+.topbar > .top-actions.home-command-bar .command-access-strip {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto minmax(112px, .55fr) !important;
+  align-items: stretch !important;
+  gap: 8px !important;
+}
+
+.topbar > .top-actions.home-command-bar .command-small-actions {
+  display: grid !important;
+  grid-template-columns: 48px 48px !important;
+  gap: 8px !important;
+}
+
+.topbar > .top-actions.home-command-bar .weather-widget,
+.topbar > .top-actions.home-command-bar .theme-toggle,
+.topbar > .top-actions.home-command-bar .guide-button,
+.topbar > .top-actions.home-command-bar .top-profile-status,
+.topbar > .top-actions.home-command-bar .notification-button,
+.topbar > .top-actions.home-command-bar #openSignup {
+  min-height: 54px !important;
+  border-radius: 18px !important;
+}
+
+.topbar > .top-actions.home-command-bar .top-profile-status {
+  grid-template-columns: 42px minmax(0, 1fr) !important;
+}
+
+.topbar > .top-actions.home-command-bar .prestige-ring {
+  width: 42px !important;
+  height: 42px !important;
+}
+
+.topbar > .top-actions.home-command-bar .prestige-ring img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+body.theme-dark .topbar > .top-actions.home-command-bar {
+  background: rgba(7, 17, 31, .90) !important;
+}
+
+@media (max-width: 620px) {
+  .topbar > .top-actions.home-command-bar .command-status-strip {
+    grid-template-columns: 1fr !important;
+  }
+
+  .topbar > .top-actions.home-command-bar .command-access-strip {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+  }
+
+  .topbar > .top-actions.home-command-bar #openSignup {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+.topbar > .top-actions.home-command-bar .command-small-actions {
+  width: max-content !important;
+  display: grid !important;
+  grid-template-columns: 48px 48px !important;
+  grid-auto-flow: column !important;
+  align-items: stretch !important;
+}
+
+.topbar > .top-actions.home-command-bar .command-small-actions .guide-button,
+.topbar > .top-actions.home-command-bar .command-small-actions .notification-button {
+  width: 48px !important;
+  min-width: 48px !important;
+  max-width: 48px !important;
+  grid-column: auto !important;
 }
