@@ -35,6 +35,24 @@ const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (character) => (
 }[character]));
 
 const eventFallbackImage = "assets/social-preview.jpg";
+const eventThemeImages = {
+  Ambiente: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1200&q=78",
+  Cultura: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1200&q=78",
+  Famiglie: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=1200&q=78",
+  Gastronomia: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=78",
+  Incontro: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1200&q=78",
+  Motori: "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1200&q=78",
+  Musica: "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=78",
+  Segnalazione: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=1200&q=78",
+  Sport: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1200&q=78",
+  Teatro: "https://images.unsplash.com/photo-1503095396549-807759245b35?auto=format&fit=crop&w=1200&q=78",
+  Territorio: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=78"
+};
+const eventAreaImages = {
+  "Alba Fucens": "https://images.unsplash.com/photo-1513581166391-887a96ddeafd?auto=format&fit=crop&w=1200&q=78",
+  Pescina: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=78",
+  Tagliacozzo: "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=1200&q=78"
+};
 const importantEventKeywords = [
   "fedez",
   "francesco gabbani",
@@ -65,10 +83,19 @@ function assetUrl(src) {
   return `${baseUrl}/${src.replace(/^\.?\//, "")}`;
 }
 
+function eventUsesGenericImage(event = {}) {
+  return !event.image || String(event.image).includes("social-preview.jpg");
+}
+
+function eventFallbackFor(event = {}) {
+  return eventAreaImages[event.area] || eventThemeImages[event.category] || eventFallbackImage;
+}
+
 function normalizeEvent(event) {
   const id = event.id || eventSlug([event.title, event.date, event.place].filter(Boolean).join(" "));
-  const image = event.image || eventFallbackImage;
-  const isRealPhoto = Boolean(event.image && event.isRealPhoto);
+  const fallbackImageUsed = eventUsesGenericImage(event);
+  const image = fallbackImageUsed ? eventFallbackFor(event) : event.image;
+  const isRealPhoto = Boolean(!fallbackImageUsed && event.image && event.isRealPhoto);
   const importance = event.importance || (event.featured ? "high" : "normal");
   const importantByTitle = importantEventKeywords.some((keyword) => String(event.title || "").toLowerCase().includes(keyword));
   return {
@@ -79,7 +106,7 @@ function normalizeEvent(event) {
     featured: Boolean(event.featured || importance === "high" || importantByTitle),
     image,
     imageAlt: event.imageAlt || `${event.title} - ${event.place}`,
-    imageSource: event.imageSource || (isRealPhoto ? "Fonte evento" : "Fallback neutro MyAvezzano"),
+    imageSource: fallbackImageUsed ? "Immagine tematica MyAvezzano" : (event.imageSource || (isRealPhoto ? "Fonte evento" : "Fallback neutro MyAvezzano")),
     isRealPhoto,
     sourceUrl: event.sourceUrl || "",
     updatedAt: event.updatedAt || buildDate

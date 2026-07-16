@@ -550,6 +550,24 @@ let activeEventCategory = "all";
 
 const EVENT_FALLBACK_IMAGE = "assets/social-preview.jpg";
 const EVENT_FALLBACK_SOURCE = "Fallback neutro MyAvezzano";
+const EVENT_THEME_IMAGES = {
+  Ambiente: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1200&q=78",
+  Cultura: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1200&q=78",
+  Famiglie: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=1200&q=78",
+  Gastronomia: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=78",
+  Incontro: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1200&q=78",
+  Motori: "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1200&q=78",
+  Musica: "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=78",
+  Segnalazione: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=1200&q=78",
+  Sport: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1200&q=78",
+  Teatro: "https://images.unsplash.com/photo-1503095396549-807759245b35?auto=format&fit=crop&w=1200&q=78",
+  Territorio: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=78"
+};
+const EVENT_AREA_IMAGES = {
+  "Alba Fucens": "https://images.unsplash.com/photo-1513581166391-887a96ddeafd?auto=format&fit=crop&w=1200&q=78",
+  Pescina: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=78",
+  Tagliacozzo: "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=1200&q=78"
+};
 const AVEZZANO_WEATHER_ENDPOINT = "https://api.open-meteo.com/v1/forecast?latitude=42.0326&longitude=13.4256&current=temperature_2m,weather_code&timezone=Europe%2FRome";
 const IMPORTANT_EVENT_KEYWORDS = [
   "fedez",
@@ -575,10 +593,19 @@ function eventSlug(value = "") {
     .slice(0, 80);
 }
 
+function eventUsesGenericImage(item = {}) {
+  return !item.image || String(item.image).includes("social-preview.jpg");
+}
+
+function eventFallbackFor(item = {}) {
+  return EVENT_AREA_IMAGES[item.area] || EVENT_THEME_IMAGES[item.category] || EVENT_FALLBACK_IMAGE;
+}
+
 function normalizeEvent(item) {
   const id = item.id || eventSlug([item.title, item.date, item.place].filter(Boolean).join(" "));
-  const image = item.image || EVENT_FALLBACK_IMAGE;
-  const isRealPhoto = Boolean(item.image && item.isRealPhoto);
+  const fallbackImageUsed = eventUsesGenericImage(item);
+  const image = fallbackImageUsed ? eventFallbackFor(item) : item.image;
+  const isRealPhoto = Boolean(!fallbackImageUsed && item.image && item.isRealPhoto);
   const importance = item.importance || (item.featured ? "high" : "normal");
   const importantByTitle = IMPORTANT_EVENT_KEYWORDS.some((keyword) => String(item.title || "").toLowerCase().includes(keyword));
   return {
@@ -589,7 +616,7 @@ function normalizeEvent(item) {
     featured: Boolean(item.featured || importance === "high" || importantByTitle),
     image,
     imageAlt: item.imageAlt || `${item.title} - ${item.place}`,
-    imageSource: item.imageSource || (isRealPhoto ? "Fonte evento" : EVENT_FALLBACK_SOURCE),
+    imageSource: fallbackImageUsed ? "Immagine tematica MyAvezzano" : (item.imageSource || (isRealPhoto ? "Fonte evento" : EVENT_FALLBACK_SOURCE)),
     isRealPhoto,
     sourceUrl: item.sourceUrl || "",
     updatedAt: item.updatedAt || "2026-06-29"
@@ -609,7 +636,7 @@ function uniqueEvents(items = []) {
 const calendarEvents = uniqueEvents(window.MYAVEZZANO_EVENTS || []);
 const archivedEvents = uniqueEvents(window.MYAVEZZANO_ARCHIVED_EVENTS || []);
 const summerEvents = calendarEvents.filter((item) => item.date >= "2026-06-21" && item.date <= "2026-09-22");
-const coverageTowns = ["Avezzano", "Alba Fucens", "Celano", "Tagliacozzo", "Pescina", "Luco dei Marsi", "Trasacco", "Carsoli", "Borgorose", "Scurcola Marsicana", "Magliano de' Marsi"];
+const coverageTowns = ["Avezzano", "Alba Fucens", "Celano", "Tagliacozzo", "Pescina", "Luco dei Marsi", "Trasacco", "Carsoli", "Borgorose", "Scurcola Marsicana", "Magliano de' Marsi", "Aielli", "Castellafiume", "Gioia dei Marsi", "Lecce nei Marsi", "Ortona dei Marsi", "Ortucchio", "Bisegna", "Pescasseroli", "San Benedetto dei Marsi"];
 const CITY_SELECTOR_STORAGE_KEY = "myavezzano_selected_town_v1";
 const townCoordinates = {
   Avezzano: { lat: 42.0326, lng: 13.4256 },
@@ -622,7 +649,16 @@ const townCoordinates = {
   Carsoli: { lat: 42.0991, lng: 13.0881 },
   Borgorose: { lat: 42.1906, lng: 13.2347 },
   "Scurcola Marsicana": { lat: 42.0634, lng: 13.3408 },
-  "Magliano de' Marsi": { lat: 42.0917, lng: 13.3647 }
+  "Magliano de' Marsi": { lat: 42.0917, lng: 13.3647 },
+  Aielli: { lat: 42.0804, lng: 13.5905 },
+  Castellafiume: { lat: 41.9895, lng: 13.3340 },
+  "Gioia dei Marsi": { lat: 41.9569, lng: 13.6904 },
+  "Lecce nei Marsi": { lat: 41.9322, lng: 13.6844 },
+  "Ortona dei Marsi": { lat: 41.9981, lng: 13.7295 },
+  Ortucchio: { lat: 41.9553, lng: 13.6468 },
+  Bisegna: { lat: 41.9218, lng: 13.7556 },
+  Pescasseroli: { lat: 41.8087, lng: 13.7897 },
+  "San Benedetto dei Marsi": { lat: 42.0081, lng: 13.6239 }
 };
 let activeTown = ["all", ...coverageTowns].includes(localStorage.getItem(CITY_SELECTOR_STORAGE_KEY))
   ? localStorage.getItem(CITY_SELECTOR_STORAGE_KEY)
@@ -1447,7 +1483,7 @@ function eventMatchesFilter(item, filter) {
     const { start, end } = weekendWindow();
     return eventOverlapsRange(item, start, end);
   }
-  if (filter === "nearby") return item.area !== "Avezzano" && coverageTowns.includes(item.area);
+  if (filter === "nearby") return item.area !== "Avezzano" && coverageTowns.includes(item.area) && eventIsHomeCandidate(item);
   if (filter === "summer") return summerEvents.some((event) => event.id === item.id);
   if (filter === "avezzano") return item.area === "Avezzano";
   if (filter === "alba") return item.area === "Alba Fucens";
@@ -1683,7 +1719,7 @@ function summerEventMatchesFilter(item, filter) {
   if (filter === "all") return true;
   if (filter === "avezzano") return item.area === "Avezzano";
   if (filter === "alba") return item.area === "Alba Fucens";
-  if (filter === "nearby") return item.area !== "Avezzano" && coverageTowns.includes(item.area);
+  if (filter === "nearby") return item.area !== "Avezzano" && coverageTowns.includes(item.area) && eventIsHomeCandidate(item);
   return item.category.toLowerCase() === filter;
 }
 
