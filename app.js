@@ -839,6 +839,53 @@ function addDemoItem(key, item) {
   return list.length;
 }
 
+function addDemoItems(key, items) {
+  const state = getDemoState();
+  const list = state[key] || [];
+  items.forEach((item) => {
+    if (!list.some((entry) => entry.title === item.title)) {
+      list.push({ ...item, savedAt: new Date().toISOString() });
+    }
+  });
+  state[key] = list;
+  saveDemoState(state);
+  return list.length;
+}
+
+function hashString(value) {
+  return String(value).split("").reduce((hash, char) => ((hash << 5) - hash + char.charCodeAt(0)) | 0, 0);
+}
+
+function couponQrDataUri(code) {
+  const size = 29;
+  const cell = 5;
+  const quiet = 3;
+  const total = (size + quiet * 2) * cell;
+  let seed = Math.abs(hashString(code || "MYAVEZZANO"));
+  const modules = [];
+  const finder = (x, y) => {
+    modules.push(`<rect x="${(x + quiet) * cell}" y="${(y + quiet) * cell}" width="${7 * cell}" height="${7 * cell}" rx="3" fill="#06182e"/>`);
+    modules.push(`<rect x="${(x + quiet + 1) * cell}" y="${(y + quiet + 1) * cell}" width="${5 * cell}" height="${5 * cell}" rx="2" fill="#fff"/>`);
+    modules.push(`<rect x="${(x + quiet + 2) * cell}" y="${(y + quiet + 2) * cell}" width="${3 * cell}" height="${3 * cell}" rx="1" fill="#06182e"/>`);
+  };
+  const inFinder = (x, y) => (x < 8 && y < 8) || (x > 20 && y < 8) || (x < 8 && y > 20);
+  finder(0, 0);
+  finder(22, 0);
+  finder(0, 22);
+  for (let y = 0; y < size; y += 1) {
+    for (let x = 0; x < size; x += 1) {
+      if (inFinder(x, y)) continue;
+      seed = (seed * 1664525 + 1013904223) >>> 0;
+      const active = ((seed + x * 17 + y * 31) % 7) < 3 || ((x + y + seed) % 19 === 0);
+      if (active) {
+        modules.push(`<rect x="${(x + quiet) * cell}" y="${(y + quiet) * cell}" width="${cell}" height="${cell}" rx=".8" fill="#06182e"/>`);
+      }
+    }
+  }
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${total} ${total}"><rect width="${total}" height="${total}" rx="18" fill="#fff"/><rect x="7" y="7" width="${total - 14}" height="${total - 14}" rx="14" fill="#fff" stroke="#dbe7ef" stroke-width="2"/>${modules.join("")}<text x="50%" y="${total - 10}" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" font-weight="700" fill="#0e7490">${code}</text></svg>`;
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+}
+
 function showToast(message, type = "info") {
   const stack = document.querySelector("#toastStack");
   if (!stack) return;
@@ -1461,6 +1508,7 @@ function renderHomeEventFocus() {
   const townEvents = scopedEvents(calendarEvents);
   const todayEvents = townEvents.filter((item) => item.date <= today && (item.endDate || item.date) >= today);
   const item = todayEvents[0] || townEvents.find((event) => (event.endDate || event.date) >= today);
+  const dinnerSpot = scopedPlaces(intelligentPlaces("cena")).find((place) => /ristor|trattoria|osteria|food|pub|bar/i.test(`${place.category} ${place.name}`)) || scopedPlaces(mapPlaces)[0];
   if (!item) {
     panel.hidden = true;
     return;
@@ -1477,6 +1525,11 @@ function renderHomeEventFocus() {
       <div><span class="agenda-tag">${item.category}</span><h2>${item.title}</h2><p>${item.time} · ${item.place}</p></div>
       <button class="save-action" data-action="save-event" data-event-id="${item.id}" data-title="${item.title}" type="button">Salva</button>
     </div>
+    <div class="tonight-plan-strip">
+      <span><strong>Piano rapido</strong> ${item.price || "Info evento"} - ${eventAttendanceCount(item)} interessati</span>
+      ${dinnerSpot ? `<button class="ghost compact-button" data-action="open-map-place" data-place="${dinnerSpot.name}" type="button">Locale vicino</button>` : ""}
+      <a class="ghost compact-button" href="eventi/${item.id}.html">Dettagli</a>
+    </div>
   `;
   hydrateLazyMedia(panel, true);
 }
@@ -1491,6 +1544,10 @@ function renderWeekendHome() {
   panel.hidden = !items.length;
   if (!items.length) return;
   meta.textContent = `${items.length} ${items.length === 1 ? "appuntamento" : "appuntamenti"} · ${new Intl.DateTimeFormat("it-IT", { day: "numeric", month: "short" }).format(eventDate(start))}-${new Intl.DateTimeFormat("it-IT", { day: "numeric", month: "short" }).format(eventDate(end))}`;
+  const head = panel.querySelector(".weekend-home-head");
+  if (head && !head.querySelector("[data-action='save-weekend-plan']")) {
+    head.insertAdjacentHTML("beforeend", `<button class="ghost compact-button" data-action="save-weekend-plan" type="button">Salva weekend</button>`);
+  }
   list.innerHTML = items.slice(0, 4).map((item) => `
     <button class="weekend-event-row" data-action="event-category" data-category="Questo weekend" data-event-filter="weekend" type="button">
       <span>${eventDayParts(item).weekday} ${eventDayParts(item).day}</span>
@@ -1683,8 +1740,9 @@ function render() {
         <span class="pill success">${meta}</span>
         <div class="qr-stack">
           <div class="qr" aria-label="QR code coupon ${title}">
-            <img src="${qrSrc}" alt="QR coupon ${title} - ${place}" loading="lazy" decoding="async" />
+            <img src="${couponQrDataUri(couponCode || qrSrc)}" alt="QR coupon ${title} - ${place}" loading="lazy" decoding="async" />
           </div>
+          <span class="qr-validity-label">QR univoco</span>
           <span class="coupon-code-label">${couponCode}</span>
         </div>
       </div>
@@ -2136,13 +2194,20 @@ function radarConfidenceTone(score) {
 function radarStatusLabel(status) {
   return {
     detected: "Da verificare",
+    verification: "Verifica richiesta",
     approved: "Approvato",
     rejected: "Scartato"
   }[status] || "Da verificare";
 }
 
 function radarPendingItems(control = getAdminControl()) {
-  return control.eventRadarQueue.filter((item) => item.status === "detected");
+  return control.eventRadarQueue.filter((item) => ["detected", "verification"].includes(item.status));
+}
+
+function radarPriority(item) {
+  if (item.confidence >= 80) return ["Alta", "success"];
+  if (item.confidence >= 60) return ["Media", "warning"];
+  return ["Bassa", "info"];
 }
 
 function createRadarModerationItem(candidate) {
@@ -2151,7 +2216,7 @@ function createRadarModerationItem(candidate) {
     type: "Evento radar",
     title: candidate.title,
     status: "pending",
-    detail: `${candidate.area} - ${candidate.date} - fonte: ${candidate.source}`
+    detail: `${candidate.area} - ${candidate.date} - fonte: ${candidate.source} - confidenza ${candidate.confidence}%`
   };
 }
 
@@ -2393,7 +2458,9 @@ function eventRadarMarkup(control) {
         <span>Ultima scansione: ${control.lastRadarScan ? new Date(control.lastRadarScan).toLocaleString("it-IT") : "non ancora eseguita"}</span>
       </div>
       <div class="admin-radar-list">
-        ${queue.map((item) => `
+        ${queue.map((item) => {
+          const [priority, priorityTone] = radarPriority(item);
+          return `
           <article class="admin-radar-item ${item.status}">
             <div class="admin-radar-main">
               <div>
@@ -2402,19 +2469,25 @@ function eventRadarMarkup(control) {
               </div>
               <span class="pill ${radarConfidenceTone(item.confidence)}">${item.confidence}% confidenza</span>
             </div>
+            <div class="admin-radar-signals">
+              <span class="pill ${priorityTone}">Priorita ${priority}</span>
+              <span>${item.source}</span>
+              <span>Azione: ${item.confidence >= 75 ? "controllo rapido e pubblicazione" : "verifica fonte e luogo"}</span>
+            </div>
             <p>${item.reason}</p>
             <small>${item.source} - ${item.suggestion}</small>
             <div class="admin-radar-footer">
               <span class="pill ${item.status === "approved" ? "success" : item.status === "rejected" ? "warning" : "info"}">${radarStatusLabel(item.status)}</span>
-              ${item.status === "detected" ? `
+              ${["detected", "verification"].includes(item.status) ? `
                 <div class="admin-row-actions">
                   <button class="ghost compact-button" data-admin-action="reject-radar-event" data-radar-id="${item.id}" type="button">Scarta</button>
+                  <button class="ghost compact-button" data-admin-action="request-radar-verification" data-radar-id="${item.id}" type="button">Richiedi verifica</button>
                   <button class="primary-action compact-button" data-admin-action="approve-radar-event" data-radar-id="${item.id}" type="button">Accetta inserimento</button>
                 </div>
               ` : ""}
             </div>
           </article>
-        `).join("")}
+        `}).join("")}
       </div>
     </section>
   `;
@@ -2882,6 +2955,18 @@ function handleAdminAction(button) {
     return;
   }
 
+  if (button.dataset.adminAction === "request-radar-verification") {
+    const control = getAdminControl();
+    const candidate = control.eventRadarQueue.find((item) => item.id === button.dataset.radarId);
+    if (!candidate) return;
+    candidate.status = "verification";
+    candidate.verificationRequestedAt = new Date().toISOString();
+    addAdminAudit(control, `${candidate.title}: verifica richiesta al team contenuti`);
+    renderAdminDashboard();
+    showToast("Verifica richiesta: resta in coda prima della pubblicazione.", "success");
+    return;
+  }
+
   if (["approve-radar-event", "reject-radar-event"].includes(button.dataset.adminAction)) {
     const control = getAdminControl();
     const candidate = control.eventRadarQueue.find((item) => item.id === button.dataset.radarId);
@@ -3143,6 +3228,23 @@ function placePhotoLabel(place) {
   return "";
 }
 
+function placeUseCase(place) {
+  const text = `${place.name} ${place.category}`.toLowerCase();
+  if (/pub|cocktail|bar|birra|beer|lounge/.test(text)) return "Aperitivo e serata";
+  if (/ristor|trattoria|osteria|pizzeria|food/.test(text)) return "Cena";
+  if (/discoteca|club|live|music/.test(text)) return "Dopo cena";
+  if (/gelato|caffe|caff/.test(text)) return "Pausa veloce";
+  return "Da scoprire";
+}
+
+function placeBusyHint(place) {
+  const text = `${place.name} ${place.category}`.toLowerCase();
+  if (/pub|discoteca|club|cocktail|birra|beer/.test(text)) return "ven-sab";
+  if (/ristor|trattoria|osteria|pizzeria/.test(text)) return "gio-dom";
+  if (/bar|caffe|gelato/.test(text)) return "tutti i giorni";
+  return "weekend";
+}
+
 function visibleMapPlaces(term = "") {
   const source = term ? intelligentPlaces(term) : mapPlaces;
   return scopedPlaces(source);
@@ -3159,6 +3261,7 @@ function renderMapBusinessList() {
         <strong>${place.name}</strong>
         <span>${place.category} - ${formatDistance(place)}</span>
         <small>${[place.address, place.phone, placePhotoLabel(place), place.stats].filter(Boolean).join(" - ")}</small>
+        <small class="destination-insight">Ideale: ${placeUseCase(place)} - Giorni forti: ${placeBusyHint(place)}</small>
       </span>
     </button>
   `).join("");
@@ -3174,7 +3277,7 @@ function rebuildMapMarkers() {
 
   visibleMapPlaces().forEach((place) => {
     const marker = L.marker([place.lat, place.lng], { icon: createMapIcon(place) }).addTo(interactiveMap);
-    marker.bindPopup(`<strong>${place.name}</strong><br>${place.category}<br>${place.address}`, {
+    marker.bindPopup(`<strong>${place.name}</strong><br>${place.category} - ${formatDistance(place)}<br>${place.address}<br><small>Ideale: ${placeUseCase(place)} - ${placeBusyHint(place)}</small><br><a href="${navigationUrl(place)}" target="_blank" rel="noopener">Apri navigatore</a>`, {
       closeButton: false,
       className: "google-popup"
     });
@@ -4099,6 +4202,26 @@ function handleAction(button) {
     if (!next) return;
     if (activeSummerCategory !== "all") renderSummerProgram("all");
     requestAnimationFrame(() => document.querySelector(`#summer-event-${next.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" }));
+    return;
+  }
+
+  if (action === "save-weekend-plan") {
+    const items = currentWeekendEvents().slice(0, 5).map((item) => ({
+      title: item.title,
+      type: "Weekend",
+      date: item.date,
+      place: item.place
+    }));
+    if (!items.length) {
+      showToast("Nessun appuntamento del weekend disponibile.", "info");
+      return;
+    }
+    const total = addDemoItems("events", items);
+    button.textContent = "Weekend salvato";
+    button.classList.add("is-saved");
+    renderDayPlan();
+    renderProfilePanel("events");
+    showToast(`Weekend salvato: ${items.length} appuntamenti nel profilo. Totale eventi: ${total}.`, "success");
     return;
   }
 
