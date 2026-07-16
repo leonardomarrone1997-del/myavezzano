@@ -6,9 +6,10 @@ import vm from "node:vm";
 const root = path.resolve(fileURLToPath(new URL("..", import.meta.url)));
 const output = path.join(root, "public");
 const baseUrl = "https://myavezzano.vercel.app";
-const buildDate = "2026-06-22";
+const buildDate = "2026-07-16";
 const entries = [
   "index.html",
+  "offline.html",
   "eventi.html",
   "coupon.html",
   "mappa.html",
@@ -240,7 +241,6 @@ function eventPage(event) {
             <div><span>Indicazioni</span><strong>${price}</strong></div>
             <div><span>Area</span><strong>${escapeHtml(event.area)}</strong></div>
           </div>
-          <p class="seo-event-attendance"><strong>${eventAttendanceCount(event)}</strong> persone parteciperanno a questo evento</p>
           <div class="seo-actions"><a class="seo-link primary" href="../index.html#events">Salva nell'app</a><a class="seo-link" href="../eventi.html">Torna al calendario</a></div>
         </section>
       </main>
@@ -251,6 +251,7 @@ function eventPage(event) {
 }
 
 function sitemapXml(events) {
+  const upcomingEvents = events.filter((event) => (event.endDate || event.date) >= buildDate);
   const basePages = [
     ["/", "daily", "1.0"],
     ["/eventi.html", "daily", "0.9"],
@@ -261,7 +262,7 @@ function sitemapXml(events) {
   ];
   const urls = [
     ...basePages.map(([pathname, changefreq, priority]) => ({ url: `${baseUrl}${pathname}`, changefreq, priority })),
-    ...events.map((event) => ({ url: `${baseUrl}/eventi/${event.id}.html`, changefreq: "weekly", priority: "0.7", lastmod: event.updatedAt || buildDate }))
+    ...upcomingEvents.map((event) => ({ url: `${baseUrl}/eventi/${event.id}.html`, changefreq: "weekly", priority: "0.7", lastmod: event.updatedAt || buildDate }))
   ];
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

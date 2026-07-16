@@ -1,7 +1,8 @@
-const CACHE_NAME = "myavezzano-v100";
+const CACHE_NAME = "myavezzano-v101";
 const APP_SHELL = [
   "./",
   "./index.html",
+  "./offline.html",
   "./eventi.html",
   "./coupon.html",
   "./mappa.html",
@@ -58,11 +59,13 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put("./index.html", copy));
+          if (response.ok && response.type === "basic") {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+          }
           return response;
         })
-        .catch(() => caches.match("./index.html"))
+        .catch(() => caches.match(event.request).then((cached) => cached || caches.match("./offline.html") || caches.match("./index.html")))
     );
     return;
   }

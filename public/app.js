@@ -285,7 +285,7 @@ let mapPlaces = curatedMapPlaces().concat([
     lat: 42.0545,
     lng: 13.4109,
     address: "Avezzano",
-    stats: "School of Rock 2026",
+    stats: "Eventi estivi",
     image: "https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=500&q=80",
     caption: "Sede per grandi eventi estivi, concerti e appuntamenti live."
   },
@@ -450,6 +450,7 @@ const IS_DEMO = (() => {
   }
 })();
 const NODE_ENV = IS_DEMO ? "development" : "production";
+const IS_PRODUCTION = !IS_DEMO;
 window.MYAVEZZANO_IS_DEMO = IS_DEMO;
 window.MYAVEZZANO_NODE_ENV = NODE_ENV;
 
@@ -717,8 +718,8 @@ const savedProfileCoupons = [
 ];
 
 const savedProfileEvents = [
-  ["School of Rock 2026", "Sab 27 giugno 2026", "Reminder disponibile"],
-  ["Teatro Off: Dopo Cristo", "Gio 9 luglio 2026 - 21:00", "Da prenotare"],
+  ["Io Mimmo M - Omaggio a Modugno", "Gio 23 luglio 2026 - 21:00", "Reminder disponibile"],
+  ["BB Day 2026", "24-26 luglio 2026", "Da verificare"],
   ["Festiv'Alba: Antigone", "Ven 7 agosto 2026", "Salvato in calendario"]
 ];
 
@@ -726,14 +727,14 @@ const userPreferences = ["Eventi", "Sconti", "Nuove aperture", "Ristoranti", "Pa
 
 const pageMeta = {
   feed: {
-    eyebrow: "MyAvezzano live",
-    title: "La città, giorno per giorno",
-    copy: "Eventi, locali, negozi e piccole scoperte di Avezzano raccolti in una schermata semplice, piacevole da aprire e veloce da usare."
+    eyebrow: "MyAvezzano",
+    title: "Cosa succede oggi ad Avezzano?",
+    copy: "Eventi verificati, luoghi e informazioni pratiche per scegliere cosa fare in pochi secondi."
   },
   map: {
-    eyebrow: "Cartografia viva",
-    title: "La città diventa navigabile",
-    copy: "Punti reali, partner verificati e percorsi rapidi: la mappa non decora, serve a trasformare l'interesse in movimento."
+    eyebrow: "Mappa",
+    title: "Trova luoghi utili vicino a te",
+    copy: "Attivita', eventi e punti di interesse ordinati per zona, categoria e distanza."
   },
   events: {
     eyebrow: "Agenda cittadina",
@@ -741,24 +742,24 @@ const pageMeta = {
     copy: "Eventi, sport, ambiente, motori, musica e teatro tra Avezzano e Alba Fucens, con filtri, salvataggi e reminder."
   },
   coupons: {
-    eyebrow: "Valore immediato",
-    title: "Sconti che sembrano oggetti",
-    copy: "Ogni coupon è trattato come un pass: leggibile, riscattabile, salvabile, con QR e punti come parte dell'esperienza."
+    eyebrow: "Coupon",
+    title: "Offerte locali da consultare",
+    copy: "Coupon e promozioni restano esempi finche' non saranno collegati a validazione sicura."
   },
   loyalty: {
-    eyebrow: "Credito locale",
-    title: "La fedeltà diventa patrimonio",
-    copy: "Punti, premi e vantaggi visualizzati come una piccola dashboard finanziaria della vita in città."
+    eyebrow: "Salvati",
+    title: "Preferenze e vantaggi",
+    copy: "Una sezione personale per eventi, coupon e preferenze salvate sul dispositivo."
   },
   profile: {
-    eyebrow: "Pass personale",
-    title: "Il tuo archivio di città",
-    copy: "Preferenze, eventi, coupon, profilo e attività salvate convergono in una sola area personale."
+    eyebrow: "Profilo",
+    title: "Il tuo spazio locale",
+    copy: "Salvataggi, preferenze e impostazioni raccolti in modo semplice."
   },
   merchant: {
-    eyebrow: "Sistema commercianti",
-    title: "Apri una presenza che lavora",
-    copy: "Non una scheda statica: un pannello per pubblicare offerte, leggere segnali e trasformare visibilità in azioni."
+    eyebrow: "Area commercianti",
+    title: "Richiedi accesso al pilot",
+    copy: "La presenza business sara' attivata solo con verifica e servizi sicuri."
   },
   campaign: {
     eyebrow: "Piano pubblicitario",
@@ -797,13 +798,13 @@ const titles = {
 };
 
 const citySignatures = {
-  feed: ["AVZ-01", "Centro / 42.0326 N", "Prima pagina urbana", "12 segnali"],
-  map: ["AVZ-02", "13.4256 E / raggio 2 km", "Carta operativa", "OSM live"],
+  feed: ["AVZ-01", "Centro / 42.0326 N", "Guida eventi", "Aggiornato"],
+  map: ["AVZ-02", "13.4256 E / raggio 2 km", "Mappa", "OSM"],
   events: ["AVZ-03", "Dalle 19:30 / notte", "Palinsesto", "Serate"],
-  coupons: ["AVZ-04", "Valore / QR / punti", "Pass riscattabile", "Attivo"],
-  loyalty: ["AVZ-05", "Saldo / premi / progressi", "Credito locale", "Punti"],
-  profile: ["AVZ-06", "ID personale / archivio", "Tessera cittadina", "Privato"],
-  merchant: ["AVZ-07", "Scheda / campagne / pagamento", "Console business", "B2B"],
+  coupons: ["AVZ-04", "Offerte / QR / negozi", "Promozioni", "Esempi"],
+  loyalty: ["AVZ-05", "Salvataggi / preferenze", "Area personale", "Locale"],
+  profile: ["AVZ-06", "Preferenze / archivio", "Profilo", "Locale"],
+  merchant: ["AVZ-07", "Scheda / pilot / verifica", "Business", "Pilot"],
   campaign: ["AVZ-MKT", "QR / vetrine / eventi", "Piano città", "Territorio"],
   admin: ["AVZ-ADM", "Dati / utenti / controllo", "Cabina di regia", "Riservato"],
   summer: ["AVZ-26", "Estate / tappe / luce", "Itinerario", "2026"],
@@ -1156,9 +1157,11 @@ function applyEnvironmentVisibility() {
   document.querySelectorAll("[data-demo-only]").forEach((node) => {
     node.hidden = !IS_DEMO;
   });
+  document.body.classList.toggle("production-trust-mode", IS_PRODUCTION);
 }
 
 function cityPulseSnapshot() {
+  if (IS_PRODUCTION) return [];
   const adminControl = getAdminControl();
   if (!adminControl.pulseEnabled) return [];
   const hour = new Date().getHours();
@@ -1206,6 +1209,7 @@ function renderCityPulseLayer() {
   if (!interactiveMap || !window.L) return;
   if (cityPulseLayer) cityPulseLayer.remove();
   cityPulseMarkers.clear();
+  if (IS_PRODUCTION) return;
   cityPulseLayer = L.layerGroup().addTo(interactiveMap);
   cityPulseSnapshot().forEach((zone) => {
     const color = pulseColor(zone.kind);
@@ -1238,6 +1242,7 @@ function renderCityPulse() {
 }
 
 function getLastMinuteState() {
+  if (IS_PRODUCTION) return { day: currentDateKey(), deadlines: {} };
   const today = currentDateKey();
   let state;
   try {
@@ -1294,6 +1299,19 @@ function updateLastMinuteCountdowns() {
 }
 
 function renderLastMinuteDeals() {
+  if (IS_PRODUCTION) {
+    document.querySelector(".last-minute-panel")?.toggleAttribute("hidden", true);
+    document.querySelector(".last-minute-section")?.toggleAttribute("hidden", true);
+    const home = document.querySelector("#lastMinuteHome");
+    const grid = document.querySelector("#lastMinuteGrid");
+    if (home) home.innerHTML = "";
+    if (grid) grid.innerHTML = "";
+    if (lastMinuteCountdownTimer) {
+      window.clearInterval(lastMinuteCountdownTimer);
+      lastMinuteCountdownTimer = 0;
+    }
+    return;
+  }
   const state = getLastMinuteState();
   const adminControl = getAdminControl();
   const visibleDeals = adminControl.lastMinuteEnabled
@@ -1529,6 +1547,15 @@ function eventAttendanceCount(item) {
   return categoryBase + (hash % 137);
 }
 
+function eventAttendanceMarkup(item) {
+  if (IS_PRODUCTION || item.past) return "";
+  return `
+          <p class="agenda-attendance" data-event-attendance="${item.id}">
+            <strong>${eventAttendanceCount(item)}</strong> persone parteciperanno a questo evento
+          </p>
+        `;
+}
+
 function eventCardMarkup(item, { compact = false, idPrefix = "event" } = {}) {
   const parts = eventDayParts(item);
   const search = [item.title, item.place, item.area, item.category, item.detail, item.price].join(" ").toLowerCase();
@@ -1553,11 +1580,7 @@ function eventCardMarkup(item, { compact = false, idPrefix = "event" } = {}) {
         <p class="agenda-place">${item.place}</p>
         <p>${item.detail}</p>
         ${isImportant && !item.past ? `<p class="agenda-importance"><span aria-hidden="true"></span> Evento importante</p>` : ""}
-        ${item.past ? "" : `
-          <p class="agenda-attendance" data-event-attendance="${item.id}">
-            <strong>${eventAttendanceCount(item)}</strong> persone parteciperanno a questo evento
-          </p>
-        `}
+        ${eventAttendanceMarkup(item)}
         <div class="agenda-event-footer">
           <span class="agenda-price">${item.price}</span>
           ${item.past ? "" : `
@@ -1603,6 +1626,7 @@ function renderHomeEventFocus() {
     return;
   }
   const parts = eventDayParts(item);
+  const attendanceText = IS_DEMO ? ` - ${eventAttendanceCount(item)} interessati` : "";
   const extraAvezzanoToday = avezzanoToday.filter((event) => event.id !== item.id);
   const headingLabel = avezzanoToday.length ? "Oggi ad Avezzano" : nearbyToday.length ? "Oggi nei dintorni" : nextAvezzano ? "Prossimo ad Avezzano" : "Prossimo nella Marsica";
   panel.hidden = false;
@@ -1617,7 +1641,7 @@ function renderHomeEventFocus() {
       <button class="save-action" data-action="save-event" data-event-id="${item.id}" data-title="${item.title}" type="button">Salva</button>
     </div>
     <div class="tonight-plan-strip">
-      <span><strong>Piano rapido</strong> ${item.price || "Info evento"} - ${eventAttendanceCount(item)} interessati</span>
+      <span><strong>Piano rapido</strong> ${item.price || "Info evento"}${attendanceText}</span>
       ${dinnerSpot ? `<button class="ghost compact-button" data-action="open-map-place" data-place="${dinnerSpot.name}" type="button">Locale vicino</button>` : ""}
       <a class="ghost compact-button" href="eventi/${item.id}.html">Dettagli</a>
     </div>
@@ -1910,7 +1934,7 @@ function render() {
           <div class="qr" aria-label="QR code coupon ${title}">
             <img src="${couponQrDataUri(couponCode || qrSrc)}" alt="QR coupon ${title} - ${place}" loading="lazy" decoding="async" />
           </div>
-          <span class="qr-validity-label">QR univoco</span>
+          <span class="qr-validity-label">${IS_DEMO ? "QR univoco" : "Esempio QR"}</span>
           <span class="coupon-code-label">${couponCode}</span>
         </div>
       </div>
@@ -2344,6 +2368,38 @@ function renderMerchantArea() {
   const paywall = document.querySelector("#merchantPaywall");
   const dashboard = document.querySelector("#merchantDashboard");
   if (!paywall || !dashboard) return;
+
+  if (IS_PRODUCTION) {
+    paywall.hidden = false;
+    dashboard.hidden = true;
+    paywall.innerHTML = `
+      <section class="merchant-pricing-hero">
+        <p class="eyebrow">Area commercianti</p>
+        <h2>Fatti trovare quando le persone decidono dove andare.</h2>
+        <p>In questa versione pubblica non sono attivi pagamenti, abbonamenti o fatture automatiche. Puoi richiedere accesso al pilot o rivendicare la tua attivita': ti ricontatteremo quando sara' disponibile il backend commerciale.</p>
+        <div class="merchant-plan-grid">
+          <article class="merchant-plan-card highlighted">
+            <span class="pill success">Pilot locale</span>
+            <h3>Richiedi accesso</h3>
+            <p>Scheda attivita', eventi, offerte e coupon validabili saranno attivati solo con servizi sicuri.</p>
+            <ul>
+              <li>Nessun pagamento simulato</li>
+              <li>Nessun dato fiscale salvato nel browser</li>
+              <li>Attivazione manuale e verificata</li>
+            </ul>
+            <button class="primary-action full-button" data-action="merchant-pilot-request" type="button">Richiedi accesso</button>
+          </article>
+          <article class="merchant-plan-card">
+            <span class="pill">Attivita' esistente</span>
+            <h3>Rivendica la tua attivita'</h3>
+            <p>Segnala il tuo locale o negozio per correggere informazioni, foto, orari e contatti.</p>
+            <button class="ghost full-button" data-action="merchant-pilot-request" type="button">Rivendica attivita'</button>
+          </article>
+        </div>
+      </section>
+    `;
+    return;
+  }
 
   paywall.hidden = hasActiveMerchantPlan;
   dashboard.hidden = !hasActiveMerchantPlan;
@@ -3314,9 +3370,9 @@ function handleAdminAction(button) {
 }
 
 const legalCopy = {
-  privacy: ["Privacy Policy", "MyAvezzano MVP salva dati account, preferenze, coupon ed eventi in storage locale del browser. In produzione i dati saranno trattati su server sicuro con consenso, finalità esplicite e strumenti di cancellazione."],
-  terms: ["Termini e condizioni", "La versione attuale mostra funzioni locali per utenti, commercianti e amministratori. Coupon, pagamenti, prenotazioni e statistiche diventano operativi solo quando collegati a servizi certificati."],
-  cookies: ["Cookie Policy", "La versione statica non usa cookie di tracciamento proprietari. Usa localStorage per sessione, preferenze, cache locale e PWA. Servizi esterni come mappe o immagini possono applicare proprie policy."]
+  privacy: ["Privacy Policy", "MyAvezzano e' un progetto indipendente, non affiliato al Comune di Avezzano. La versione pubblica non attiva registrazione, checkout o raccolta di dati fiscali senza un backend sicuro. Le preferenze tecniche possono essere salvate nel browser per tema, PWA e salvataggi locali. Prima del lancio commerciale servira' una revisione legale con titolare, contatti ufficiali, finalita', basi giuridiche, tempi di conservazione, fornitori, diritti di accesso/cancellazione ed export."],
+  terms: ["Termini e condizioni", "MyAvezzano mostra eventi, luoghi, coupon e materiali informativi. Le funzioni di account, pagamenti, fatture, QR personali, prenotazioni, notifiche inviate e statistiche commerciali sono operative solo quando collegate a servizi certificati e verifiche server-side. Le informazioni sugli eventi vanno sempre controllate con la fonte ufficiale indicata."],
+  cookies: ["Cookie Policy", "La versione statica non usa cookie di tracciamento proprietari. Puo' usare localStorage per preferenze tecniche, tema, salvataggi locali e cache PWA. Mappe, immagini o link esterni possono applicare proprie policy. Prima della produzione commerciale serviranno consenso, registro fornitori e gestione preferenze se verranno introdotti strumenti di analytics o marketing."]
 };
 
 function renderLegalPanel(tab = "privacy") {
@@ -3332,7 +3388,7 @@ function renderLegalPanel(tab = "privacy") {
     <p>${text}</p>
     <div class="settings-list">
       <div class="profile-row"><div><strong>Titolare account</strong><span>MyAvezzano</span></div><span class="pill">Locale</span></div>
-      <div class="profile-row"><div><strong>Ultimo aggiornamento</strong><span>5 giugno 2026</span></div><span class="pill success">Attivo</span></div>
+      <div class="profile-row"><div><strong>Ultimo aggiornamento</strong><span>16 luglio 2026</span></div><span class="pill success">Da revisionare legalmente</span></div>
     </div>
   `;
 }
@@ -4330,6 +4386,12 @@ function handleAction(button) {
     return;
   }
 
+  if (action === "merchant-pilot-request") {
+    showToast("Richiesta non inviata: collega prima un modulo o un backend commerciale sicuro.", "info");
+    setMerchantFeedback("Canale pilot in preparazione. Non raccogliamo dati commerciali o fiscali in questa versione pubblica.", "info");
+    return;
+  }
+
   if (action === "create-reminder") {
     const total = addDemoItem("reminders", { title: "Reminder eventi di stasera" });
     renderDayPlan();
@@ -5188,6 +5250,11 @@ function setAuthMode(mode) {
 }
 
 function openSignup(mode = "register") {
+  if (IS_PRODUCTION) {
+    showToast("Account in preparazione: non raccogliamo dati personali in questa versione pubblica.", "info");
+    switchView("profile");
+    return;
+  }
   const user = getStoredUser();
   authOverlay.classList.add("active");
   authOverlay.setAttribute("aria-hidden", "false");
@@ -5238,6 +5305,11 @@ function updateAuthUi() {
 }
 
 async function completeRegistration(provider, details = {}) {
+  if (IS_PRODUCTION) {
+    setFeedback("Registrazione disattivata nella versione pubblica finche' non sara' collegato un backend sicuro.", "info");
+    showToast("Account in preparazione: nessun dato personale viene salvato.", "info");
+    return;
+  }
   const name = details.name || provider;
   const email = (details.email || "").toLowerCase();
   const users = getUsers();
@@ -5356,6 +5428,10 @@ document.querySelector("#phoneSignupMode").addEventListener("click", () => {
 });
 
 createAccountButton.addEventListener("click", async () => {
+  if (IS_PRODUCTION) {
+    setFeedback("Registrazione disattivata nella versione pubblica: il backend sicuro e' in preparazione.", "info");
+    return;
+  }
   const name = signupName.value.trim();
   const surname = signupSurname.value.trim();
   const email = signupEmail.value.trim().toLowerCase();
@@ -5441,6 +5517,10 @@ createAccountButton.addEventListener("click", async () => {
 });
 
 loginAccountButton.addEventListener("click", async () => {
+  if (IS_PRODUCTION) {
+    setFeedback("Login disattivato nella versione pubblica: gli account reali saranno attivati con backend sicuro.", "info");
+    return;
+  }
   const email = signupEmail.value.trim().toLowerCase();
   const password = signupPassword.value.trim();
   const user = getUsers().find((item) => item.email.toLowerCase() === email);
@@ -5473,6 +5553,10 @@ loginAccountButton.addEventListener("click", async () => {
 });
 
 recoverPasswordButton.addEventListener("click", () => {
+  if (IS_PRODUCTION) {
+    setFeedback("Recupero password non disponibile nella versione pubblica senza servizio email sicuro.", "info");
+    return;
+  }
   const email = signupEmail.value.trim().toLowerCase();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     setFeedback("Inserisci la tua email per recuperare la password.", "error");
@@ -5534,6 +5618,12 @@ document.querySelector("#profilePhotoInput").addEventListener("change", (event) 
 
 document.querySelectorAll(".start-plan").forEach((button) => {
   button.addEventListener("click", () => {
+    if (IS_PRODUCTION) {
+      merchantCheckout.hidden = true;
+      setMerchantFeedback("Pagamenti e abbonamenti non sono attivi nella versione pubblica. Usa la richiesta accesso al pilot.", "info");
+      showToast("Area commercianti in preparazione: nessun checkout demo in produzione.", "info");
+      return;
+    }
     const user = getStoredUser();
     selectedMerchantPlan = {
       plan: button.dataset.plan,
@@ -5555,6 +5645,10 @@ document.querySelectorAll(".start-plan").forEach((button) => {
 });
 
 document.querySelector("#confirmMerchantPayment").addEventListener("click", () => {
+  if (IS_PRODUCTION) {
+    setMerchantFeedback("Checkout disattivato: abbonamenti, pagamenti e fatture richiedono backend e gateway sicuri.", "info");
+    return;
+  }
   const user = getStoredUser();
   const businessName = document.querySelector("#merchantBusinessName").value.trim();
   const category = document.querySelector("#merchantBusinessCategory").value.trim();
@@ -5619,6 +5713,10 @@ document.querySelector("#confirmMerchantPayment").addEventListener("click", () =
 });
 
 document.querySelector("#cancelMerchantPlan").addEventListener("click", () => {
+  if (IS_PRODUCTION) {
+    setMerchantFeedback("Nessun piano reale da annullare nella versione pubblica.", "info");
+    return;
+  }
   localStorage.removeItem(MERCHANT_STORAGE_KEY);
   merchantCheckout.hidden = true;
   setMerchantFeedback("Piano annullato.", "info");
@@ -5626,6 +5724,10 @@ document.querySelector("#cancelMerchantPlan").addEventListener("click", () => {
 });
 
 document.querySelector("#downloadMerchantInvoice")?.addEventListener("click", () => {
+  if (IS_PRODUCTION) {
+    showToast("Fatture non disponibili nella versione pubblica senza backend fiscale.", "info");
+    return;
+  }
   const subscription = getMerchantSubscription();
   if (!subscription) return;
   const blob = new Blob([merchantInvoiceHtml(subscription)], { type: "text/html;charset=utf-8" });
@@ -5641,6 +5743,10 @@ document.querySelector("#downloadMerchantInvoice")?.addEventListener("click", ()
 });
 
 document.querySelector("#printMerchantInvoice")?.addEventListener("click", () => {
+  if (IS_PRODUCTION) {
+    showToast("Fatture non disponibili nella versione pubblica senza backend fiscale.", "info");
+    return;
+  }
   const subscription = getMerchantSubscription();
   if (!subscription) return;
   const win = window.open("", "_blank", "noopener,noreferrer");
