@@ -1063,8 +1063,8 @@ function intelligenceInsights() {
 function smartHomeCards() {
   const topFood = intelligentPlaces("ristorante aperto", 1)[0];
   const topShopping = intelligentPlaces("shopping coupon", 1)[0];
-  const today = new Date().toISOString().slice(0, 10);
-  const liveEvent = calendarEvents.find((item) => (item.endDate || item.date) >= today) || calendarEvents[0];
+  const today = currentDateKey();
+  const liveEvent = sortEventsByCurrentDate(calendarEvents.filter((item) => eventIsHomeCandidate(item, today)), today)[0] || calendarEvents[0];
   return [
     {
       label: "Consiglio ora",
@@ -1330,6 +1330,36 @@ function dateKey(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
+function eventDurationDays(item) {
+  if (!item.endDate) return 1;
+  return Math.max(1, Math.round((eventDate(item.endDate) - eventDate(item.date)) / 86400000) + 1);
+}
+
+function isLongRunningProgram(item) {
+  const text = [item.title, item.time, item.detail, item.price, item.category].filter(Boolean).join(" ").toLowerCase();
+  return eventDurationDays(item) > 7 || /date variabili|orari vari|centro estivo|centri estivi|iscrizioni|programma|voucher/.test(text);
+}
+
+function eventStartsOnOrAfter(item, referenceKey = currentDateKey()) {
+  return item.date >= referenceKey;
+}
+
+function eventIsLiveToday(item, referenceKey = currentDateKey()) {
+  return !isLongRunningProgram(item) && item.date <= referenceKey && (item.endDate || item.date) >= referenceKey;
+}
+
+function eventIsHomeCandidate(item, referenceKey = currentDateKey()) {
+  return eventIsLiveToday(item, referenceKey) || eventStartsOnOrAfter(item, referenceKey);
+}
+
+function eventSortDate(item, referenceKey = currentDateKey()) {
+  return eventIsLiveToday(item, referenceKey) ? referenceKey : item.date;
+}
+
+function sortEventsByCurrentDate(items, referenceKey = currentDateKey()) {
+  return [...items].sort((a, b) => eventSortDate(a, referenceKey).localeCompare(eventSortDate(b, referenceKey)) || a.time.localeCompare(b.time));
+}
+
 function selectedTownLabel() {
   return activeTown === "all" ? "Marsica" : activeTown;
 }
@@ -1368,12 +1398,13 @@ function weekendWindow(referenceKey = currentDateKey()) {
 }
 
 function eventOverlapsRange(item, start, end) {
+  if (isLongRunningProgram(item)) return item.date >= start && item.date <= end;
   return item.date <= end && (item.endDate || item.date) >= start;
 }
 
 function currentWeekendEvents() {
   const { start, end } = weekendWindow();
-  return scopedEvents(calendarEvents.filter((item) => eventOverlapsRange(item, start, end)));
+  return sortEventsByCurrentDate(scopedEvents(calendarEvents.filter((item) => eventOverlapsRange(item, start, end))));
 }
 
 function nearbyEvents() {
@@ -1382,8 +1413,8 @@ function nearbyEvents() {
 }
 
 function groupEventsByMonth(items) {
-  return items.reduce((months, item) => {
-    const date = eventDate(item.date);
+  return sortEventsByCurrentDate(items).reduce((months, item) => {
+    const date = eventDate(eventSortDate(item));
     const key = `${date.getFullYear()}-${date.getMonth()}`;
     if (!months[key]) {
       months[key] = {
@@ -1409,7 +1440,7 @@ function eventAgendaMarkup(items, { idPrefix = "event" } = {}) {
 }
 
 function eventMatchesFilter(item, filter) {
-  if (filter === "all") return !item.past;
+  if (filter === "all") return !item.past && eventIsHomeCandidate(item);
   if (filter === "archivio") return Boolean(item.past);
   if (item.past) return false;
   if (filter === "weekend") {
@@ -1505,19 +1536,26 @@ function renderHomeEventFocus() {
   const panel = document.querySelector("#homeEventFocus");
   if (!panel) return;
   const today = currentDateKey();
-  const townEvents = scopedEvents(calendarEvents);
-  const todayEvents = townEvents.filter((item) => item.date <= today && (item.endDate || item.date) >= today);
-  const item = todayEvents[0] || townEvents.find((event) => (event.endDate || event.date) >= today);
+  const avezzanoEvents = sortEventsByCurrentDate(calendarEvents.filter((item) => item.area === "Avezzano"), today);
+  const nearbyTownEvents = sortEventsByCurrentDate(calendarEvents.filter((item) => item.area !== "Avezzano" && coverageTowns.includes(item.area)), today);
+  const avezzanoToday = avezzanoEvents.filter((item) => eventIsLiveToday(item, today));
+  const nearbyToday = nearbyTownEvents.filter((item) => eventIsLiveToday(item, today));
+  const nextAvezzano = avezzanoEvents.find((event) => eventStartsOnOrAfter(event, today));
+  const nextNearby = nearbyTownEvents.find((event) => eventStartsOnOrAfter(event, today));
+  const item = avezzanoToday[0] || nearbyToday[0] || nextAvezzano || nextNearby;
+  const nextSuggested = sortEventsByCurrentDate([nextAvezzano, nextNearby].filter((event) => event && event.id !== item?.id), today)[0];
   const dinnerSpot = scopedPlaces(intelligentPlaces("cena")).find((place) => /ristor|trattoria|osteria|food|pub|bar/i.test(`${place.category} ${place.name}`)) || scopedPlaces(mapPlaces)[0];
   if (!item) {
     panel.hidden = true;
     return;
   }
   const parts = eventDayParts(item);
+  const extraAvezzanoToday = avezzanoToday.filter((event) => event.id !== item.id);
+  const headingLabel = avezzanoToday.length ? "Oggi ad Avezzano" : nearbyToday.length ? "Oggi nei dintorni" : nextAvezzano ? "Prossimo ad Avezzano" : "Prossimo nella Marsica";
   panel.hidden = false;
   panel.innerHTML = `
     <div class="home-event-heading">
-      <div><p class="eyebrow">Cosa si fa questa sera?</p><strong>${todayEvents.length ? `Oggi a ${selectedTownLabel()}` : `Prossimo a ${selectedTownLabel()}`}</strong></div>
+      <div><p class="eyebrow">Cosa si fa questa sera?</p><strong>${headingLabel}</strong></div>
       <button class="ghost compact-button" data-view-target="events" type="button">Calendario</button>
     </div>
     <div class="home-event-main">
@@ -1530,6 +1568,39 @@ function renderHomeEventFocus() {
       ${dinnerSpot ? `<button class="ghost compact-button" data-action="open-map-place" data-place="${dinnerSpot.name}" type="button">Locale vicino</button>` : ""}
       <a class="ghost compact-button" href="eventi/${item.id}.html">Dettagli</a>
     </div>
+    ${extraAvezzanoToday.length ? `
+      <div class="today-more-events" aria-label="Altri eventi di oggi">
+        <span>Altri eventi oggi ad Avezzano</span>
+        ${extraAvezzanoToday.slice(0, 3).map((event) => `
+          <button class="today-more-event" data-action="save-event" data-event-id="${event.id}" data-title="${event.title}" type="button">
+            <strong>${event.time}</strong>
+            <span>${event.title}</span>
+          </button>
+        `).join("")}
+        ${extraAvezzanoToday.length > 3 ? `<button class="today-more-link" data-view-target="events" type="button">+${extraAvezzanoToday.length - 3}</button>` : ""}
+      </div>
+    ` : ""}
+    ${nearbyToday.length ? `
+      <div class="today-more-events nearby" aria-label="Eventi di oggi nei comuni limitrofi">
+        <span>Oggi nei comuni vicini</span>
+        ${nearbyToday.slice(0, 3).map((event) => `
+          <button class="today-more-event" data-action="save-event" data-event-id="${event.id}" data-title="${event.title}" type="button">
+            <strong>${event.area}</strong>
+            <span>${event.title}</span>
+          </button>
+        `).join("")}
+        ${nearbyToday.length > 3 ? `<button class="today-more-link" data-view-target="events" type="button">+${nearbyToday.length - 3}</button>` : ""}
+      </div>
+    ` : ""}
+    ${nextSuggested && nextSuggested.id !== item.id ? `
+      <div class="next-suggestion" aria-label="Prossimo evento consigliato">
+        <span>Prossimo consigliato</span>
+        <button data-action="save-event" data-event-id="${nextSuggested.id}" data-title="${nextSuggested.title}" type="button">
+          <strong>${eventRangeLabel(nextSuggested)} · ${nextSuggested.area}</strong>
+          <small>${nextSuggested.title}</small>
+        </button>
+      </div>
+    ` : ""}
   `;
   hydrateLazyMedia(panel, true);
 }
@@ -1564,9 +1635,9 @@ function renderTonightAgenda() {
   if (!grid || !heading || !copy) return;
 
   const today = currentDateKey();
-  const townEvents = scopedEvents(calendarEvents);
-  const todayEvents = townEvents.filter((item) => item.date <= today && (item.endDate || item.date) >= today);
-  const visible = todayEvents.length ? todayEvents : townEvents.filter((item) => (item.endDate || item.date) >= today).slice(0, 1);
+  const townEvents = sortEventsByCurrentDate(scopedEvents(calendarEvents), today);
+  const todayEvents = townEvents.filter((item) => eventIsLiveToday(item, today));
+  const visible = todayEvents.length ? todayEvents : townEvents.filter((item) => eventStartsOnOrAfter(item, today)).slice(0, 1);
 
   if (!visible.length) {
     heading.textContent = "Cartellone 2026 concluso";
@@ -1608,6 +1679,7 @@ function ensureEventsViewRendered() {
 }
 
 function summerEventMatchesFilter(item, filter) {
+  if (!eventIsHomeCandidate(item)) return false;
   if (filter === "all") return true;
   if (filter === "avezzano") return item.area === "Avezzano";
   if (filter === "alba") return item.area === "Alba Fucens";
@@ -1617,8 +1689,8 @@ function summerEventMatchesFilter(item, filter) {
 
 function nextSummerEvent() {
   const today = currentDateKey();
-  const townEvents = scopedEvents(summerEvents);
-  return townEvents.find((item) => (item.endDate || item.date) >= today) || townEvents[0] || summerEvents[0];
+  const townEvents = sortEventsByCurrentDate(scopedEvents(summerEvents), today);
+  return townEvents.find((item) => eventStartsOnOrAfter(item, today)) || townEvents.find((item) => eventIsLiveToday(item, today)) || townEvents[0] || summerEvents[0];
 }
 
 function renderSummerHomeBand() {
@@ -1633,10 +1705,11 @@ function renderSummerHomeBand() {
 }
 
 function renderSummerMetrics() {
-  const scopedSummer = scopedEvents(summerEvents);
-  document.querySelector("#summerEventCount").textContent = scopedSummer.length || summerEvents.length;
-  document.querySelector("#summerAvezzanoCount").textContent = summerEvents.filter((item) => item.area === "Avezzano").length;
-  document.querySelector("#summerAlbaCount").textContent = summerEvents.filter((item) => item.area === "Alba Fucens").length;
+  const upcomingSummer = summerEvents.filter((item) => eventIsHomeCandidate(item));
+  const scopedSummer = scopedEvents(upcomingSummer);
+  document.querySelector("#summerEventCount").textContent = scopedSummer.length || upcomingSummer.length;
+  document.querySelector("#summerAvezzanoCount").textContent = upcomingSummer.filter((item) => item.area === "Avezzano").length;
+  document.querySelector("#summerAlbaCount").textContent = upcomingSummer.filter((item) => item.area === "Alba Fucens").length;
 }
 
 function renderSummerFilters() {
