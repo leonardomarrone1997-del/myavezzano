@@ -676,7 +676,17 @@ let activeSummerCategory = "all";
 const coupons = [
   ["Aperitivo 2x1", "Caffè Risorgimento", "Scade oggi alle 20:00", "35 punti", "assets/coupons/aperitivo-2x1.svg", "AVZ-APERITIVO-2X1", "bar"],
   ["-20% nuova collezione", "Atelier Marsica", "Valido fino a domenica", "80 usi rimasti", "assets/coupons/atelier-marsica-20.svg", "AVZ-MARSICA-20", "negozi"],
-  ["Ingresso prova gratuito", "FitLab Avezzano", "Prenota entro 48 ore", "50 punti", "assets/coupons/fitlab-prova-gratis.svg", "AVZ-FITLAB-PROVA", "servizi"]
+  ["Ingresso prova gratuito", "FitLab Avezzano", "Prenota entro 48 ore", "50 punti", "assets/coupons/fitlab-prova-gratis.svg", "AVZ-FITLAB-PROVA", "servizi"],
+  ["-15% cena per due", "Osteria Molo 7", "Valido da lunedi a giovedi", "120 usi rimasti", "assets/coupons/aperitivo-2x1.svg", "AVZ-MOLO7-CENA15", "ristoranti"],
+  ["Dolce omaggio", "Renzo e Caterina", "Mostra il QR dopo cena", "60 punti", "assets/coupons/fitlab-prova-gratis.svg", "AVZ-RENZO-DOLCE", "ristoranti"],
+  ["Menu pizza + bibita", "L'Acquario", "Disponibile stasera", "95 usi rimasti", "assets/coupons/aperitivo-2x1.svg", "AVZ-ACQUARIO-PIZZA", "ristoranti"],
+  ["Cocktail signature -20%", "Bar Fantasy", "Valido fino alle 23:30", "45 punti", "assets/coupons/aperitivo-2x1.svg", "AVZ-FANTASY-20", "bar"],
+  ["Colazione smart", "Caffe dei Marsi", "Cappuccino + cornetto", "30 punti", "assets/coupons/fitlab-prova-gratis.svg", "AVZ-MARSI-BREAK", "bar"],
+  ["-10% scarpe e accessori", "Boutique Avezzano", "Valido fino a sabato", "70 usi rimasti", "assets/coupons/atelier-marsica-20.svg", "AVZ-BOUTIQUE-10", "negozi"],
+  ["Extra saldo weekend", "Dell'Olio 1920", "Solo con QR MyAvezzano", "55 punti", "assets/coupons/atelier-marsica-20.svg", "AVZ-DELLOLIO-WEEKEND", "negozi"],
+  ["Check postura gratuito", "Studio Wellness Marsica", "Prenotazione richiesta", "Servizio gratuito", "assets/coupons/fitlab-prova-gratis.svg", "AVZ-WELLNESS-POSTURA", "servizi"],
+  ["Piega express -25%", "Beauty Lab Centro", "Valido martedi e mercoledi", "40 punti", "assets/coupons/atelier-marsica-20.svg", "AVZ-BEAUTY-PIEGA25", "servizi"],
+  ["Ingresso serata ridotto", "Discoteca Astra", "Valido entro le 00:30", "Lista MyAvezzano", "assets/coupons/aperitivo-2x1.svg", "AVZ-ASTRA-LISTA", "bar"]
 ];
 
 const cityPulseZones = [
