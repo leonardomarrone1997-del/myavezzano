@@ -1,5 +1,5 @@
 import { createServer } from "node:http";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -70,12 +70,29 @@ async function assertOkAsset(page, baseUrl, assetPath) {
   if (!response.ok()) fail(`asset non raggiungibile: ${assetPath} (${response.status()})`);
 }
 
+async function readPublicText(relativePath) {
+  return readFile(path.join(publicDir, relativePath), "utf8");
+}
+
 const server = createStaticServer();
 await new Promise((resolve) => server.listen(port, "127.0.0.1", resolve));
 
 const baseUrl = `http://127.0.0.1:${port}`;
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+const consoleErrors = [];
+
+page.on("console", (message) => {
+  if (message.type() === "error") consoleErrors.push(message.text());
+});
+page.on("pageerror", (error) => consoleErrors.push(error.message));
+
+async function gotoChecked(target, label) {
+  const start = consoleErrors.length;
+  await page.goto(target, { waitUntil: "networkidle" });
+  const newErrors = consoleErrors.slice(start);
+  if (newErrors.length) fail(`${label} ha errori console: ${newErrors.join(" | ")}`);
+}
 
 try {
   const forbiddenPublicText = [
@@ -91,24 +108,31 @@ try {
     "annulla demo",
     "street green fest",
     "stracittadina",
-    "school of rock"
+    "school of rock",
+    "caff\u00e8 risorgimento",
+    "2 tavoli aperitivo",
+    "bakery marsica",
+    "coupon benvenuto",
+    "aperitivo lungo in centro",
+    "saldi weekend",
+    "fitlab avezzano"
   ];
 
-  await page.goto(`${baseUrl}/?prod=1`, { waitUntil: "networkidle" });
+  await gotoChecked(`${baseUrl}/?prod=1`, "home produzione");
   if (await page.evaluate(() => window.MYAVEZZANO_IS_DEMO)) fail("la modalità produzione locale non è attiva con ?prod=1");
   await textMustNotContain(page, forbiddenPublicText, "home produzione");
 
   const profileCounts = await page.locator("#homeProfileCoupons, #homeProfileEvents, #homeProfilePoints").evaluateAll((nodes) => nodes.map((node) => node.textContent?.trim()));
   if (profileCounts.some((value) => value !== "0")) fail(`profilo ospite non vuoto in home: ${profileCounts.join(", ")}`);
 
-  await page.goto(`${baseUrl}/?prod=1`, { waitUntil: "networkidle" });
+  await gotoChecked(`${baseUrl}/?prod=1`, "home produzione");
   await page.locator("[data-view-target='coupons']:visible").first().click();
   await page.locator("#couponsGrid .coupon-card").first().waitFor({ state: "visible", timeout: 5000 });
   await textMustNotContain(page, forbiddenPublicText, "coupon produzione");
   if (await page.locator("text=QR dimostrativo non valido").count() < 1) fail("manca etichetta QR dimostrativo non valido");
   if (await page.locator("button:visible", { hasText: "Scansiona QR" }).count() > 0) fail("azione scansione QR visibile in produzione");
 
-  await page.goto(`${baseUrl}/?prod=1#events`, { waitUntil: "networkidle" });
+  await gotoChecked(`${baseUrl}/?prod=1#events`, "eventi produzione");
   await textMustNotContain(page, forbiddenPublicText, "eventi produzione");
   if (await page.locator(".agenda-trust").count() < 1) fail("mancano campi fiducia evento");
   if (await page.locator("button[data-action='event-reminder']").count() > 0) fail("promemoria simulato visibile in produzione");
@@ -120,7 +144,7 @@ try {
   const demoState = await page.evaluate(() => localStorage.getItem("myavezzano_demo_state_v1"));
   if (demoState) fail("lo stato demo è stato scritto in produzione");
 
-  await page.goto(`${baseUrl}/?prod=1#profile`, { waitUntil: "networkidle" });
+  await gotoChecked(`${baseUrl}/?prod=1#profile`, "profilo produzione");
   const profileCouponCount = await page.locator("#profileCouponCount").innerText();
   const profilePointCount = await page.locator("#profilePointCount").innerText();
   if (profileCouponCount.trim() !== "0" || profilePointCount.trim() !== "0") {
@@ -142,6 +166,50 @@ try {
   const serviceWorkerText = await (await page.request.get(`${baseUrl}/service-worker.js`)).text();
   if (/v=100|v=101|__BUILD_VERSION__/.test(serviceWorkerText)) fail("service worker contiene versioni obsolete o token non sostituiti");
 
+  const indexText = await readPublicText("index.html");
+  const indexVersion = indexText.match(/styles\.css\?v=([a-z0-9.-]+)/i)?.[1];
+  const appVersion = indexText.match(/app\.js\?v=([a-z0-9.-]+)/i)?.[1];
+  const workerVersion = serviceWorkerText.match(/myavezzano-([a-z0-9.-]+)/i)?.[1];
+  if (!indexVersion || !appVersion || !workerVersion || indexVersion !== appVersion || indexVersion !== workerVersion) {
+    fail(`versioni asset non allineate: css ${indexVersion}, app ${appVersion}, sw ${workerVersion}`);
+  }
+
+  const estateText = await readPublicText("estate-2026.html");
+  if (!estateText.includes('id="summerSeoEvents"')) fail("estate-2026 non contiene la sezione eventi generata");
+  if (/"@type":\s*"Event"/.test(estateText)) fail("estate-2026 contiene Event JSON-LD statico non verificato");
+
+  const eventFiles = (await readdir(path.join(publicDir, "eventi"))).filter((file) => file.endsWith(".html"));
+  let verifiedPages = 0;
+  let unverifiedPages = 0;
+  const unverifiedUrls = [];
+  for (const file of eventFiles) {
+    const html = await readPublicText(path.join("eventi", file));
+    const hasEventJsonLd = /"@type":\s*"Event"/.test(html);
+    const isIndexable = /<meta name="robots" content="index, follow"/.test(html);
+    const isNoindex = /<meta name="robots" content="noindex, follow"/.test(html);
+    if (/"availability":\s*"https:\/\/schema\.org\/InStock"/.test(html)) fail(`${file} contiene disponibilita InStock fittizia`);
+    if (/"name":\s*"Non disponibile"/.test(html)) fail(`${file} contiene organizer JSON-LD fittizio`);
+    if (!html.includes("Prezzo / Biglietto")) fail(`${file} non mostra il campo prezzo/biglietto`);
+    if (isIndexable && hasEventJsonLd) verifiedPages += 1;
+    if (isNoindex && !hasEventJsonLd) {
+      unverifiedPages += 1;
+      unverifiedUrls.push(`/eventi/${file}`);
+    }
+  }
+  if (!verifiedPages) fail("nessuna pagina evento verificata indicizzabile");
+  if (!unverifiedPages) fail("nessuna pagina evento non verificata con noindex");
+
+  const sitemapText = await readPublicText("sitemap.xml");
+  for (const url of unverifiedUrls) {
+    if (sitemapText.includes(url)) fail(`sitemap contiene evento non verificato: ${url}`);
+  }
+
+  await gotoChecked(`${baseUrl}/?prod=1#events`, "ordine eventi");
+  const eventTitles = await page.locator("#eventsGrid .agenda-event h3").evaluateAll((nodes) => nodes.map((node) => node.textContent?.trim()).filter(Boolean));
+  const lievitoIndex = eventTitles.findIndex((title) => title.includes("Lievito Madre"));
+  const laudatoIndex = eventTitles.findIndex((title) => title.includes("Laudato"));
+  if (lievitoIndex >= 0 && laudatoIndex >= 0 && lievitoIndex > laudatoIndex) fail("gli eventi dello stesso giorno non sono ordinati per ora");
+
   for (const viewport of [
     { width: 320, height: 740 },
     { width: 390, height: 844 },
@@ -149,13 +217,17 @@ try {
     { width: 1440, height: 900 }
   ]) {
     await page.setViewportSize(viewport);
-    await page.goto(`${baseUrl}/?prod=1`, { waitUntil: "networkidle" });
+    await gotoChecked(`${baseUrl}/?prod=1`, "home produzione");
     await assertNoHorizontalOverflow(page, `${viewport.width}px home`);
-    await page.goto(`${baseUrl}/?prod=1#events`, { waitUntil: "networkidle" });
+    await gotoChecked(`${baseUrl}/?prod=1#events`, "eventi produzione");
     await assertNoHorizontalOverflow(page, `${viewport.width}px eventi`);
   }
 
-  await page.goto(`${baseUrl}/?demo=1`, { waitUntil: "networkidle" });
+  for (const pathName of ["/eventi.html", "/estate-2026.html", "/coupon.html", "/mappa.html", "/attivita-locali.html"]) {
+    await gotoChecked(`${baseUrl}${pathName}`, pathName);
+  }
+
+  await gotoChecked(`${baseUrl}/?demo=1`, "modalita demo");
   if (!(await page.evaluate(() => window.MYAVEZZANO_IS_DEMO))) fail("modalità demo non attivabile con ?demo=1");
 
   console.log("Production QA ok: modalità produzione pulita, PWA asset presenti, nessun overflow critico.");

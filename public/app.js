@@ -481,55 +481,55 @@ const quickActions = [
 const cityHighlights = [
   {
     type: "Evento stasera",
-    title: "Aperitivo lungo in centro",
-    place: "Caffè Risorgimento",
+    title: "Esempio promozione serale",
+    place: "Attività dimostrativa",
     when: "Oggi - 19:30",
-    detail: "Drink promo, tavoli disponibili e reminder automatico prima dell'inizio.",
+    detail: "Anteprima non utilizzabile: disponibilità e promozioni richiedono conferma del gestore.",
     image: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1000&q=80",
     cta: "Prenota"
   },
   {
     type: "Sconto",
-    title: "2x1 aperitivo entro le 20:00",
-    place: "Caffè Risorgimento",
-    when: "Scade oggi",
-    detail: "Mostra il QR alla cassa, usa il coupon e accumula punti fedeltà.",
+    title: "Esempio promozione aperitivo",
+    place: "Attività dimostrativa",
+    when: "Anteprima",
+    detail: "Anteprima non utilizzabile: il coupon richiede validazione del gestore.",
     image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1000&q=80",
     cta: "Apri coupon"
   },
   {
     type: "Nuova apertura",
-    title: "Bakery Marsica inaugura sabato",
-    place: "Centro Avezzano",
-    when: "Sabato - 10:00",
-    detail: "Degustazione gratuita, promo lancio e indicazioni rapide per raggiungerla.",
+    title: "Esempio nuova apertura",
+    place: "Attività dimostrativa",
+    when: "Informazione da verificare",
+    detail: "Anteprima non verificata: nessuna apertura o offerta reale pubblicata.",
     image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1000&q=80",
     cta: "Salva"
   },
   {
     type: "Evento in disco",
-    title: "Latin Party al Moon Club",
-    place: "Moon Club",
+    title: "Esempio serata musicale",
+    place: "Attività dimostrativa",
     when: "Oggi - 22:45",
-    detail: "Prevendita digitale, lista tavoli e reminder per l'ingresso.",
+    detail: "Anteprima evento non utilizzabile finché non viene collegata una fonte ufficiale.",
     image: "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1000&q=80",
     cta: "Dettagli"
   },
   {
     type: "Shopping",
-    title: "Saldi weekend da Atelier Marsica",
-    place: "Atelier Marsica",
-    when: "Valido fino a domenica",
-    detail: "Extra 20% con coupon digitale e mappa per arrivare in negozio.",
+    title: "Esempio promozione shopping",
+    place: "Attività dimostrativa",
+    when: "Anteprima",
+    detail: "Percentuale e disponibilità sono esempi grafici, non offerte reali.",
     image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1000&q=80",
     cta: "Usa sconto"
   },
   {
     type: "Sport",
-    title: "Prova gratuita FitLab Avezzano",
-    place: "FitLab Avezzano",
-    when: "Prenota entro 48 ore",
-    detail: "Ingresso prova, scheda iniziale e punti fedeltà al check-in.",
+    title: "Esempio vantaggio sport",
+    place: "Attività dimostrativa",
+    when: "Anteprima",
+    detail: "Vantaggio dimostrativo: serve conferma prima della pubblicazione.",
     image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1000&q=80",
     cta: "Prenota"
   }
@@ -713,9 +713,9 @@ const cityPulseZones = [
 ];
 
 const lastMinuteDeals = [
-  { id: "aperitivo-tavoli", title: "2 tavoli aperitivo", place: "Caffè Risorgimento", category: "Aperitivo", value: "-20%", availability: "2 tavoli", durationMinutes: 95, detail: "Prenotazione per oggi entro esaurimento." },
-  { id: "bakery-box", title: "Box serale Bakery", place: "Bakery Marsica", category: "Food", value: "-40%", availability: "6 box", durationMinutes: 140, detail: "Ritiro serale di prodotti freschi disponibili." },
-  { id: "fitlab-ingressi", title: "Ingresso prova FitLab", place: "FitLab Avezzano", category: "Sport", value: "Gratis", availability: "3 ingressi", durationMinutes: 180, detail: "Ultimi ingressi prova prenotabili oggi." }
+  { id: "demo-promo-serale", title: "Esempio disponibilità serale", place: "Attività dimostrativa", category: "Anteprima", value: "Demo", availability: "Da verificare", durationMinutes: 95, detail: "Disponibilità non reale: serve conferma del gestore." },
+  { id: "demo-box-food", title: "Esempio offerta food", place: "Attività dimostrativa", category: "Food", value: "Demo", availability: "Da verificare", durationMinutes: 140, detail: "Offerta dimostrativa non utilizzabile." },
+  { id: "demo-vantaggio-sport", title: "Esempio vantaggio sport", place: "Attività dimostrativa", category: "Sport", value: "Demo", availability: "Da verificare", durationMinutes: 180, detail: "Vantaggio da autorizzare prima della pubblicazione." }
 ];
 
 const LAST_MINUTE_STATE_KEY = "myavezzano_last_minute_v1";
@@ -748,7 +748,7 @@ const pageMeta = {
   feed: {
     eyebrow: "MyAvezzano",
     title: "Cosa succede oggi ad Avezzano?",
-    copy: "Eventi verificati, luoghi e informazioni pratiche per scegliere cosa fare in pochi secondi."
+    copy: "Eventi segnalati, luoghi e informazioni pratiche per scegliere cosa fare. Controlla sempre fonte e stato della scheda."
   },
   map: {
     eyebrow: "Mappa",
@@ -777,7 +777,7 @@ const pageMeta = {
   },
   merchant: {
     eyebrow: "Area commercianti",
-    title: "Richiedi accesso al pilot",
+    title: "Pilot in preparazione",
     copy: "La presenza business sara' attivata solo con verifica e servizi sicuri."
   },
   campaign: {
@@ -871,7 +871,7 @@ const onboardingSteps = [
     title: "Tutto resta nel tuo pannello utente",
     copy: "La versione pubblica non raccoglie dati personali. Gli account completi arriveranno con backend sicuro.",
     tip: "I salvataggi restano disponibili anche al prossimo accesso.",
-    points: ["Registrati con Google, Apple, telefono o email", "Gestisci preferenze e salvataggi", "Crea una scheda negozio da 12,99 EUR/mese"]
+    points: ["Account in preparazione", "Salva eventi su questo dispositivo", "Pilot commercianti non ancora attivo"]
   },
   {
     view: "feed", icon: "notifications", eyebrow: "Sempre aggiornato",
@@ -1469,7 +1469,11 @@ function eventSortDate(item, referenceKey = currentDateKey()) {
 }
 
 function sortEventsByCurrentDate(items, referenceKey = currentDateKey()) {
-  return [...items].sort((a, b) => eventSortDate(a, referenceKey).localeCompare(eventSortDate(b, referenceKey)) || a.time.localeCompare(b.time));
+  return [...items].sort((a, b) =>
+    eventSortDate(a, referenceKey).localeCompare(eventSortDate(b, referenceKey)) ||
+    String(a.time || "").localeCompare(String(b.time || "")) ||
+    String(a.title || "").localeCompare(String(b.title || ""), "it")
+  );
 }
 
 function selectedTownLabel() {
@@ -1893,7 +1897,9 @@ function renderSummerHomeBand() {
 function renderSummerMetrics() {
   const upcomingSummer = summerEvents.filter((item) => eventIsHomeCandidate(item));
   const scopedSummer = scopedEvents(upcomingSummer);
-  document.querySelector("#summerEventCount").textContent = scopedSummer.length || upcomingSummer.length;
+  const visibleSummer = scopedSummer.length || upcomingSummer.length;
+  document.querySelector("#summerEventLabel").textContent = activeTown === "all" ? "Eventi nel cartellone Marsica" : `Eventi per ${selectedTownLabel()}`;
+  document.querySelector("#summerEventCount").textContent = visibleSummer;
   document.querySelector("#summerAvezzanoCount").textContent = upcomingSummer.filter((item) => item.area === "Avezzano").length;
   document.querySelector("#summerAlbaCount").textContent = upcomingSummer.filter((item) => item.area === "Alba Fucens").length;
 }
@@ -2155,7 +2161,7 @@ function renderProfileActions() {
     ${adminAction}
     <button class="profile-action-card" data-view-target="merchant" type="button">
       <span class="profile-action-icon icon-store" aria-hidden="true"></span>
-      <span class="profile-action-copy"><strong>Crea il tuo negozio</strong><small>Piani da 12,99 EUR/mese</small></span>
+      <span class="profile-action-copy"><strong>Pilot per attività locali</strong><small>Pagamenti non ancora attivi</small></span>
       <span class="profile-action-arrow" aria-hidden="true"></span>
     </button>
     <button class="profile-action-card" data-profile-panel="coupons" type="button">
@@ -2397,7 +2403,7 @@ function renderUserProfile(panel = "settings") {
   document.querySelector("#profileName").textContent = user ? user.name : "Accedi a MyAvezzano";
   document.querySelector("#profileMeta").textContent = user
     ? `${user.provider} - ${user.email || user.phone || "account locale"}`
-    : "Crea un account per salvare coupon, eventi e preferenze.";
+    : "Account in preparazione. Gli eventi possono essere salvati soltanto su questo dispositivo.";
   document.querySelector("#profileCouponCount").textContent = user ? profileCouponRows().length : 0;
   document.querySelector("#profileEventCount").textContent = user ? profileEventRows().length : 0;
   document.querySelector("#profilePointCount").textContent = user ? citizenLevel.points.toLocaleString("it-IT") : 0;
@@ -2426,24 +2432,24 @@ function renderMerchantArea() {
       <section class="merchant-pricing-hero">
         <p class="eyebrow">Area commercianti</p>
         <h2>Fatti trovare quando le persone decidono dove andare.</h2>
-        <p>In questa versione pubblica non sono attivi pagamenti, abbonamenti o fatture automatiche. Puoi richiedere accesso al pilot o rivendicare la tua attivita': ti ricontatteremo quando sara' disponibile il backend commerciale.</p>
+        <p>In questa versione pubblica non sono attivi pagamenti, abbonamenti, fatture automatiche o candidature online. Il modulo di candidatura sarà disponibile prossimamente.</p>
         <div class="merchant-plan-grid">
           <article class="merchant-plan-card highlighted">
             <span class="pill success">Pilot locale</span>
-            <h3>Richiedi accesso</h3>
-            <p>Scheda attivita', eventi, offerte e coupon validabili saranno attivati solo con servizi sicuri.</p>
+            <h3>Come funzionerà il pilot</h3>
+            <p>Schede attività, eventi, offerte e coupon validabili saranno attivati solo con servizi sicuri.</p>
             <ul>
               <li>Nessun pagamento simulato</li>
               <li>Nessun dato fiscale salvato nel browser</li>
               <li>Attivazione manuale e verificata</li>
             </ul>
-            <button class="primary-action full-button" data-action="merchant-pilot-request" type="button">Richiedi accesso</button>
+            <button class="primary-action full-button" data-action="merchant-pilot-request" type="button">Pilot in preparazione</button>
           </article>
           <article class="merchant-plan-card">
             <span class="pill">Attivita' esistente</span>
-            <h3>Rivendica la tua attivita'</h3>
-            <p>Segnala il tuo locale o negozio per correggere informazioni, foto, orari e contatti.</p>
-            <button class="ghost full-button" data-action="merchant-pilot-request" type="button">Rivendica attivita'</button>
+            <h3>Rivendica attività</h3>
+            <p>La rivendicazione sarà disponibile con un modulo verificato e tracciabile.</p>
+            <button class="ghost full-button" data-action="merchant-pilot-request" type="button">Pilot in preparazione</button>
           </article>
         </div>
       </section>
@@ -4464,8 +4470,8 @@ function handleAction(button) {
   }
 
   if (action === "merchant-pilot-request") {
-    showToast("Richiesta non inviata: collega prima un modulo o un backend commerciale sicuro.", "info");
-    setMerchantFeedback("Canale pilot in preparazione. Non raccogliamo dati commerciali o fiscali in questa versione pubblica.", "info");
+    showToast("Pilot in preparazione: il modulo di candidatura sarà disponibile prossimamente.", "info");
+    setMerchantFeedback("Non raccogliamo dati commerciali o fiscali in questa versione pubblica.", "info");
     return;
   }
 

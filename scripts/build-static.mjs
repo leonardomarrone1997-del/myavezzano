@@ -54,6 +54,10 @@ function withBuildTokens(content) {
   return content.replaceAll("__BUILD_VERSION__", assetVersion);
 }
 
+function cleanOutput(content) {
+  return content.replace(/[ \t]+$/gm, "");
+}
+
 const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (character) => ({
   "&": "&amp;",
   "<": "&lt;",
@@ -119,6 +123,24 @@ function eventFallbackFor(event = {}) {
   return eventAreaImages[event.area] || eventThemeImages[event.category] || eventFallbackImage;
 }
 
+function eventIsVerified(event = {}) {
+  const status = String(event.verificationStatus || event.status || "").toLowerCase();
+  return Boolean(event.sourceUrl && ["verified", "confermato", "confirmed"].includes(status));
+}
+
+function eventSortTime(event = {}) {
+  const match = String(event.time || "").match(/(\d{1,2}):(\d{2})/);
+  return match ? `${String(match[1]).padStart(2, "0")}:${match[2]}` : "99:99";
+}
+
+function sortEvents(events) {
+  return [...events].sort((a, b) =>
+    String(a.date || "").localeCompare(String(b.date || "")) ||
+    eventSortTime(a).localeCompare(eventSortTime(b)) ||
+    String(a.title || "").localeCompare(String(b.title || ""), "it")
+  );
+}
+
 function normalizeEvent(event) {
   const id = event.id || eventSlug([event.title, event.date, event.place].filter(Boolean).join(" "));
   const fallbackImageUsed = eventUsesGenericImage(event);
@@ -137,7 +159,7 @@ function normalizeEvent(event) {
     imageSource: fallbackImageUsed ? "Immagine tematica MyAvezzano" : (event.imageSource || (isRealPhoto ? "Fonte evento" : "Fallback neutro MyAvezzano")),
     isRealPhoto,
     sourceUrl: event.sourceUrl || "",
-    organizer: event.organizer || "Non disponibile",
+    organizer: event.organizer || "",
     verificationStatus: event.verificationStatus || (event.sourceUrl ? "confermato" : "da verificare"),
     status: event.status || (event.sourceUrl ? "confermato" : "da verificare"),
     officialUrl: event.officialUrl || event.sourceUrl || "",
@@ -181,12 +203,9 @@ function schemaDates(event) {
   return { startDate, endDate };
 }
 
-function eventPage(event) {
-  const url = `${baseUrl}/eventi/${event.id}.html`;
+function eventJsonLd(event, url, imageUrl, locality, addressRegion) {
+  if (!eventIsVerified(event)) return "";
   const dates = schemaDates(event);
-  const locality = event.area === "Alba Fucens" ? "Massa d'Albe" : event.area;
-  const imageUrl = assetUrl(event.image);
-  const addressRegion = event.area === "Borgorose" || /\(RI\)/.test(event.place) ? "RI" : "AQ";
   const schema = {
     "@context": "https://schema.org",
     "@type": "Event",
@@ -197,18 +216,7 @@ function eventPage(event) {
     eventStatus: event.status === "annullato" ? "https://schema.org/EventCancelled" : "https://schema.org/EventScheduled",
     url,
     dateModified: event.updatedAt,
-    organizer: {
-      "@type": "Organization",
-      name: event.organizer || "Non disponibile"
-    },
-    offers: {
-      "@type": "Offer",
-      availability: "https://schema.org/InStock",
-      price: event.price && /\d/.test(event.price) ? event.price.replace(",", ".").match(/\d+(\.\d+)?/)?.[0] || "0" : "0",
-      priceCurrency: "EUR",
-      url: event.ticketUrl || event.officialUrl || url,
-      validFrom: event.updatedAt
-    },
+    ...(event.organizer ? { organizer: { "@type": "Organization", name: event.organizer } } : {}),
     ...(event.officialUrl ? { sameAs: event.officialUrl } : {}),
     image: [imageUrl],
     description: event.detail,
@@ -223,7 +231,15 @@ function eventPage(event) {
       }
     }
   };
-  const schemaJson = JSON.stringify(schema, null, 2).replace(/</g, "\\u003c");
+  return `<script type="application/ld+json">${JSON.stringify(schema, null, 2).replace(/</g, "\\u003c")}</script>`;
+}
+
+function eventPage(event) {
+  const url = `${baseUrl}/eventi/${event.id}.html`;
+  const locality = event.area === "Alba Fucens" ? "Massa d'Albe" : event.area;
+  const imageUrl = assetUrl(event.image);
+  const addressRegion = event.area === "Borgorose" || /\(RI\)/.test(event.place) ? "RI" : "AQ";
+  const schemaJson = eventJsonLd(event, url, imageUrl, locality, addressRegion);
   const title = escapeHtml(event.title);
   const description = escapeHtml(event.detail);
   const dateLabel = escapeHtml(eventDateLabel(event));
@@ -234,9 +250,10 @@ function eventPage(event) {
   const imageSource = escapeHtml(event.imageSource);
   const isImportant = event.featured || event.importance === "high";
   const statusLabel = event.status === "confermato" ? "Confermato" : event.status === "annullato" ? "Annullato" : "Da verificare";
-  const organizer = escapeHtml(event.organizer || "Non disponibile");
+  const organizer = escapeHtml(event.organizer || "Organizzatore non disponibile");
   const lastVerified = escapeHtml(event.lastVerifiedAt || "Non disponibile");
   const officialLink = event.officialUrl ? `<a class="seo-link" href="${escapeHtml(event.officialUrl)}" rel="nofollow noreferrer" target="_blank">Fonte ufficiale</a>` : `<span class="seo-link disabled">Fonte non disponibile</span>`;
+  const robots = eventIsVerified(event) ? "index, follow" : "noindex, follow";
 
   return `<!doctype html>
 <html lang="it">
@@ -245,6 +262,7 @@ function eventPage(event) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>${title} | Eventi MyAvezzano</title>
     <meta name="description" content="${description}" />
+    <meta name="robots" content="${robots}" />
     <link rel="canonical" href="${url}" />
     <meta property="og:type" content="event" />
     <meta property="og:title" content="${title} | MyAvezzano" />
@@ -255,7 +273,7 @@ function eventPage(event) {
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content="${imageUrl}" />
     <meta name="twitter:image:alt" content="${imageAlt}" />
-    <script type="application/ld+json">${schemaJson}</script>
+    ${schemaJson}
     <link rel="stylesheet" href="../styles.css?v=__BUILD_VERSION__" />
   </head>
   <body class="seo-body${isImportant ? " seo-event-important" : ""}">
@@ -277,7 +295,7 @@ function eventPage(event) {
           <div class="seo-event-summary">
             <div><span>Data e ora</span><strong>${dateLabel} · ${time}</strong></div>
             <div><span>Luogo</span><strong>${place}</strong></div>
-            <div><span>Indicazioni</span><strong>${price}</strong></div>
+            <div><span>Prezzo / Biglietto</span><strong>${price}</strong></div>
             <div><span>Area</span><strong>${escapeHtml(event.area)}</strong></div>
             <div><span>Stato</span><strong>${statusLabel}</strong></div>
             <div><span>Organizzatore</span><strong>${organizer}</strong></div>
@@ -292,8 +310,40 @@ function eventPage(event) {
 </html>`;
 }
 
+function summerEventsSection(events) {
+  const summer = sortEvents(events.filter((event) =>
+    event.date >= "2026-06-21" &&
+    event.date <= "2026-09-22" &&
+    (event.endDate || event.date) >= buildDate
+  ));
+  const verified = summer.filter(eventIsVerified);
+  const fallback = summer.filter((event) => !eventIsVerified(event));
+  const selected = [...verified, ...fallback].slice(0, 12);
+  if (!selected.length) {
+    return `<section class="seo-section" id="summerSeoEvents"><p class="seo-kicker">Calendario</p><h2>Prossimi eventi dell'Estate 2026</h2><p>Non risultano eventi futuri pubblicabili in questo momento.</p></section>`;
+  }
+  return `<section class="seo-section" id="summerSeoEvents">
+          <p class="seo-kicker">Calendario aggiornato</p>
+          <h2>Prossimi eventi dell'Estate 2026</h2>
+          <div class="seo-grid two">
+            ${selected.map((event) => `
+            <article class="seo-card">
+              <span class="pill ${eventIsVerified(event) ? "success" : "warning"}">${eventIsVerified(event) ? "Verificato" : "Da verificare"}</span>
+              <h3>${escapeHtml(event.title)}</h3>
+              <ul class="seo-meta">
+                <li>${escapeHtml(eventDateLabel(event))}</li>
+                <li>${escapeHtml(event.time || "Orario da verificare")}</li>
+                <li>${escapeHtml(event.area || "Comune non disponibile")}</li>
+              </ul>
+              <p>${escapeHtml(event.place || "Luogo non disponibile")}</p>
+              <a class="seo-link" href="eventi/${escapeHtml(event.id)}.html">Apri scheda evento</a>
+            </article>`).join("")}
+          </div>
+        </section>`;
+}
+
 function sitemapXml(events) {
-  const upcomingEvents = events.filter((event) => (event.endDate || event.date) >= buildDate);
+  const upcomingEvents = sortEvents(events.filter((event) => (event.endDate || event.date) >= buildDate && eventIsVerified(event)));
   const basePages = [
     ["/", "daily", "1.0"],
     ["/eventi.html", "daily", "0.9"],
@@ -336,18 +386,22 @@ await Promise.all([
 ].map(async (file) => {
   const target = path.join(output, file);
   const content = await readFile(target, "utf8");
-  await writeFile(target, withBuildTokens(content), "utf8");
+  await writeFile(target, cleanOutput(withBuildTokens(content)), "utf8");
 }));
 
 const eventsSource = await readFile(path.join(root, "events-data.js"), "utf8");
 const sandbox = { window: {} };
 vm.runInNewContext(eventsSource, sandbox);
 const events = uniqueEvents(sandbox.window.MYAVEZZANO_EVENTS || []);
-const publicEvents = events.filter((event) => (event.endDate || event.date) >= buildDate);
+const publicEvents = sortEvents(events.filter((event) => (event.endDate || event.date) >= buildDate));
 const eventOutput = path.join(output, "eventi");
 await mkdir(eventOutput, { recursive: true });
 
-await Promise.all(publicEvents.map((event) => writeFile(path.join(eventOutput, `${event.id}.html`), withBuildTokens(eventPage(event)), "utf8")));
-await writeFile(path.join(output, "sitemap.xml"), sitemapXml(publicEvents), "utf8");
+const estatePagePath = path.join(output, "estate-2026.html");
+const estatePage = await readFile(estatePagePath, "utf8");
+await writeFile(estatePagePath, cleanOutput(estatePage.replace("<!-- SUMMER_EVENTS_PLACEHOLDER -->", summerEventsSection(publicEvents))), "utf8");
+
+await Promise.all(publicEvents.map((event) => writeFile(path.join(eventOutput, `${event.id}.html`), cleanOutput(withBuildTokens(eventPage(event))), "utf8")));
+await writeFile(path.join(output, "sitemap.xml"), cleanOutput(sitemapXml(publicEvents)), "utf8");
 
 console.log(`Static PWA copied to public/ with ${publicEvents.length} event pages.`);

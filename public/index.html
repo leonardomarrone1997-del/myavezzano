@@ -60,7 +60,7 @@
         ]
       }
     </script>
-    <link rel="stylesheet" href="styles.css?v=e5815b7" />
+    <link rel="stylesheet" href="styles.css?v=b709006" />
   </head>
 <body class="view-feed">
     <a class="skip-link" href="#mainContent">Vai al contenuto</a>
@@ -131,7 +131,7 @@
           <div>
             <p class="eyebrow" id="pageEyebrow">MyAvezzano</p>
             <h1 id="pageTitle">Cosa succede oggi ad Avezzano?</h1>
-            <p class="topbar-copy" id="pageCopy">Eventi verificati, luoghi e informazioni pratiche per scegliere cosa fare in pochi secondi.</p>
+            <p class="topbar-copy" id="pageCopy">Eventi segnalati, luoghi e informazioni pratiche per scegliere cosa fare. Controlla sempre fonte e stato della scheda.</p>
             <div class="city-signature" aria-label="Coordinate sezione">
               <span id="pageCode">AVZ-00</span>
               <span id="pageCoords">42.0326 N / 13.4256 E</span>
@@ -286,8 +286,8 @@
               </div>
               <div class="panel accent-panel">
                 <p class="eyebrow">Nuova apertura</p>
-                <h2>Bakery Marsica apre sabato</h2>
-                <p>Inaugurazione con degustazione gratuita e coupon benvenuto in app.</p>
+                <h2>Esempio nuova apertura</h2>
+                <p>Anteprima informativa non verificata: nessuna offerta reale disponibile.</p>
                 <button class="light-action" data-view-target="coupons" type="button">Vedi vantaggi</button>
               </div>
               <div class="panel campaign-mini-panel">
@@ -390,9 +390,9 @@
             </div>
           </div>
           <section class="summer-metrics" aria-label="Riepilogo programma estivo">
-            <div><span>Appuntamenti</span><strong id="summerEventCount">0</strong></div>
-            <div><span>Avezzano</span><strong id="summerAvezzanoCount">0</strong></div>
-            <div><span>Alba Fucens</span><strong id="summerAlbaCount">0</strong></div>
+            <div><span id="summerEventLabel">Eventi nel cartellone Marsica</span><strong id="summerEventCount">0</strong></div>
+            <div><span>Eventi ad Avezzano</span><strong id="summerAvezzanoCount">0</strong></div>
+            <div><span>Eventi ad Alba Fucens</span><strong id="summerAlbaCount">0</strong></div>
           </section>
           <div class="summer-filters" id="summerFilters" aria-label="Filtra il programma estivo"></div>
           <section class="summer-next-panel" id="summerNextPanel" aria-label="Prossimo evento estivo"></section>
@@ -481,7 +481,7 @@
                 <div>
                   <p class="eyebrow">Profilo utente</p>
                   <h2 id="profileName">Accedi a MyAvezzano</h2>
-                  <p id="profileMeta">Crea un account per salvare coupon, eventi e preferenze.</p>
+                  <p id="profileMeta">Account in preparazione. Gli eventi possono essere salvati soltanto su questo dispositivo.</p>
                 </div>
               </div>
               <div class="metrics compact profile-metrics">
@@ -494,7 +494,7 @@
                 <div><span id="profileProgressLabel">Prossimo livello</span><strong id="profileProgressValue">18%</strong></div>
                 <span class="profile-progress-track"><i id="profileProgressBar"></i></span>
               </div>
-              <button class="primary-action full-button" id="profileSignupButton" type="button">Registrati o accedi</button>
+              <button class="primary-action full-button" id="profileSignupButton" type="button">Account in preparazione</button>
             </section>
 
             <section class="profile-actions-grid">
@@ -505,7 +505,7 @@
               </button>
               <button class="profile-action-card" data-view-target="merchant" type="button">
                 <span class="profile-action-icon icon-store" aria-hidden="true"></span>
-                <span class="profile-action-copy"><strong>Crea il tuo negozio</strong><small>Piani da 12,99 EUR/mese</small></span>
+                <span class="profile-action-copy"><strong>Pilot per attività locali</strong><small>Pagamenti non ancora attivi</small></span>
                 <span class="profile-action-arrow" aria-hidden="true"></span>
               </button>
               <button class="profile-action-card" data-profile-panel="coupons" type="button">
@@ -545,7 +545,7 @@
             <section class="merchant-pricing-hero">
               <div>
                 <p class="eyebrow">Per commercianti</p>
-                <h2>Crea il tuo negozio su MyAvezzano</h2>
+                <h2>Pilot per attività locali</h2>
                 <p>Pubblica eventi, coupon, nuove aperture, foto e offerte. Tutte le attività commerciali accedono con un piano a pagamento.</p>
               </div>
               <div class="price-badge">
@@ -969,7 +969,7 @@
 
     <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
-    <script defer src="events-data.js?v=e5815b7"></script>
-    <script defer src="app.js?v=e5815b7"></script>
+    <script defer src="events-data.js?v=b709006"></script>
+    <script defer src="app.js?v=b709006"></script>
   </body>
 </html>
