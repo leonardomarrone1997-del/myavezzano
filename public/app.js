@@ -70,12 +70,12 @@ const userSubmittedBusinesses = [
     lng: 13.4256,
     address: "Via Camillo Corradini 172, Avezzano",
     phone: "+39086332128",
-    stats: "Attività inserita",
+    stats: "Scheda informativa",
     photo: "https://dellolio1920avezzano.it/img/dellolio-storia-avezzano.jpg",
     logo: "https://dellolio1920avezzano.it/img/dellolio__logo-desktop.svg",
     photoCredit: "Dell'Olio 1920",
     image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=600&q=80",
-    caption: "Negozio di abbigliamento inserito nella rete MyAvezzano."
+    caption: "Luogo dalla mappa. Informazioni da verificare."
   },
   {
     name: "Renzo e Caterina",
@@ -210,7 +210,7 @@ const marsicaFoodVenues = [
   { name: "Bar Passone", category: "Bar", area: "Carsoli", distance: "Carsoli", lat: 42.097715, lng: 13.081677, address: "Carsoli", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80", caption: "Bar a Carsoli inserito nella rete MyAvezzano." },
   { name: "Bar Le Magnolie", category: "Bar", area: "Scurcola Marsicana", distance: "Scurcola Marsicana", lat: 42.0638, lng: 13.34175, address: "Scurcola Marsicana", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80", caption: "Bar a Scurcola Marsicana vicino agli eventi estivi." },
   { name: "Agriturismo I musicanti di Brema", category: "Ristorante", area: "Scurcola Marsicana", distance: "Scurcola Marsicana", lat: 42.066155, lng: 13.319943, address: "Scurcola Marsicana", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Agriturismo e ristorante a Scurcola Marsicana nella rete Marsica." },
-  { name: "I Cinque Pini", category: "Ristorante", area: "Magliano de' Marsi", distance: "Magliano de' Marsi", lat: 42.091462, lng: 13.365486, address: "Via Avezzano 11, Magliano de' Marsi", phone: "+39 0863 51221", website: "http://www.icinquepini.it/", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80", caption: "Ristorante pizzeria braceria a Magliano de' Marsi nella rete MyAvezzano." },
+  { name: "I Cinque Pini", category: "Ristorante", area: "Magliano de' Marsi", distance: "Magliano de' Marsi", lat: 42.091462, lng: 13.365486, address: "Via Avezzano 11, Magliano de' Marsi", phone: "+39 0863 51221", website: "http://www.icinquepini.it/", stats: "Scheda informativa", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80", caption: "Luogo dalla mappa. Informazioni da verificare." },
   { name: "Sarni", category: "Ristorante", area: "Magliano de' Marsi", distance: "Magliano de' Marsi", lat: 42.094891, lng: 13.346537, address: "Magliano de' Marsi", stats: "Locale limitrofo", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", caption: "Ristorante a Magliano de' Marsi nella mappa dei comuni vicini." }
 ];
 
@@ -604,6 +604,23 @@ function eventFallbackFor(item = {}) {
   return EVENT_AREA_IMAGES[item.area] || EVENT_THEME_IMAGES[item.category] || EVENT_FALLBACK_IMAGE;
 }
 
+function isGenericSourceUrl(url = "") {
+  if (!url) return false;
+  try {
+    const parsed = new URL(url);
+    const pathname = parsed.pathname.replace(/\/+$/, "");
+    return !pathname || pathname === "";
+  } catch {
+    return false;
+  }
+}
+
+function normalizedSourceType(item = {}, sourceUrl = "") {
+  if (item.sourceType) return item.sourceType;
+  if (item.officialUrl) return "official";
+  return sourceUrl ? "secondary" : "";
+}
+
 function normalizeEvent(item) {
   const id = item.id || eventSlug([item.title, item.date, item.place].filter(Boolean).join(" "));
   const fallbackImageUsed = eventUsesGenericImage(item);
@@ -611,6 +628,14 @@ function normalizeEvent(item) {
   const isRealPhoto = Boolean(!fallbackImageUsed && item.image && item.isRealPhoto);
   const importance = item.importance || (item.featured ? "high" : "normal");
   const importantByTitle = IMPORTANT_EVENT_KEYWORDS.some((keyword) => String(item.title || "").toLowerCase().includes(keyword));
+  const rawSourceUrl = item.sourceUrl || "";
+  const sourceUrl = isGenericSourceUrl(rawSourceUrl) ? "" : rawSourceUrl;
+  const sourceType = normalizedSourceType(item, sourceUrl);
+  const officialUrl = sourceType === "official" && !isGenericSourceUrl(item.officialUrl || sourceUrl) ? (item.officialUrl || sourceUrl) : "";
+  const defaultStatus = officialUrl ? "confermato" : (sourceUrl ? "segnalato" : "da verificare");
+  const incomingStatus = String(item.status || item.verificationStatus || "").toLowerCase();
+  const safeStatus = officialUrl || incomingStatus === "annullato" ? (item.status || defaultStatus) : defaultStatus;
+  const safeVerificationStatus = officialUrl ? (item.verificationStatus || safeStatus) : defaultStatus;
   return {
     ...item,
     id,
@@ -621,11 +646,12 @@ function normalizeEvent(item) {
     imageAlt: item.imageAlt || `${item.title} - ${item.place}`,
     imageSource: fallbackImageUsed ? "Immagine tematica MyAvezzano" : (item.imageSource || (isRealPhoto ? "Fonte evento" : EVENT_FALLBACK_SOURCE)),
     isRealPhoto,
-    sourceUrl: item.sourceUrl || "",
+    sourceUrl,
+    sourceType,
     organizer: item.organizer || "Non disponibile",
-    verificationStatus: item.verificationStatus || (item.sourceUrl ? "confermato" : "da verificare"),
-    status: item.status || (item.sourceUrl ? "confermato" : "da verificare"),
-    officialUrl: item.officialUrl || item.sourceUrl || "",
+    verificationStatus: safeVerificationStatus,
+    status: safeStatus,
+    officialUrl,
     ticketUrl: item.ticketUrl || "",
     lastVerifiedAt: item.lastVerifiedAt || item.updatedAt || "Non disponibile",
     coordinates: item.coordinates || null,
@@ -693,7 +719,7 @@ const coupons = [
   ["Cocktail signature -20%", "Bar Fantasy", "Valido fino alle 23:30", "45 punti", "assets/coupons/aperitivo-2x1.svg", "AVZ-FANTASY-20", "bar"],
   ["Colazione smart", "Caffe dei Marsi", "Cappuccino + cornetto", "30 punti", "assets/coupons/fitlab-prova-gratis.svg", "AVZ-MARSI-BREAK", "bar"],
   ["-10% scarpe e accessori", "Boutique Avezzano", "Valido fino a sabato", "70 usi rimasti", "assets/coupons/atelier-marsica-20.svg", "AVZ-BOUTIQUE-10", "negozi"],
-  ["Extra saldo weekend", "Dell'Olio 1920", "Solo con QR MyAvezzano", "55 punti", "assets/coupons/atelier-marsica-20.svg", "AVZ-DELLOLIO-WEEKEND", "negozi"],
+  ["Esempio coupon negozio", "Attività aderente", "Anteprima non utilizzabile", "Offerta da autorizzare", "assets/coupons/atelier-marsica-20.svg", "DEMO-NON-VALIDO-4", "negozi"],
   ["Check postura gratuito", "Studio Wellness Marsica", "Prenotazione richiesta", "Servizio gratuito", "assets/coupons/fitlab-prova-gratis.svg", "AVZ-WELLNESS-POSTURA", "servizi"],
   ["Piega express -25%", "Beauty Lab Centro", "Valido martedi e mercoledi", "40 punti", "assets/coupons/atelier-marsica-20.svg", "AVZ-BEAUTY-PIEGA25", "servizi"],
   ["Ingresso serata ridotto", "Discoteca Astra", "Valido entro le 00:30", "Lista MyAvezzano", "assets/coupons/aperitivo-2x1.svg", "AVZ-ASTRA-LISTA", "bar"]
@@ -1156,15 +1182,16 @@ function intelligenceInsights() {
 }
 
 function smartHomeCards() {
-  const topFood = intelligentPlaces("ristorante aperto", 1)[0];
-  const topShopping = intelligentPlaces("shopping coupon", 1)[0];
+  const homeExcludedPlaces = new Set(["Dell'Olio 1920", "I Cinque Pini"]);
+  const topFood = intelligentPlaces("ristorante aperto", 5).find((place) => !homeExcludedPlaces.has(place.name));
+  const topShopping = intelligentPlaces("shopping coupon", 5).find((place) => !homeExcludedPlaces.has(place.name));
   const today = currentDateKey();
   const liveEvent = sortEventsByCurrentDate(calendarEvents.filter((item) => eventIsHomeCandidate(item, today)), today)[0] || calendarEvents[0];
   return [
     {
-      label: "Consiglio ora",
+      label: "Luogo dalla mappa",
       title: topFood ? topFood.name : "Cena in centro",
-      text: topFood ? `${topFood.category} - ${topFood.distance || "Avezzano"}` : "Apri la mappa e scegli un locale vicino.",
+      text: topFood ? "Scheda informativa - informazioni da verificare." : "Apri la mappa e scegli un locale vicino.",
       action: "open-map-place",
       place: topFood?.name,
       cta: "Apri"
@@ -1177,9 +1204,9 @@ function smartHomeCards() {
       cta: "Vedi eventi"
     },
     {
-      label: "Vantaggio",
+      label: "Scheda informativa",
       title: topShopping ? topShopping.name : "Coupon locali",
-      text: topShopping ? `${topShopping.category} - promo e shopping` : "Sconti e QR pronti da salvare.",
+      text: topShopping ? "Informazioni da verificare prima della pubblicazione." : "Sconti e QR pronti da salvare.",
       view: "coupons",
       cta: "Scopri"
     }
@@ -1513,7 +1540,7 @@ function homeHighlightRows() {
   return sortEventsByCurrentDate(scopedEvents(calendarEvents.filter((item) => eventIsHomeCandidate(item, today))), today)
     .slice(0, 4)
     .map((item) => ({
-      type: item.status === "confermato" ? "Evento confermato" : "Evento da verificare",
+      type: item.status === "confermato" ? "Evento confermato" : item.status === "segnalato" ? "Evento segnalato" : "Evento da verificare",
       title: item.title,
       place: item.place,
       when: eventRangeLabel(item),
@@ -1649,7 +1676,7 @@ function eventCardMarkup(item, { compact = false, idPrefix = "event" } = {}) {
         ${isImportant && !item.past ? `<p class="agenda-importance"><span aria-hidden="true"></span> Evento importante</p>` : ""}
         ${eventAttendanceMarkup(item)}
         <p class="agenda-trust">
-          <span>${item.status === "confermato" ? "Confermato" : "Da verificare"}</span>
+          <span>${item.status === "confermato" ? "Confermato" : item.status === "segnalato" ? "Segnalato" : "Da verificare"}</span>
           <span>Aggiornato: ${item.updatedAt || "Non disponibile"}</span>
           ${item.sourceUrl ? `<a href="${item.sourceUrl}" target="_blank" rel="noopener">Fonte</a>` : "<span>Fonte non disponibile</span>"}
         </p>
@@ -1890,18 +1917,44 @@ function renderSummerHomeBand() {
   if (!title || !meta) return;
   title.textContent = next?.title || "Il programma estivo di Avezzano";
   meta.textContent = next
-    ? `${summerEvents.length} appuntamenti · prossimo ${eventRangeLabel(next)} alle ${next.time}`
+    ? `Calendario Estate 2026 aggiornato - prossimo ${eventRangeLabel(next)} alle ${next.time}`
     : "Il calendario stagionale sarà aggiornato qui.";
 }
 
 function renderSummerMetrics() {
-  const upcomingSummer = summerEvents.filter((item) => eventIsHomeCandidate(item));
-  const scopedSummer = scopedEvents(upcomingSummer);
-  const visibleSummer = scopedSummer.length || upcomingSummer.length;
-  document.querySelector("#summerEventLabel").textContent = activeTown === "all" ? "Eventi nel cartellone Marsica" : `Eventi per ${selectedTownLabel()}`;
-  document.querySelector("#summerEventCount").textContent = visibleSummer;
-  document.querySelector("#summerAvezzanoCount").textContent = upcomingSummer.filter((item) => item.area === "Avezzano").length;
-  document.querySelector("#summerAlbaCount").textContent = upcomingSummer.filter((item) => item.area === "Alba Fucens").length;
+  const futureEvents = calendarEvents.filter((item) => eventIsHomeCandidate(item));
+  const futureSummer = summerEvents.filter((item) => eventIsHomeCandidate(item));
+  const scopedFutureEvents = scopedEvents(futureEvents);
+  const scopedSummer = scopedEvents(futureSummer);
+  const selectedLabel = selectedTownLabel();
+  const townPrefix = ["Avezzano", "Alba Fucens"].includes(selectedLabel) ? "ad" : "a";
+  const rows = [
+    document.querySelector("#summerMetricFuture"),
+    document.querySelector("#summerMetricProgram"),
+    document.querySelector("#summerMetricAvezzano"),
+    document.querySelector("#summerMetricAlba")
+  ];
+  const setRow = (row, label, value, hidden = false) => {
+    if (!row) return;
+    row.hidden = hidden;
+    const labelNode = row.querySelector("span");
+    const valueNode = row.querySelector("strong");
+    if (labelNode) labelNode.textContent = label;
+    if (valueNode) valueNode.textContent = value;
+  };
+
+  if (activeTown === "all") {
+    setRow(rows[0], "Eventi futuri nella Marsica", futureEvents.length);
+    setRow(rows[1], "Eventi nel cartellone Estate 2026", futureSummer.length);
+    setRow(rows[2], "Eventi futuri ad Avezzano", futureEvents.filter((item) => item.area === "Avezzano").length);
+    setRow(rows[3], "Eventi futuri ad Alba Fucens", futureEvents.filter((item) => item.area === "Alba Fucens").length);
+    return;
+  }
+
+  setRow(rows[0], `Eventi futuri ${townPrefix} ${selectedLabel}`, scopedFutureEvents.length);
+  setRow(rows[1], `Estate 2026 ${townPrefix} ${selectedLabel}`, scopedSummer.length);
+  setRow(rows[2], "", "", true);
+  setRow(rows[3], "", "", true);
 }
 
 function renderSummerFilters() {
@@ -2400,7 +2453,7 @@ function renderUserProfile(panel = "settings") {
   const citizenLevel = citizenLevelState(user);
   const avatar = user?.avatar || "assets/app-icon.svg";
   document.querySelector("#profileAvatar").src = avatar;
-  document.querySelector("#profileName").textContent = user ? user.name : "Accedi a MyAvezzano";
+  document.querySelector("#profileName").textContent = user ? user.name : "Account MyAvezzano";
   document.querySelector("#profileMeta").textContent = user
     ? `${user.provider} - ${user.email || user.phone || "account locale"}`
     : "Account in preparazione. Gli eventi possono essere salvati soltanto su questo dispositivo.";

@@ -1478,7 +1478,7 @@ window.MYAVEZZANO_EVENTS = [
     "imageAlt": "Festa Patronale ai Casali d'Aschi - Casali d'Aschi, Gioia dei Marsi",
     "imageSource": "Immagine tematica MyAvezzano",
     "isRealPhoto": false,
-    "sourceUrl": "https://www.festivalinitalia.it/",
+    "sourceUrl": "",
     "updatedAt": "2026-07-16"
   },
   {
@@ -1497,7 +1497,7 @@ window.MYAVEZZANO_EVENTS = [
     "imageAlt": "Sagra della Patata del Fucino IGP - Celano",
     "imageSource": "Immagine tematica MyAvezzano",
     "isRealPhoto": false,
-    "sourceUrl": "https://www.festivalinitalia.it/",
+    "sourceUrl": "",
     "updatedAt": "2026-07-16"
   },
   {
@@ -1515,7 +1515,7 @@ window.MYAVEZZANO_EVENTS = [
     "imageAlt": "Sagra del Cinghiale - Gioia dei Marsi",
     "imageSource": "Immagine tematica MyAvezzano",
     "isRealPhoto": false,
-    "sourceUrl": "https://www.festivalinitalia.it/",
+    "sourceUrl": "",
     "updatedAt": "2026-07-16"
   },
   {
@@ -1533,7 +1533,7 @@ window.MYAVEZZANO_EVENTS = [
     "imageAlt": "Rievocazione della Trebbiatura - Ortucchio",
     "imageSource": "Immagine tematica MyAvezzano",
     "isRealPhoto": false,
-    "sourceUrl": "https://www.festivalinitalia.it/",
+    "sourceUrl": "",
     "updatedAt": "2026-07-16"
   },
   {
@@ -1551,7 +1551,7 @@ window.MYAVEZZANO_EVENTS = [
     "imageAlt": "Gran Sagra della Ranocchia - Ortucchio",
     "imageSource": "Immagine tematica MyAvezzano",
     "isRealPhoto": false,
-    "sourceUrl": "https://www.festivalinitalia.it/",
+    "sourceUrl": "",
     "updatedAt": "2026-07-16"
   },
   {
@@ -1569,7 +1569,7 @@ window.MYAVEZZANO_EVENTS = [
     "imageAlt": "Sagra della Sagna Gioiese - Gioia dei Marsi",
     "imageSource": "Immagine tematica MyAvezzano",
     "isRealPhoto": false,
-    "sourceUrl": "https://www.festivalinitalia.it/",
+    "sourceUrl": "",
     "updatedAt": "2026-07-16"
   },
   {
@@ -1587,7 +1587,7 @@ window.MYAVEZZANO_EVENTS = [
     "imageAlt": "Sagra del Piliero - Gioia dei Marsi",
     "imageSource": "Immagine tematica MyAvezzano",
     "isRealPhoto": false,
-    "sourceUrl": "https://www.festivalinitalia.it/",
+    "sourceUrl": "",
     "updatedAt": "2026-07-16"
   },
   {
@@ -1605,7 +1605,7 @@ window.MYAVEZZANO_EVENTS = [
     "imageAlt": "Notte Bianca - Centro cittadino, Lecce nei Marsi",
     "imageSource": "Immagine tematica MyAvezzano",
     "isRealPhoto": false,
-    "sourceUrl": "https://www.festivalinitalia.it/",
+    "sourceUrl": "",
     "updatedAt": "2026-07-16"
   },
   {
@@ -1625,6 +1625,7 @@ window.MYAVEZZANO_EVENTS = [
     "imageSource": "Immagine tematica MyAvezzano",
     "isRealPhoto": false,
     "sourceUrl": "https://www.festivalinitalia.it/festival/festeggiamenti-santi-patroni-aielli",
+    "sourceType": "secondary",
     "updatedAt": "2026-07-16"
   },
   {
@@ -1642,7 +1643,7 @@ window.MYAVEZZANO_EVENTS = [
     "imageAlt": "Finale Regionale Karaoke Abruzzo - Piazza Matteotti, Castellafiume",
     "imageSource": "Immagine tematica MyAvezzano",
     "isRealPhoto": false,
-    "sourceUrl": "https://www.festivalinitalia.it/",
+    "sourceUrl": "",
     "updatedAt": "2026-07-16"
   },
   {
@@ -1660,7 +1661,7 @@ window.MYAVEZZANO_EVENTS = [
     "imageAlt": "Sagra delle Pappardelle - Ortona dei Marsi",
     "imageSource": "Immagine tematica MyAvezzano",
     "isRealPhoto": false,
-    "sourceUrl": "https://www.festivalinitalia.it/",
+    "sourceUrl": "",
     "updatedAt": "2026-07-16"
   },
   {
@@ -1680,6 +1681,7 @@ window.MYAVEZZANO_EVENTS = [
     "imageSource": "Immagine tematica MyAvezzano",
     "isRealPhoto": false,
     "sourceUrl": "https://www.festivalinitalia.it/festival/festa-madonna-assunta-san-luigi-gonzaga-pescina",
+    "sourceType": "secondary",
     "updatedAt": "2026-07-16"
   },
   {
@@ -1698,7 +1700,7 @@ window.MYAVEZZANO_EVENTS = [
     "imageAlt": "Festa di San Rocco - Bisegna",
     "imageSource": "Immagine tematica MyAvezzano",
     "isRealPhoto": false,
-    "sourceUrl": "https://www.festivalinitalia.it/",
+    "sourceUrl": "",
     "updatedAt": "2026-07-16"
   },
   {
@@ -1716,7 +1718,7 @@ window.MYAVEZZANO_EVENTS = [
     "imageAlt": "Bandabardo - Pescasseroli",
     "imageSource": "Immagine tematica MyAvezzano",
     "isRealPhoto": false,
-    "sourceUrl": "https://www.festivalinitalia.it/",
+    "sourceUrl": "",
     "updatedAt": "2026-07-16",
     "importance": "high",
     "featured": true,
@@ -1738,7 +1740,7 @@ window.MYAVEZZANO_EVENTS = [
     "imageAlt": "Festival Siloniano - Pescina",
     "imageSource": "Immagine tematica MyAvezzano",
     "isRealPhoto": false,
-    "sourceUrl": "https://www.festivalinitalia.it/",
+    "sourceUrl": "",
     "updatedAt": "2026-07-16"
   },
   {
@@ -1757,7 +1759,7 @@ window.MYAVEZZANO_EVENTS = [
     "imageAlt": "Festa di Santa Maria Goretti - San Benedetto dei Marsi",
     "imageSource": "Immagine tematica MyAvezzano",
     "isRealPhoto": false,
-    "sourceUrl": "https://www.festivalinitalia.it/",
+    "sourceUrl": "",
     "updatedAt": "2026-07-16"
   }
 ];

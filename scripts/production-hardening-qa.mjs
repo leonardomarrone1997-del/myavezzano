@@ -115,12 +115,86 @@ try {
     "coupon benvenuto",
     "aperitivo lungo in centro",
     "saldi weekend",
-    "fitlab avezzano"
+    "fitlab avezzano",
+    "Extra saldo weekend",
+    "Solo con QR MyAvezzano",
+    "AVZ-DELLOLIO-WEEKEND",
+    "Consiglio ora",
+    "promo e shopping",
+    "95 appuntamenti"
   ];
 
   await gotoChecked(`${baseUrl}/?prod=1`, "home produzione");
   if (await page.evaluate(() => window.MYAVEZZANO_IS_DEMO)) fail("la modalità produzione locale non è attiva con ?prod=1");
   await textMustNotContain(page, forbiddenPublicText, "home produzione");
+  const homeVisibleText = await page.locator("body").innerText();
+  if (/Dell'Olio 1920/i.test(homeVisibleText)) fail("home produzione mostra Dell'Olio 1920 come contenuto promozionale");
+  if (/I Cinque Pini[\s\S]{0,80}Consiglio ora/i.test(homeVisibleText)) fail("home produzione mostra I Cinque Pini come consiglio non verificato");
+
+  await page.locator("[data-view-target='summer']").click();
+  await page.locator("#summerGrid .agenda-event").first().waitFor({ state: "visible", timeout: 5000 });
+  await page.locator("#citySelector").selectOption("all");
+  await page.waitForTimeout(150);
+  const metricCheck = await page.evaluate(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    const events = window.MYAVEZZANO_EVENTS || [];
+    const isLongRunningProgram = (event) => {
+      const start = new Date(`${event.date}T12:00:00`);
+      const end = new Date(`${event.endDate || event.date}T12:00:00`);
+      const duration = Math.max(1, Math.round((end - start) / 86400000) + 1);
+      const text = [event.title, event.time, event.detail, event.price, event.category].filter(Boolean).join(" ").toLowerCase();
+      return duration > 7 || /date variabili|orari vari|centro estivo|centri estivi|iscrizioni|programma|voucher/.test(text);
+    };
+    const future = events.filter((event) =>
+      String(event.date || "") >= today ||
+      (!isLongRunningProgram(event) && String(event.date || "") <= today && String(event.endDate || event.date || "") >= today)
+    );
+    const summer = future.filter((event) => String(event.date || "") >= "2026-06-21" && String(event.date || "") <= "2026-09-22");
+    const avezzano = future.filter((event) => event.area === "Avezzano");
+    const alba = future.filter((event) => event.area === "Alba Fucens");
+    const readMetric = (id) => {
+      const row = document.querySelector(id);
+      return {
+        label: row?.querySelector("span")?.textContent?.trim() || "",
+        value: Number(row?.querySelector("strong")?.textContent?.trim() || "NaN")
+      };
+    };
+    return {
+      expected: { future: future.length, summer: summer.length, avezzano: avezzano.length, alba: alba.length },
+      actual: {
+        future: readMetric("#summerMetricFuture"),
+        summer: readMetric("#summerMetricProgram"),
+        avezzano: readMetric("#summerMetricAvezzano"),
+        alba: readMetric("#summerMetricAlba")
+      }
+    };
+  });
+  if (metricCheck.actual.future.value !== metricCheck.expected.future || !/Eventi futuri nella Marsica/.test(metricCheck.actual.future.label)) {
+    fail(`conteggio Marsica incoerente: ${JSON.stringify(metricCheck)}`);
+  }
+  if (metricCheck.actual.summer.value !== metricCheck.expected.summer || !/cartellone Estate 2026/.test(metricCheck.actual.summer.label)) {
+    fail(`conteggio Estate incoerente: ${JSON.stringify(metricCheck)}`);
+  }
+  if (metricCheck.actual.avezzano.value !== metricCheck.expected.avezzano || !/Eventi futuri ad Avezzano/.test(metricCheck.actual.avezzano.label)) {
+    fail(`conteggio Avezzano incoerente: ${JSON.stringify(metricCheck)}`);
+  }
+  if (metricCheck.actual.alba.value !== metricCheck.expected.alba || !/Eventi futuri ad Alba Fucens/.test(metricCheck.actual.alba.label)) {
+    fail(`conteggio Alba Fucens incoerente: ${JSON.stringify(metricCheck)}`);
+  }
+
+  await page.locator("#citySelector").selectOption("Avezzano");
+  await page.waitForTimeout(150);
+  const avezzanoMetric = await page.evaluate(() => {
+    const row = document.querySelector("#summerMetricFuture");
+    return {
+      label: row?.querySelector("span")?.textContent?.trim() || "",
+      value: row?.querySelector("strong")?.textContent?.trim() || "",
+      duplicateVisible: !document.querySelector("#summerMetricAvezzano")?.hidden
+    };
+  });
+  if (!/eventi futuri ad Avezzano/i.test(avezzanoMetric.label) || avezzanoMetric.duplicateVisible) {
+    fail(`metrica Avezzano duplicata o non chiara: ${JSON.stringify(avezzanoMetric)}`);
+  }
 
   const profileCounts = await page.locator("#homeProfileCoupons, #homeProfileEvents, #homeProfilePoints").evaluateAll((nodes) => nodes.map((node) => node.textContent?.trim()));
   if (profileCounts.some((value) => value !== "0")) fail(`profilo ospite non vuoto in home: ${profileCounts.join(", ")}`);
@@ -179,7 +253,6 @@ try {
   if (/"@type":\s*"Event"/.test(estateText)) fail("estate-2026 contiene Event JSON-LD statico non verificato");
 
   const eventFiles = (await readdir(path.join(publicDir, "eventi"))).filter((file) => file.endsWith(".html"));
-  let verifiedPages = 0;
   let unverifiedPages = 0;
   const unverifiedUrls = [];
   for (const file of eventFiles) {
@@ -189,17 +262,20 @@ try {
     const isNoindex = /<meta name="robots" content="noindex, follow"/.test(html);
     if (/"availability":\s*"https:\/\/schema\.org\/InStock"/.test(html)) fail(`${file} contiene disponibilita InStock fittizia`);
     if (/"name":\s*"Non disponibile"/.test(html)) fail(`${file} contiene organizer JSON-LD fittizio`);
+    if (/sameAs":\s*"https:\/\/www\.festivalinitalia\.it\/?"/.test(html)) fail(`${file} contiene sameAs verso homepage generica`);
+    if (/https:\/\/www\.festivalinitalia\.it\/?["<]/.test(html)) fail(`${file} contiene fonte generica Festival in Italia`);
+    if (html.includes("Fonte ufficiale") && html.includes("festivalinitalia.it")) fail(`${file} mostra Fonte ufficiale per una fonte secondaria`);
+    if (html.includes("Fonte consultata") && (hasEventJsonLd || isIndexable)) fail(`${file} indicizza o struttura un evento con sola fonte secondaria`);
     if (!html.includes("Prezzo / Biglietto")) fail(`${file} non mostra il campo prezzo/biglietto`);
-    if (isIndexable && hasEventJsonLd) verifiedPages += 1;
     if (isNoindex && !hasEventJsonLd) {
       unverifiedPages += 1;
       unverifiedUrls.push(`/eventi/${file}`);
     }
   }
-  if (!verifiedPages) fail("nessuna pagina evento verificata indicizzabile");
   if (!unverifiedPages) fail("nessuna pagina evento non verificata con noindex");
 
   const sitemapText = await readPublicText("sitemap.xml");
+  if (sitemapText.includes("festivalinitalia.it")) fail("sitemap contiene riferimenti a fonti secondarie");
   for (const url of unverifiedUrls) {
     if (sitemapText.includes(url)) fail(`sitemap contiene evento non verificato: ${url}`);
   }
@@ -209,6 +285,17 @@ try {
   const lievitoIndex = eventTitles.findIndex((title) => title.includes("Lievito Madre"));
   const laudatoIndex = eventTitles.findIndex((title) => title.includes("Laudato"));
   if (lievitoIndex >= 0 && laudatoIndex >= 0 && lievitoIndex > laudatoIndex) fail("gli eventi dello stesso giorno non sono ordinati per ora");
+
+  await gotoChecked(`${baseUrl}/eventi.html`, "eventi statici");
+  const staticEventTitles = await page.locator("#eventsSeoList .seo-card h3").evaluateAll((nodes) => nodes.map((node) => node.textContent?.trim()).filter(Boolean));
+  const staticLievitoIndex = staticEventTitles.findIndex((title) => title.includes("Lievito Madre"));
+  const staticLaudatoIndex = staticEventTitles.findIndex((title) => title.includes("Laudato"));
+  if (staticLievitoIndex >= 0 && staticLaudatoIndex >= 0 && staticLievitoIndex > staticLaudatoIndex) {
+    fail("eventi.html non ordina gli eventi del 17 luglio per orario");
+  }
+
+  const eventsDataText = await readPublicText("events-data.js");
+  if (eventsDataText.includes('"sourceUrl": "https://www.festivalinitalia.it/"')) fail("events-data contiene homepage generica Festival in Italia");
 
   for (const viewport of [
     { width: 320, height: 740 },

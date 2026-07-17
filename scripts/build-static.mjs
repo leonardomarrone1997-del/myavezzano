@@ -123,9 +123,32 @@ function eventFallbackFor(event = {}) {
   return eventAreaImages[event.area] || eventThemeImages[event.category] || eventFallbackImage;
 }
 
+function isGenericSourceUrl(url = "") {
+  if (!url) return false;
+  try {
+    const parsed = new URL(url);
+    const pathname = parsed.pathname.replace(/\/+$/, "");
+    return !pathname || pathname === "";
+  } catch {
+    return false;
+  }
+}
+
+function normalizedSourceType(event = {}, sourceUrl = "") {
+  if (event.sourceType) return event.sourceType;
+  if (event.officialUrl) return "official";
+  return sourceUrl ? "secondary" : "";
+}
+
+function eventOfficialUrl(event = {}) {
+  const sourceType = event.sourceType || "";
+  const candidate = event.officialUrl || (sourceType === "official" ? event.sourceUrl : "");
+  return candidate && !isGenericSourceUrl(candidate) ? candidate : "";
+}
+
 function eventIsVerified(event = {}) {
   const status = String(event.verificationStatus || event.status || "").toLowerCase();
-  return Boolean(event.sourceUrl && ["verified", "confermato", "confirmed"].includes(status));
+  return Boolean(event.sourceType === "official" && eventOfficialUrl(event) && ["verified", "confermato", "confirmed"].includes(status));
 }
 
 function eventSortTime(event = {}) {
@@ -148,6 +171,14 @@ function normalizeEvent(event) {
   const isRealPhoto = Boolean(!fallbackImageUsed && event.image && event.isRealPhoto);
   const importance = event.importance || (event.featured ? "high" : "normal");
   const importantByTitle = importantEventKeywords.some((keyword) => String(event.title || "").toLowerCase().includes(keyword));
+  const rawSourceUrl = event.sourceUrl || "";
+  const sourceUrl = isGenericSourceUrl(rawSourceUrl) ? "" : rawSourceUrl;
+  const sourceType = normalizedSourceType(event, sourceUrl);
+  const officialUrl = sourceType === "official" && !isGenericSourceUrl(event.officialUrl || sourceUrl) ? (event.officialUrl || sourceUrl) : "";
+  const defaultStatus = officialUrl ? "confermato" : (sourceUrl ? "segnalato" : "da verificare");
+  const incomingStatus = String(event.status || event.verificationStatus || "").toLowerCase();
+  const safeStatus = officialUrl || incomingStatus === "annullato" ? (event.status || defaultStatus) : defaultStatus;
+  const safeVerificationStatus = officialUrl ? (event.verificationStatus || safeStatus) : defaultStatus;
   return {
     ...event,
     id,
@@ -158,11 +189,12 @@ function normalizeEvent(event) {
     imageAlt: event.imageAlt || `${event.title} - ${event.place}`,
     imageSource: fallbackImageUsed ? "Immagine tematica MyAvezzano" : (event.imageSource || (isRealPhoto ? "Fonte evento" : "Fallback neutro MyAvezzano")),
     isRealPhoto,
-    sourceUrl: event.sourceUrl || "",
+    sourceUrl,
+    sourceType,
     organizer: event.organizer || "",
-    verificationStatus: event.verificationStatus || (event.sourceUrl ? "confermato" : "da verificare"),
-    status: event.status || (event.sourceUrl ? "confermato" : "da verificare"),
-    officialUrl: event.officialUrl || event.sourceUrl || "",
+    verificationStatus: safeVerificationStatus,
+    status: safeStatus,
+    officialUrl,
     ticketUrl: event.ticketUrl || "",
     lastVerifiedAt: event.lastVerifiedAt || event.updatedAt || "Non disponibile",
     coordinates: event.coordinates || null,
@@ -249,10 +281,14 @@ function eventPage(event) {
   const imageAlt = escapeHtml(event.imageAlt);
   const imageSource = escapeHtml(event.imageSource);
   const isImportant = event.featured || event.importance === "high";
-  const statusLabel = event.status === "confermato" ? "Confermato" : event.status === "annullato" ? "Annullato" : "Da verificare";
+  const statusLabel = event.status === "confermato" ? "Confermato" : event.status === "annullato" ? "Annullato" : event.status === "segnalato" ? "Segnalato" : "Da verificare";
   const organizer = escapeHtml(event.organizer || "Organizzatore non disponibile");
   const lastVerified = escapeHtml(event.lastVerifiedAt || "Non disponibile");
-  const officialLink = event.officialUrl ? `<a class="seo-link" href="${escapeHtml(event.officialUrl)}" rel="nofollow noreferrer" target="_blank">Fonte ufficiale</a>` : `<span class="seo-link disabled">Fonte non disponibile</span>`;
+  const sourceLink = event.officialUrl
+    ? `<a class="seo-link" href="${escapeHtml(event.officialUrl)}" rel="nofollow noreferrer" target="_blank">Fonte ufficiale</a>`
+    : event.sourceUrl
+      ? `<a class="seo-link" href="${escapeHtml(event.sourceUrl)}" rel="nofollow noreferrer" target="_blank">Fonte consultata</a>`
+      : `<span class="seo-link disabled">Fonte non disponibile</span>`;
   const robots = eventIsVerified(event) ? "index, follow" : "noindex, follow";
 
   return `<!doctype html>
@@ -301,7 +337,7 @@ function eventPage(event) {
             <div><span>Organizzatore</span><strong>${organizer}</strong></div>
             <div><span>Ultima verifica</span><strong>${lastVerified}</strong></div>
           </div>
-          <div class="seo-actions">${officialLink}<a class="seo-link" href="../eventi.html">Torna al calendario</a></div>
+          <div class="seo-actions">${sourceLink}<a class="seo-link" href="../eventi.html">Torna al calendario</a></div>
         </section>
       </main>
       <footer class="seo-footer"><p>MyAvezzano raccoglie eventi e informazioni locali per Avezzano e area immediata. Scheda aggiornata il ${escapeHtml(event.updatedAt)}.</p><div class="seo-footer-links"><a href="../index.html">Home</a><a href="../sitemap.xml">Sitemap</a></div></footer>
@@ -319,6 +355,8 @@ function summerEventsSection(events) {
   const verified = summer.filter(eventIsVerified);
   const fallback = summer.filter((event) => !eventIsVerified(event));
   const selected = [...verified, ...fallback].slice(0, 12);
+  const trustLabel = (event) => eventIsVerified(event) ? "Verificato" : (event.sourceUrl ? "Segnalato" : "Da verificare");
+  const trustClass = (event) => eventIsVerified(event) ? "success" : "warning";
   if (!selected.length) {
     return `<section class="seo-section" id="summerSeoEvents"><p class="seo-kicker">Calendario</p><h2>Prossimi eventi dell'Estate 2026</h2><p>Non risultano eventi futuri pubblicabili in questo momento.</p></section>`;
   }
@@ -328,7 +366,7 @@ function summerEventsSection(events) {
           <div class="seo-grid two">
             ${selected.map((event) => `
             <article class="seo-card">
-              <span class="pill ${eventIsVerified(event) ? "success" : "warning"}">${eventIsVerified(event) ? "Verificato" : "Da verificare"}</span>
+              <span class="pill ${trustClass(event)}">${trustLabel(event)}</span>
               <h3>${escapeHtml(event.title)}</h3>
               <ul class="seo-meta">
                 <li>${escapeHtml(eventDateLabel(event))}</li>
@@ -337,6 +375,29 @@ function summerEventsSection(events) {
               </ul>
               <p>${escapeHtml(event.place || "Luogo non disponibile")}</p>
               <a class="seo-link" href="eventi/${escapeHtml(event.id)}.html">Apri scheda evento</a>
+            </article>`).join("")}
+          </div>
+        </section>`;
+}
+
+function eventsPageSection(events) {
+  const selected = sortEvents(events.filter((event) => (event.endDate || event.date) >= buildDate)).slice(0, 18);
+  if (!selected.length) {
+    return `<section class="seo-section" id="eventsSeoList"><p class="seo-kicker">In evidenza</p><h2>Prossimi appuntamenti</h2><p>Non risultano eventi futuri pubblicabili in questo momento.</p></section>`;
+  }
+  return `<section class="seo-section" id="eventsSeoList">
+          <p class="seo-kicker">In evidenza</p>
+          <h2>Prossimi appuntamenti</h2>
+          <div class="seo-grid">
+            ${selected.map((event) => `
+            <article class="seo-card">
+              <span class="pill ${eventIsVerified(event) ? "success" : "warning"}">${eventIsVerified(event) ? "Verificato" : (event.sourceUrl ? "Segnalato" : "Da verificare")}</span>
+              <h3><a href="eventi/${escapeHtml(event.id)}.html">${escapeHtml(event.title)}</a></h3>
+              <ul class="seo-meta">
+                <li>${escapeHtml(eventDateLabel(event))} · ${escapeHtml(event.time || "Orario da verificare")}</li>
+                <li>${escapeHtml(event.place || "Luogo non disponibile")}</li>
+              </ul>
+              <p>${escapeHtml(event.detail || "Informazioni evento in aggiornamento.")}</p>
             </article>`).join("")}
           </div>
         </section>`;
@@ -400,6 +461,10 @@ await mkdir(eventOutput, { recursive: true });
 const estatePagePath = path.join(output, "estate-2026.html");
 const estatePage = await readFile(estatePagePath, "utf8");
 await writeFile(estatePagePath, cleanOutput(estatePage.replace("<!-- SUMMER_EVENTS_PLACEHOLDER -->", summerEventsSection(publicEvents))), "utf8");
+
+const eventsPagePath = path.join(output, "eventi.html");
+const eventsPage = await readFile(eventsPagePath, "utf8");
+await writeFile(eventsPagePath, cleanOutput(eventsPage.replace("<!-- EVENTS_LIST_PLACEHOLDER -->", eventsPageSection(publicEvents))), "utf8");
 
 await Promise.all(publicEvents.map((event) => writeFile(path.join(eventOutput, `${event.id}.html`), cleanOutput(withBuildTokens(eventPage(event))), "utf8")));
 await writeFile(path.join(output, "sitemap.xml"), cleanOutput(sitemapXml(publicEvents)), "utf8");
