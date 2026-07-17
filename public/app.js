@@ -4977,7 +4977,7 @@ document.addEventListener("submit", (event) => {
   renderUserProfile("settings");
 });
 
-document.querySelector("#publishDemo").addEventListener("click", () => {
+document.querySelector("#publishDemo")?.addEventListener("click", () => {
   const button = document.querySelector("#publishDemo");
   if (IS_PRODUCTION) {
     showUnavailableFeature("La pubblicazione reale richiede un pannello commerciante verificato.");
@@ -5318,7 +5318,7 @@ function renderMerchantBilling(subscription = getMerchantSubscription()) {
   }
   summary.innerHTML = `
     <div><span>Ragione sociale</span><strong>${notificationText(subscription.businessName)}</strong></div>
-    <div><span>Partita IVA</span><strong>${notificationText(fiscal.vatNumber || "Non inserita")}</strong></div>
+    <div><span>Dato fiscale</span><strong>${notificationText(fiscal.vatNumber || "Non inserito")}</strong></div>
     <div><span>SDI / PEC</span><strong>${notificationText(fiscal.channel || "Non inserito")}</strong></div>
     <div><span>Prossima fattura</span><strong>${subscription.price} EUR/mese + IVA</strong></div>
   `;
@@ -5365,11 +5365,13 @@ async function maybeSendBrowserNotification(title, body) {
 }
 
 function setFeedback(message, type = "info") {
+  if (!authFeedback) return;
   authFeedback.textContent = message;
   authFeedback.className = `auth-feedback ${type}`;
 }
 
 function setMerchantFeedback(message, type = "info") {
+  if (!merchantCheckoutFeedback) return;
   merchantCheckoutFeedback.textContent = message;
   merchantCheckoutFeedback.className = `auth-feedback ${type}`;
 }
@@ -5382,26 +5384,32 @@ function closeSignup() {
 function setAuthMode(mode) {
   authMode = mode;
   const user = getStoredUser();
-  document.querySelector("#showRegisterMode").classList.toggle("active", mode === "register");
-  document.querySelector("#showLoginMode").classList.toggle("active", mode === "login");
-  document.querySelector("#signupTitle").textContent = mode === "login" ? "Accedi a MyAvezzano" : "Registrati a MyAvezzano";
-  signupCopy.textContent = mode === "login"
-    ? "Accedi con email e password per continuare."
-    : "Crea il tuo account per salvare eventi, coupon, nuove aperture e reminder cittadini.";
+  document.querySelector("#showRegisterMode")?.classList.toggle("active", mode === "register");
+  document.querySelector("#showLoginMode")?.classList.toggle("active", mode === "login");
+  const title = document.querySelector("#signupTitle");
+  if (title) title.textContent = "Account in preparazione";
+  if (signupCopy) signupCopy.textContent = "La versione pubblica non raccoglie credenziali o dati personali. Gli eventi possono essere salvati soltanto su questo dispositivo.";
   document.querySelectorAll(".register-only").forEach((item) => { item.hidden = mode === "login" || Boolean(user); });
-  document.querySelector("#socialSignupActions").hidden = mode === "login" || Boolean(user);
-  document.querySelector("#authDivider").hidden = mode === "login" || Boolean(user);
-  createAccountButton.hidden = mode !== "register" || Boolean(user);
-  loginAccountButton.hidden = mode !== "login" || Boolean(user);
-  recoverPasswordButton.hidden = mode !== "login" || Boolean(user);
-  signupName.closest(".field").hidden = mode === "login" || Boolean(user);
-  phoneField.hidden = true;
+  const socialActions = document.querySelector("#socialSignupActions");
+  const authDivider = document.querySelector("#authDivider");
+  if (socialActions) socialActions.hidden = mode === "login" || Boolean(user);
+  if (authDivider) authDivider.hidden = mode === "login" || Boolean(user);
+  if (createAccountButton) createAccountButton.hidden = mode !== "register" || Boolean(user);
+  if (loginAccountButton) loginAccountButton.hidden = mode !== "login" || Boolean(user);
+  if (recoverPasswordButton) recoverPasswordButton.hidden = mode !== "login" || Boolean(user);
+  if (signupName?.closest(".field")) signupName.closest(".field").hidden = mode === "login" || Boolean(user);
+  if (phoneField) phoneField.hidden = true;
 }
 
 function openSignup(mode = "register") {
   if (IS_PRODUCTION) {
-    showToast("Account in preparazione: non raccogliamo dati personali in questa versione pubblica.", "info");
-    switchView("profile");
+    const title = document.querySelector("#signupTitle");
+    if (title) title.textContent = "Account in preparazione";
+    if (signupCopy) signupCopy.textContent = "La versione pubblica non raccoglie credenziali o dati personali. Gli eventi possono essere salvati soltanto su questo dispositivo.";
+    setFeedback("");
+    authOverlay.classList.add("active");
+    authOverlay.setAttribute("aria-hidden", "false");
+    animateActiveView(authOverlay);
     return;
   }
   const user = getStoredUser();
@@ -5439,11 +5447,13 @@ function updateAuthUi() {
   if (homeCoupons) homeCoupons.textContent = user ? profileCouponRows().length : 0;
   if (homeEvents) homeEvents.textContent = user ? profileEventRows().length : 0;
   if (homePoints) homePoints.textContent = user ? levelState.points.toLocaleString("it-IT") : 0;
-  signupCopy.textContent = user
-    ? `Ciao ${user.name}, il tuo account ${user.role === "admin" ? "admin" : "utente"} è attivo.`
-    : "Crea il tuo account per salvare eventi, coupon, nuove aperture e reminder cittadini.";
+  if (signupCopy) {
+    signupCopy.textContent = user
+      ? `Ciao ${user.name}, il tuo account ${user.role === "admin" ? "admin" : "utente"} e' attivo.`
+      : "La versione pubblica non raccoglie credenziali o dati personali. Gli eventi possono essere salvati soltanto su questo dispositivo.";
+  }
 
-  logoutAccountButton.hidden = !user;
+  if (logoutAccountButton) logoutAccountButton.hidden = !user;
   authOverlay.querySelectorAll(".field, .legal-check, .signup-actions, .divider, #createAccount, #loginAccount, #recoverPassword").forEach((item) => {
     item.hidden = Boolean(user) || item.hidden;
   });
@@ -5541,7 +5551,11 @@ document.addEventListener("click", (event) => {
   closeNotificationMenu();
 });
 
-document.querySelector("#closeSignup").addEventListener("click", () => {
+document.querySelector("#closeSignup")?.addEventListener("click", () => {
+  closeSignup();
+});
+
+document.querySelector("#accountInfoConfirm")?.addEventListener("click", () => {
   closeSignup();
 });
 
@@ -5560,23 +5574,23 @@ document.querySelectorAll("[data-auth-provider]").forEach((button) => {
   });
 });
 
-document.querySelector("#showRegisterMode").addEventListener("click", () => {
+document.querySelector("#showRegisterMode")?.addEventListener("click", () => {
   setAuthMode("register");
   setFeedback("");
 });
 
-document.querySelector("#showLoginMode").addEventListener("click", () => {
+document.querySelector("#showLoginMode")?.addEventListener("click", () => {
   setAuthMode("login");
   setFeedback("");
 });
 
-document.querySelector("#phoneSignupMode").addEventListener("click", () => {
+document.querySelector("#phoneSignupMode")?.addEventListener("click", () => {
   phoneField.hidden = false;
-  signupPhone.focus();
-  setFeedback("Inserisci il numero di telefono e premi Crea account.", "info");
+  signupPhone?.focus();
+  setFeedback("Inserisci il numero di telefono e conferma.", "info");
 });
 
-createAccountButton.addEventListener("click", async () => {
+createAccountButton?.addEventListener("click", async () => {
   if (IS_PRODUCTION) {
     setFeedback("Registrazione disattivata nella versione pubblica: il backend sicuro e' in preparazione.", "info");
     return;
@@ -5665,7 +5679,7 @@ createAccountButton.addEventListener("click", async () => {
   }, 800);
 });
 
-loginAccountButton.addEventListener("click", async () => {
+loginAccountButton?.addEventListener("click", async () => {
   if (IS_PRODUCTION) {
     setFeedback("Login disattivato nella versione pubblica: gli account reali saranno attivati con backend sicuro.", "info");
     return;
@@ -5701,7 +5715,7 @@ loginAccountButton.addEventListener("click", async () => {
   }, 700);
 });
 
-recoverPasswordButton.addEventListener("click", () => {
+recoverPasswordButton?.addEventListener("click", () => {
   if (IS_PRODUCTION) {
     setFeedback("Recupero password non disponibile nella versione pubblica senza servizio email sicuro.", "info");
     return;
@@ -5717,7 +5731,7 @@ recoverPasswordButton.addEventListener("click", () => {
   setFeedback("Richiesta registrata. In produzione invieremo una email sicura di reset.", "success");
 });
 
-logoutAccountButton.addEventListener("click", () => {
+logoutAccountButton?.addEventListener("click", () => {
   localStorage.removeItem(AUTH_STORAGE_KEY);
   signupName.value = "";
   signupSurname.value = "";
@@ -5768,7 +5782,7 @@ document.querySelector("#profilePhotoInput").addEventListener("change", (event) 
 document.querySelectorAll(".start-plan").forEach((button) => {
   button.addEventListener("click", () => {
     if (IS_PRODUCTION) {
-      merchantCheckout.hidden = true;
+      if (merchantCheckout) merchantCheckout.hidden = true;
       setMerchantFeedback("Pagamenti e abbonamenti non sono attivi nella versione pubblica. Usa la richiesta accesso al pilot.", "info");
       showToast("Area commercianti in preparazione: attivazione reale solo con verifica.", "info");
       return;
@@ -5779,9 +5793,12 @@ document.querySelectorAll(".start-plan").forEach((button) => {
       price: button.dataset.price
     };
 
-    document.querySelector("#selectedPlanBadge").textContent = `${selectedMerchantPlan.plan} - ${selectedMerchantPlan.price} EUR/mese`;
-    merchantCheckout.hidden = false;
-    merchantCheckout.scrollIntoView({ behavior: "smooth", block: "center" });
+    const selectedPlanBadge = document.querySelector("#selectedPlanBadge");
+    if (selectedPlanBadge) selectedPlanBadge.textContent = `${selectedMerchantPlan.plan} - ${selectedMerchantPlan.price} EUR/mese`;
+    if (merchantCheckout) {
+      merchantCheckout.hidden = false;
+      merchantCheckout.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
 
     if (!user) {
       setMerchantFeedback("Per creare un negozio devi prima registrarti o accedere.", "error");
@@ -5793,7 +5810,7 @@ document.querySelectorAll(".start-plan").forEach((button) => {
   });
 });
 
-document.querySelector("#confirmMerchantPayment").addEventListener("click", () => {
+document.querySelector("#confirmMerchantPayment")?.addEventListener("click", () => {
   if (IS_PRODUCTION) {
     setMerchantFeedback("Attivazione disattivata nella versione pubblica: abbonamenti, pagamenti e documenti fiscali richiedono backend e gateway sicuri.", "info");
     return;
@@ -5861,13 +5878,13 @@ document.querySelector("#confirmMerchantPayment").addEventListener("click", () =
   setTimeout(renderMerchantArea, 700);
 });
 
-document.querySelector("#cancelMerchantPlan").addEventListener("click", () => {
+document.querySelector("#cancelMerchantPlan")?.addEventListener("click", () => {
   if (IS_PRODUCTION) {
     setMerchantFeedback("Nessun piano reale da annullare nella versione pubblica.", "info");
     return;
   }
   localStorage.removeItem(MERCHANT_STORAGE_KEY);
-  merchantCheckout.hidden = true;
+  if (merchantCheckout) merchantCheckout.hidden = true;
   setMerchantFeedback("Piano annullato.", "info");
   renderMerchantArea();
 });

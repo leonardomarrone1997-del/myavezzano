@@ -60,7 +60,7 @@
         ]
       }
     </script>
-    <link rel="stylesheet" href="styles.css?v=fc9ebb7" />
+    <link rel="stylesheet" href="styles.css?v=9d96939" />
   </head>
 <body class="view-feed">
     <a class="skip-link" href="#mainContent">Vai al contenuto</a>
@@ -546,284 +546,28 @@
             <section class="merchant-pricing-hero">
               <div>
                 <p class="eyebrow">Per commercianti</p>
-                <h2>Pilot per attività locali</h2>
-                <p>Pubblica eventi, coupon, nuove aperture, foto e offerte. Tutte le attività commerciali accedono con un piano a pagamento.</p>
-              </div>
-              <div class="price-badge">
-                <span>da</span>
-                <strong>12,99</strong>
-                <small>EUR/mese</small>
+                <h2>Pilot attivita locali non attivo</h2>
+                <p>La versione pubblica non attiva pagamenti, abbonamenti, fatture o candidature online. L'area commercianti arrivera solo con verifica, contratto e strumenti sicuri.</p>
               </div>
             </section>
 
             <section class="pricing-grid">
-              <article class="pricing-card">
-                <p class="eyebrow">Starter</p>
-                <h2>12,99 EUR/mese</h2>
-                <p>Per iniziare con una scheda negozio, posizione in mappa e offerte base.</p>
-                <ul>
-                  <li>Profilo attività</li>
-                  <li>1 coupon attivo</li>
-                  <li>3 contenuti al mese</li>
-                  <li>Presenza in mappa</li>
-                </ul>
-                <button class="primary-action full-button start-plan" data-plan="Starter" data-price="12,99" type="button">Attiva Starter</button>
-              </article>
               <article class="pricing-card featured">
-                <p class="eyebrow">Pro</p>
-                <h2>29,99 EUR/mese</h2>
-                <p>Per locali e negozi che vogliono spingere eventi, offerte e coupon.</p>
+                <p class="eyebrow">Stato pubblico</p>
+                <h2>Nessun pagamento disponibile</h2>
+                <p>MyAvezzano mostra eventi, coupon dimostrativi e salvataggi locali. Le funzioni business saranno valutate in una fase successiva.</p>
                 <ul>
-                  <li>Contenuti illimitati</li>
-                  <li>Coupon QR multipli</li>
-                  <li>Eventi e reminder</li>
-                  <li>Statistiche conversione</li>
+                  <li>Candidature non disponibili</li>
+                  <li>Pagamenti non disponibili</li>
+                  <li>Dati fiscali non raccolti</li>
+                  <li>Contatti commerciali in preparazione</li>
                 </ul>
-                <button class="primary-action full-button start-plan" data-plan="Pro" data-price="29,99" type="button">Attiva Pro</button>
+                <button class="primary-action full-button" data-action="merchant-pilot-request" type="button">Area in preparazione</button>
               </article>
-              <article class="pricing-card">
-                <p class="eyebrow">Gold</p>
-                <h2>59,99 EUR/mese</h2>
-                <p>Per campagne locali, notifiche per web app e massima visibilità cittadina.</p>
-                <ul>
-                  <li>Posizionamento prioritario</li>
-                  <li>Notifiche promozionali per web app</li>
-                  <li>Analytics avanzate</li>
-                  <li>Supporto prioritario</li>
-                </ul>
-                <button class="primary-action full-button start-plan" data-plan="Gold" data-price="59,99" type="button">Attiva Gold</button>
-              </article>
-            </section>
-
-            <section class="panel checkout-panel" id="merchantCheckout" hidden>
-              <div class="panel-head">
-                <h2>Checkout negozio</h2>
-                <span class="pill" id="selectedPlanBadge">Starter</span>
-              </div>
-              <div class="auth-feedback" id="merchantCheckoutFeedback" role="status" aria-live="polite"></div>
-              <div class="checkout-grid">
-                <label class="field">
-                  <span>Nome attività</span>
-                  <input id="merchantBusinessName" type="text" placeholder="Es. Caffè Centrale" />
-                </label>
-                <label class="field">
-                  <span>Categoria</span>
-                  <input id="merchantBusinessCategory" type="text" placeholder="Bar, ristorante, negozio..." />
-                </label>
-                <label class="field">
-                  <span>Riferimento commerciale</span>
-                  <input id="merchantPaymentMethod" type="text" placeholder="Telefono, email o referente" />
-                </label>
-                <label class="field">
-                  <span>Partita IVA</span>
-                  <input id="merchantVatNumber" type="text" inputmode="numeric" maxlength="16" placeholder="Es. 01234567890" />
-                </label>
-                <label class="field">
-                  <span>Codice SDI o PEC</span>
-                  <input id="merchantFiscalChannel" type="text" maxlength="80" placeholder="SDI oppure PEC fatturazione" />
-                </label>
-                <label class="field full-field">
-                  <span>Indirizzo fatturazione</span>
-                  <input id="merchantBillingAddress" type="text" placeholder="Via, civico, CAP, comune e provincia" />
-                </label>
-                <button class="primary-action full-button" id="confirmMerchantPayment" type="button">Richiedi attivazione</button>
-              </div>
-              <p class="legal">L'attivazione commerciale richiederà conferma, contratto e strumenti di pagamento sicuri.</p>
             </section>
           </div>
 
-          <div class="merchant-dashboard" id="merchantDashboard" hidden>
-            <section class="panel merchant-subscription-panel">
-              <div>
-                <p class="eyebrow">Abbonamento attivo</p>
-                <h2 id="merchantSubscriptionTitle">Piano Pro</h2>
-                <p id="merchantSubscriptionMeta">Dashboard negozio abilitata.</p>
-              </div>
-              <button class="ghost" id="cancelMerchantPlan" type="button">Annulla piano</button>
-            </section>
-
-            <div class="merchant-layout">
-              <section class="panel">
-              <div class="panel-head">
-                <h2>Dashboard commerciante</h2>
-                <span class="pill success" id="merchantPlanPill">Piano attivo</span>
-              </div>
-              <div class="metrics">
-                <div><span>Visite profilo</span><strong>1.284</strong></div>
-                <div><span>Visualizzazioni 7gg</span><strong>8.920</strong></div>
-                <div><span>Coupon usati</span><strong>418</strong></div>
-                <div><span>Conversione</span><strong>12,6%</strong></div>
-              </div>
-            </section>
-
-            <section class="panel composer">
-              <h2>Pubblica contenuto</h2>
-              <div class="composer-preview"></div>
-              <textarea placeholder="Scrivi un post, una nuova offerta o lancia un evento..."></textarea>
-              <div class="composer-actions">
-                <button class="ghost" data-action="upload-media" type="button">Foto/video</button>
-                <button class="ghost" data-action="create-coupon" type="button">Coupon QR</button>
-                <button class="primary-action" id="publishDemo" type="button">Pubblica</button>
-              </div>
-            </section>
-
-            <section class="panel merchant-notification-panel" id="merchantNotificationPanel">
-              <div class="panel-head">
-                <div>
-                  <p class="eyebrow">Canale Gold</p>
-                  <h2>Notifica promozionale</h2>
-                </div>
-                <span class="pill warning" id="merchantNotificationGate">Gold</span>
-              </div>
-              <div class="notification-composer">
-                <label class="field">
-                  <span>Titolo notifica</span>
-                  <input id="merchantNotificationTitle" type="text" maxlength="64" placeholder="Es. Aperitivo 2x1 stasera" />
-                </label>
-                <label class="field">
-                  <span>Messaggio</span>
-                  <textarea id="merchantNotificationBody" maxlength="160" placeholder="Scrivi una promo chiara, senza parole offensive."></textarea>
-                </label>
-                <label class="field">
-                  <span>Target</span>
-                  <select id="merchantNotificationTarget">
-                    <option value="nearby">Utenti vicino al negozio</option>
-                    <option value="saved">Utenti che salvano coupon</option>
-                    <option value="events">Utenti interessati a eventi</option>
-                    <option value="all">Tutti gli utenti</option>
-                  </select>
-                </label>
-                <div class="auth-feedback" id="merchantNotificationFeedback" role="status" aria-live="polite"></div>
-                <div class="composer-actions">
-                  <button class="ghost" id="previewMerchantNotification" type="button">Anteprima</button>
-                  <button class="primary-action" id="sendMerchantNotification" type="button">Invia notifica</button>
-                </div>
-              </div>
-              <div class="notification-log" id="merchantNotificationLog"></div>
-            </section>
-
-            <section class="panel merchant-billing-panel">
-              <div class="panel-head">
-                <div>
-                  <p class="eyebrow">Dati fiscali</p>
-                  <h2>Richiesta documenti</h2>
-                </div>
-                <span class="pill success" id="merchantBillingStatus">Da attivare</span>
-              </div>
-              <div class="billing-summary" id="merchantBillingSummary"></div>
-              <div class="invoice-preview" id="merchantInvoicePreview"></div>
-              <div class="composer-actions">
-                <button class="ghost" id="downloadMerchantInvoice" type="button">Anteprima documento</button>
-                <button class="light-action" id="printMerchantInvoice" type="button">Prepara PDF</button>
-              </div>
-            </section>
-
-            <section class="panel">
-              <div class="panel-head">
-                <h2>Campagne attive</h2>
-                <button class="ghost" data-action="new-campaign" type="button">Nuova</button>
-              </div>
-              <div class="campaign-list">
-                <div><strong>Aperitivo 2x1</strong><span>228 salvataggi - 74 usi</span></div>
-                <div><strong>Evento DJ set</strong><span>130 prenotazioni - 22 ticket</span></div>
-                <div><strong>Story saldi weekend</strong><span>4.218 impression</span></div>
-              </div>
-            </section>
-            </div>
-          </div>
-        </section>
-
-        <section class="view" id="campaignView">
-          <section class="campaign-hero">
-            <div class="campaign-copy">
-              <p class="eyebrow">Piano pubblicitario</p>
-              <h2>MyAvezzano fuori dallo schermo</h2>
-              <p>Una sezione dedicata alla campagna fisica: QR in città, espositori da banco, vetrofanie, manifesti, materiali per eventi e pacchetti per commercianti.</p>
-              <div class="campaign-actions">
-                <a class="primary-action" href="assets/marketing/iavezzano-piano-pubblicitario.pptx" download>Scarica piano</a>
-                <button class="ghost" data-view-target="merchant" type="button">Area commercianti</button>
-              </div>
-            </div>
-            <figure class="campaign-visual">
-              <img src="assets/marketing/citta-live.webp" width="1672" height="941" alt="Concept Città Live MyAvezzano con app, QR e materiali pubblicitari" loading="lazy" decoding="async" />
-            </figure>
-          </section>
-
-          <section class="campaign-metrics" aria-label="Sintesi campagna">
-            <article>
-              <span>Touchpoint</span>
-              <strong>8+</strong>
-              <p>Banco, vetrina, manifesti, vela, flyer, sticker, card e stand.</p>
-            </article>
-            <article>
-              <span>Meccanica</span>
-              <strong>QR</strong>
-              <p>Scansiona, apri la PWA, salva coupon, eventi e punti.</p>
-            </article>
-            <article>
-              <span>Commercianti</span>
-              <strong>12,99</strong>
-              <p>Piano di ingresso per creare una presenza locale attiva.</p>
-            </article>
-          </section>
-
-          <section class="campaign-feature-grid">
-            <article class="campaign-feature is-large">
-              <img src="assets/marketing/touchpoint-kit.webp" width="1672" height="941" alt="Kit touchpoint MyAvezzano con espositori, vetrofanie, manifesti e stand" loading="lazy" decoding="async" />
-              <div>
-                <p class="eyebrow">Kit città</p>
-                <h3>Un’unica piattaforma, tanti punti di contatto</h3>
-                <p>La campagna collega app, mappa, eventi, coupon QR e area commercianti con materiali riconoscibili e coerenti.</p>
-              </div>
-            </article>
-            <article class="campaign-feature">
-              <img src="assets/marketing/trova-il-qr.webp" width="1672" height="941" alt="Concept Trova il QR con premi, coupon e punti" loading="lazy" decoding="async" />
-              <div>
-                <p class="eyebrow">Gamification</p>
-                <h3>Trova il QR</h3>
-                <p>Una caccia urbana leggera: i QR nei locali diventano scoperta, punti e vantaggi.</p>
-              </div>
-            </article>
-            <article class="campaign-feature">
-              <img src="assets/marketing/estate-avezzano-2026.webp" width="1672" height="941" alt="Campagna Estate Avezzano 2026 con calendario eventi e coupon" loading="lazy" decoding="async" />
-              <div>
-                <p class="eyebrow">Estate 2026</p>
-                <h3>Eventi, cultura e promozioni</h3>
-                <p>Un tema stagionale già pronto per calendario eventi, coupon, stand e comunicazione cittadina.</p>
-              </div>
-            </article>
-          </section>
-
-          <section class="panel campaign-playbook">
-            <div class="panel-head">
-              <div>
-                <p class="eyebrow">Come si usa</p>
-                <h2>Dal materiale fisico all’app</h2>
-              </div>
-              <a class="ghost" href="assets/marketing/iavezzano-piano-pubblicitario.pptx" download>Scarica PPT</a>
-            </div>
-            <div class="campaign-steps">
-              <article><strong>1</strong><span>Installa QR in vetrina, banco o locandina evento.</span></article>
-              <article><strong>2</strong><span>L’utente scansiona e apre MyAvezzano senza cercare nulla.</span></article>
-              <article><strong>3</strong><span>Trova eventi, coupon, mappa e attività vicino a sé.</span></article>
-              <article><strong>4</strong><span>Salva vantaggi, raccoglie punti e torna nei locali aderenti.</span></article>
-            </div>
-          </section>
-
-          <section class="campaign-gallery" aria-label="Concept grafici campagna">
-            <article>
-              <img src="assets/marketing/campagna-alternative.webp" width="1672" height="941" alt="Alternative grafiche MyAvezzano per materiali pubblicitari" loading="lazy" decoding="async" />
-              <div><strong>Alternative visuali</strong><span>Palette, espositori, vetrofanie, vele e materiali da banco.</span></div>
-            </article>
-            <article>
-              <img src="assets/marketing/citta-live.webp" width="1672" height="941" alt="Concept Città Live per app urbana MyAvezzano" loading="lazy" decoding="async" />
-              <div><strong>Città Live</strong><span>Concept elegante per una guida cittadina quotidiana.</span></div>
-            </article>
-            <article>
-              <img src="assets/marketing/trova-il-qr.webp" width="1672" height="941" alt="Concept Trova il QR per caccia urbana MyAvezzano" loading="lazy" decoding="async" />
-              <div><strong>Trova il QR</strong><span>Concept più giocoso per coinvolgere utenti e attività.</span></div>
-            </article>
-          </section>
+          <div class="merchant-dashboard" id="merchantDashboard" hidden></div>
         </section>
 
         <section class="view" id="adminView">
@@ -891,55 +635,13 @@
         <div class="signup-brand">
           <img src="assets/app-icon.svg" alt="MyAvezzano" />
           <div>
-            <p class="eyebrow">Benvenuto</p>
-            <h2 id="signupTitle">Registrati a MyAvezzano</h2>
+            <p class="eyebrow">Account</p>
+            <h2 id="signupTitle">Account in preparazione</h2>
           </div>
         </div>
-        <p class="signup-copy" id="signupCopy">Crea il tuo account o accedi per salvare eventi, coupon e preferenze.</p>
-        <div class="auth-mode-switch" role="tablist" aria-label="Accesso">
-          <button class="active" id="showRegisterMode" type="button">Registrati</button>
-          <button id="showLoginMode" type="button">Login</button>
-        </div>
+        <p class="signup-copy" id="signupCopy">La versione pubblica non raccoglie credenziali o dati personali. Gli eventi possono essere salvati soltanto su questo dispositivo.</p>
         <div class="auth-feedback" id="authFeedback" role="status" aria-live="polite"></div>
-        <div class="signup-actions" id="socialSignupActions">
-          <button class="auth-button google" data-auth-provider="Google" type="button"><span>G</span> Continua con Google</button>
-          <button class="auth-button phone" id="phoneSignupMode" type="button"><span>+39</span> Continua con telefono</button>
-          <button class="auth-button apple" data-auth-provider="Apple" type="button"><span>A</span> Continua con Apple</button>
-        </div>
-        <div class="divider" id="authDivider"><span>oppure</span></div>
-        <label class="field">
-          <span>Nome</span>
-          <input id="signupName" type="text" placeholder="Il tuo nome" autocomplete="name" />
-        </label>
-        <label class="field register-only">
-          <span>Cognome</span>
-          <input id="signupSurname" type="text" placeholder="Il tuo cognome" autocomplete="family-name" />
-        </label>
-        <label class="field">
-          <span>Email</span>
-          <input id="signupEmail" type="email" placeholder="nome@email.it" autocomplete="email" />
-        </label>
-        <label class="field">
-          <span>Password</span>
-          <input id="signupPassword" type="password" placeholder="Crea una password" autocomplete="new-password" />
-        </label>
-        <label class="field register-only">
-          <span>Conferma password</span>
-          <input id="signupPasswordConfirm" type="password" placeholder="Ripeti la password" autocomplete="new-password" />
-        </label>
-        <label class="field phone-field" id="phoneField" hidden>
-          <span>Telefono</span>
-          <input id="signupPhone" type="tel" placeholder="+39 333 1234567" autocomplete="tel" />
-        </label>
-        <label class="legal-check register-only">
-          <input id="acceptLegal" type="checkbox" />
-          <span>Accetto Privacy Policy, Termini e Cookie Policy.</span>
-        </label>
-        <button class="primary-action full-button" id="createAccount" type="button">Crea account</button>
-        <button class="primary-action full-button" id="loginAccount" type="button" hidden>Accedi</button>
-        <button class="ghost full-button" id="recoverPassword" type="button" hidden>Recupera password</button>
-        <button class="ghost full-button logout-button" id="logoutAccount" type="button" hidden>Esci dall'account</button>
-        <p class="legal" id="adminDemoHint" data-demo-only hidden>Accesso admin di sviluppo disponibile solo in ambiente locale.</p>
+        <button class="primary-action full-button" id="accountInfoConfirm" type="button">Ho capito</button>
       </section>
     </div>
 
@@ -970,7 +672,7 @@
 
     <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
-    <script defer src="events-data.js?v=fc9ebb7"></script>
-    <script defer src="app.js?v=fc9ebb7"></script>
+    <script defer src="events-data.js?v=9d96939"></script>
+    <script defer src="app.js?v=9d96939"></script>
   </body>
 </html>
