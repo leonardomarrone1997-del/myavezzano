@@ -7826,6 +7826,26 @@ body.theme-dark .campaign-steps article {
   color: #b45309;
 }
 
+.agenda-trust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.agenda-trust a {
+  color: #0e7490;
+  text-decoration: none;
+}
+
+.demo-disclaimer {
+  border-color: rgba(14, 116, 144, .18);
+  background: linear-gradient(180deg, rgba(236, 254, 255, .92), rgba(255, 255, 255, .96));
+}
+
 .agenda-event-actions button {
   min-height: 36px;
   padding: 7px 11px;

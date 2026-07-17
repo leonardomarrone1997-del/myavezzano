@@ -1,4 +1,5 @@
-import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+﻿import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { execSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import vm from "node:vm";
@@ -6,7 +7,29 @@ import vm from "node:vm";
 const root = path.resolve(fileURLToPath(new URL("..", import.meta.url)));
 const output = path.join(root, "public");
 const baseUrl = "https://myavezzano.vercel.app";
-const buildDate = "2026-07-16";
+
+function todayInRome(date = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Rome",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(date);
+  const get = (type) => parts.find((part) => part.type === type)?.value;
+  return `${get("year")}-${get("month")}-${get("day")}`;
+}
+
+function buildVersion() {
+  if (process.env.BUILD_VERSION) return process.env.BUILD_VERSION;
+  try {
+    return execSync("git rev-parse --short HEAD", { cwd: root, stdio: ["ignore", "pipe", "ignore"] }).toString().trim();
+  } catch {
+    return todayInRome().replaceAll("-", "");
+  }
+}
+
+const buildDate = process.env.BUILD_DATE || todayInRome();
+const assetVersion = buildVersion();
 const entries = [
   "index.html",
   "offline.html",
@@ -26,6 +49,10 @@ const entries = [
   "googleb99b104558bbc069.html",
   "assets"
 ];
+
+function withBuildTokens(content) {
+  return content.replaceAll("__BUILD_VERSION__", assetVersion);
+}
 
 const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (character) => ({
   "&": "&amp;",
@@ -110,6 +137,13 @@ function normalizeEvent(event) {
     imageSource: fallbackImageUsed ? "Immagine tematica MyAvezzano" : (event.imageSource || (isRealPhoto ? "Fonte evento" : "Fallback neutro MyAvezzano")),
     isRealPhoto,
     sourceUrl: event.sourceUrl || "",
+    organizer: event.organizer || "Non disponibile",
+    verificationStatus: event.verificationStatus || (event.sourceUrl ? "confermato" : "da verificare"),
+    status: event.status || (event.sourceUrl ? "confermato" : "da verificare"),
+    officialUrl: event.officialUrl || event.sourceUrl || "",
+    ticketUrl: event.ticketUrl || "",
+    lastVerifiedAt: event.lastVerifiedAt || event.updatedAt || "Non disponibile",
+    coordinates: event.coordinates || null,
     updatedAt: event.updatedAt || buildDate
   };
 }
@@ -122,19 +156,6 @@ function uniqueEvents(events) {
     seen.add(key);
     return true;
   });
-}
-
-function eventAttendanceCount(event) {
-  const categoryBase = {
-    Ambiente: 92,
-    Motori: 168,
-    Musica: 184,
-    Segnalazione: 112,
-    Sport: 226,
-    Teatro: 74
-  }[event.category] || 68;
-  const hash = [...event.id].reduce((total, character) => total + character.charCodeAt(0), 0);
-  return categoryBase + (hash % 137);
 }
 
 function eventDateLabel(event) {
@@ -173,8 +194,22 @@ function eventPage(event) {
     startDate: dates.startDate,
     ...(dates.endDate ? { endDate: dates.endDate } : {}),
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
-    eventStatus: "https://schema.org/EventScheduled",
+    eventStatus: event.status === "annullato" ? "https://schema.org/EventCancelled" : "https://schema.org/EventScheduled",
     url,
+    dateModified: event.updatedAt,
+    organizer: {
+      "@type": "Organization",
+      name: event.organizer || "Non disponibile"
+    },
+    offers: {
+      "@type": "Offer",
+      availability: "https://schema.org/InStock",
+      price: event.price && /\d/.test(event.price) ? event.price.replace(",", ".").match(/\d+(\.\d+)?/)?.[0] || "0" : "0",
+      priceCurrency: "EUR",
+      url: event.ticketUrl || event.officialUrl || url,
+      validFrom: event.updatedAt
+    },
+    ...(event.officialUrl ? { sameAs: event.officialUrl } : {}),
     image: [imageUrl],
     description: event.detail,
     location: {
@@ -198,6 +233,10 @@ function eventPage(event) {
   const imageAlt = escapeHtml(event.imageAlt);
   const imageSource = escapeHtml(event.imageSource);
   const isImportant = event.featured || event.importance === "high";
+  const statusLabel = event.status === "confermato" ? "Confermato" : event.status === "annullato" ? "Annullato" : "Da verificare";
+  const organizer = escapeHtml(event.organizer || "Non disponibile");
+  const lastVerified = escapeHtml(event.lastVerifiedAt || "Non disponibile");
+  const officialLink = event.officialUrl ? `<a class="seo-link" href="${escapeHtml(event.officialUrl)}" rel="nofollow noreferrer" target="_blank">Fonte ufficiale</a>` : `<span class="seo-link disabled">Fonte non disponibile</span>`;
 
   return `<!doctype html>
 <html lang="it">
@@ -217,7 +256,7 @@ function eventPage(event) {
     <meta name="twitter:image" content="${imageUrl}" />
     <meta name="twitter:image:alt" content="${imageAlt}" />
     <script type="application/ld+json">${schemaJson}</script>
-    <link rel="stylesheet" href="../styles.css?v=100" />
+    <link rel="stylesheet" href="../styles.css?v=__BUILD_VERSION__" />
   </head>
   <body class="seo-body${isImportant ? " seo-event-important" : ""}">
     <div class="seo-shell">
@@ -240,8 +279,11 @@ function eventPage(event) {
             <div><span>Luogo</span><strong>${place}</strong></div>
             <div><span>Indicazioni</span><strong>${price}</strong></div>
             <div><span>Area</span><strong>${escapeHtml(event.area)}</strong></div>
+            <div><span>Stato</span><strong>${statusLabel}</strong></div>
+            <div><span>Organizzatore</span><strong>${organizer}</strong></div>
+            <div><span>Ultima verifica</span><strong>${lastVerified}</strong></div>
           </div>
-          <div class="seo-actions"><a class="seo-link primary" href="../index.html#events">Salva nell'app</a><a class="seo-link" href="../eventi.html">Torna al calendario</a></div>
+          <div class="seo-actions">${officialLink}<a class="seo-link" href="../eventi.html">Torna al calendario</a></div>
         </section>
       </main>
       <footer class="seo-footer"><p>MyAvezzano raccoglie eventi e informazioni locali per Avezzano e area immediata. Scheda aggiornata il ${escapeHtml(event.updatedAt)}.</p><div class="seo-footer-links"><a href="../index.html">Home</a><a href="../sitemap.xml">Sitemap</a></div></footer>
@@ -283,14 +325,29 @@ for (const entry of entries) {
   await cp(path.join(root, entry), path.join(output, entry), { recursive: true });
 }
 
+await Promise.all([
+  "index.html",
+  "eventi.html",
+  "coupon.html",
+  "mappa.html",
+  "estate-2026.html",
+  "attivita-locali.html",
+  "service-worker.js"
+].map(async (file) => {
+  const target = path.join(output, file);
+  const content = await readFile(target, "utf8");
+  await writeFile(target, withBuildTokens(content), "utf8");
+}));
+
 const eventsSource = await readFile(path.join(root, "events-data.js"), "utf8");
 const sandbox = { window: {} };
 vm.runInNewContext(eventsSource, sandbox);
 const events = uniqueEvents(sandbox.window.MYAVEZZANO_EVENTS || []);
+const publicEvents = events.filter((event) => (event.endDate || event.date) >= buildDate);
 const eventOutput = path.join(output, "eventi");
 await mkdir(eventOutput, { recursive: true });
 
-await Promise.all(events.map((event) => writeFile(path.join(eventOutput, `${event.id}.html`), eventPage(event), "utf8")));
-await writeFile(path.join(output, "sitemap.xml"), sitemapXml(events), "utf8");
+await Promise.all(publicEvents.map((event) => writeFile(path.join(eventOutput, `${event.id}.html`), withBuildTokens(eventPage(event)), "utf8")));
+await writeFile(path.join(output, "sitemap.xml"), sitemapXml(publicEvents), "utf8");
 
-console.log(`Static PWA copied to public/ with ${events.length} event pages.`);
+console.log(`Static PWA copied to public/ with ${publicEvents.length} event pages.`);

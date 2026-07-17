@@ -60,7 +60,7 @@
         ]
       }
     </script>
-    <link rel="stylesheet" href="styles.css?v=100" />
+    <link rel="stylesheet" href="styles.css?v=e5815b7" />
   </head>
 <body class="view-feed">
     <a class="skip-link" href="#mainContent">Vai al contenuto</a>
@@ -416,12 +416,17 @@
         </section>
 
         <section class="view" id="couponsView">
+          <section class="panel demo-disclaimer coupon-demo-disclaimer" aria-label="Avviso coupon dimostrativi">
+            <p class="eyebrow">Anteprima dimostrativa</p>
+            <h2>Offerte e QR non utilizzabili</h2>
+            <p>Questa sezione mostra esempi grafici. I coupon reali saranno disponibili solo con validazione sicura e autorizzazione degli esercenti.</p>
+          </section>
           <div class="section-head">
             <div>
-              <p class="eyebrow">Portafoglio digitale</p>
-              <h2>Coupon QR e conversioni</h2>
+              <p class="eyebrow">Esempi promozionali</p>
+              <h2>Anteprima coupon locali</h2>
             </div>
-            <button class="primary-action" data-action="scan-qr" type="button">Scansiona QR</button>
+            <button class="primary-action" data-action="scan-qr" data-demo-only type="button">Scansiona QR</button>
           </div>
           <div class="coupon-filter-tabs" aria-label="Filtra coupon">
             <button class="active" data-action="city-coupon-filter" data-coupon-filter="all" type="button">Tutti</button>
@@ -442,8 +447,8 @@
           </section>
           <div class="section-head coupon-library-head">
             <div>
-              <p class="eyebrow">Sempre disponibili</p>
-              <h2>I tuoi coupon</h2>
+              <p class="eyebrow">Anteprima</p>
+              <h2>Esempi di coupon</h2>
             </div>
           </div>
           <div id="couponsGrid" class="cards-grid"></div>
@@ -452,12 +457,12 @@
         <section class="view" id="loyaltyView">
           <div class="loyalty-hero">
             <div>
-              <p class="eyebrow">Sistema fedeltà</p>
-              <h2>Livello fedelt&agrave; Gold</h2>
-              <p>Hai 1.240 punti. Mancano 260 punti al premio "Cena locale".</p>
+              <p class="eyebrow">Funzione futura</p>
+              <h2>Premi e vantaggi locali</h2>
+              <p>La raccolta punti sarà disponibile solo con un sistema sicuro collegato agli esercenti.</p>
             </div>
             <div class="progress-ring">
-              <span>83%</span>
+                <span>0%</span>
             </div>
           </div>
           <div class="cards-grid" id="rewardsGrid"></div>
@@ -505,12 +510,12 @@
               </button>
               <button class="profile-action-card" data-profile-panel="coupons" type="button">
                 <span class="profile-action-icon icon-ticket" aria-hidden="true"></span>
-                <span class="profile-action-copy"><strong>I miei coupon</strong><small>Sconti salvati e QR</small></span>
+                <span class="profile-action-copy"><strong>Esempi coupon</strong><small>Anteprime non utilizzabili</small></span>
                 <span class="profile-action-arrow" aria-hidden="true"></span>
               </button>
               <button class="profile-action-card" data-profile-panel="events" type="button">
                 <span class="profile-action-icon icon-calendar" aria-hidden="true"></span>
-                <span class="profile-action-copy"><strong>I miei eventi</strong><small>Prenotazioni e reminder</small></span>
+                <span class="profile-action-copy"><strong>Eventi salvati</strong><small>Solo su questo dispositivo</small></span>
                 <span class="profile-action-arrow" aria-hidden="true"></span>
               </button>
               <button class="profile-action-card" data-profile-panel="preferences" type="button">
@@ -605,8 +610,8 @@
                   <input id="merchantBusinessCategory" type="text" placeholder="Bar, ristorante, negozio..." />
                 </label>
                 <label class="field">
-                  <span>Metodo di pagamento</span>
-                  <input id="merchantPaymentMethod" type="text" placeholder="Carta o riferimento pagamento" />
+                  <span>Riferimento commerciale</span>
+                  <input id="merchantPaymentMethod" type="text" placeholder="Telefono, email o referente" />
                 </label>
                 <label class="field">
                   <span>Partita IVA</span>
@@ -620,9 +625,9 @@
                   <span>Indirizzo fatturazione</span>
                   <input id="merchantBillingAddress" type="text" placeholder="Via, civico, CAP, comune e provincia" />
                 </label>
-                <button class="primary-action full-button" id="confirmMerchantPayment" type="button">Paga e crea negozio</button>
+                <button class="primary-action full-button" id="confirmMerchantPayment" type="button">Richiedi attivazione</button>
               </div>
-              <p class="legal">Il pagamento sarà completato tramite gateway sicuro collegato al servizio commerciale.</p>
+              <p class="legal">L'attivazione commerciale richiederà conferma, contratto e strumenti di pagamento sicuri.</p>
             </section>
           </div>
 
@@ -699,16 +704,16 @@
             <section class="panel merchant-billing-panel">
               <div class="panel-head">
                 <div>
-                  <p class="eyebrow">Fatturazione B2B</p>
-                  <h2>Documenti fiscali</h2>
+                  <p class="eyebrow">Dati fiscali</p>
+                  <h2>Richiesta documenti</h2>
                 </div>
-                <span class="pill success" id="merchantBillingStatus">Pronta</span>
+                <span class="pill success" id="merchantBillingStatus">Da attivare</span>
               </div>
               <div class="billing-summary" id="merchantBillingSummary"></div>
               <div class="invoice-preview" id="merchantInvoicePreview"></div>
               <div class="composer-actions">
-                <button class="ghost" id="downloadMerchantInvoice" type="button">Scarica fattura</button>
-                <button class="light-action" id="printMerchantInvoice" type="button">Stampa / PDF</button>
+                <button class="ghost" id="downloadMerchantInvoice" type="button">Anteprima documento</button>
+                <button class="light-action" id="printMerchantInvoice" type="button">Prepara PDF</button>
               </div>
             </section>
 
@@ -964,7 +969,7 @@
 
     <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
-    <script defer src="events-data.js?v=100"></script>
-    <script defer src="app.js?v=100"></script>
+    <script defer src="events-data.js?v=e5815b7"></script>
+    <script defer src="app.js?v=e5815b7"></script>
   </body>
 </html>

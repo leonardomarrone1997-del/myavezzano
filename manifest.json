@@ -13,10 +13,44 @@
   "lang": "it-IT",
   "icons": [
     {
+      "src": "assets/pwa/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/pwa/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/pwa/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
       "src": "assets/app-icon.svg",
       "sizes": "1024x1024",
       "type": "image/svg+xml",
       "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "assets/pwa/screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Home mobile con eventi di oggi"
+    },
+    {
+      "src": "assets/pwa/screenshot-desktop.png",
+      "sizes": "1440x900",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Dashboard desktop MyAvezzano"
     }
   ],
   "shortcuts": [
@@ -24,36 +58,36 @@
       "name": "Eventi stasera",
       "short_name": "Eventi",
       "description": "Apri gli eventi e le serate di oggi",
-      "url": "./index.html#events",
-      "icons": [{ "src": "assets/app-icon.svg", "sizes": "1024x1024", "type": "image/svg+xml" }]
+      "url": "/#events",
+      "icons": [{ "src": "assets/pwa/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
       "name": "Coupon e sconti",
       "short_name": "Coupon",
       "description": "Apri sconti e coupon disponibili",
-      "url": "./index.html#coupons",
-      "icons": [{ "src": "assets/app-icon.svg", "sizes": "1024x1024", "type": "image/svg+xml" }]
+      "url": "/#coupons",
+      "icons": [{ "src": "assets/pwa/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
       "name": "Mappa",
       "short_name": "Mappa",
       "description": "Trova attività vicine",
-      "url": "./index.html#map",
-      "icons": [{ "src": "assets/app-icon.svg", "sizes": "1024x1024", "type": "image/svg+xml" }]
+      "url": "/#map",
+      "icons": [{ "src": "assets/pwa/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
       "name": "Estate 2026",
       "short_name": "Estate",
       "description": "Apri la pagina estiva di MyAvezzano",
-      "url": "./index.html#summer",
-      "icons": [{ "src": "assets/app-icon.svg", "sizes": "1024x1024", "type": "image/svg+xml" }]
+      "url": "/#summer",
+      "icons": [{ "src": "assets/pwa/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
       "name": "Campagna MyAvezzano",
       "short_name": "Campagna",
       "description": "Apri materiali pubblicitari, QR e touchpoint",
-      "url": "./index.html#campaign",
-      "icons": [{ "src": "assets/app-icon.svg", "sizes": "1024x1024", "type": "image/svg+xml" }]
+      "url": "/#campaign",
+      "icons": [{ "src": "assets/pwa/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]
 }

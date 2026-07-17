@@ -9,7 +9,8 @@
     "build": "npm run qa:calendar && node scripts/build-static.mjs",
     "check": "npm run qa:calendar",
     "qa:calendar": "node scripts/calendar-qa.mjs",
-    "qa:human": "npm run build && node scripts/human-qa.mjs"
+    "qa:human": "npm run build && node scripts/human-qa.mjs",
+    "qa:production": "npm run build && node scripts/production-hardening-qa.mjs"
   },
   "keywords": [
     "myavezzano",

@@ -7,8 +7,8 @@ const businesses = [
     lng: 13.4277,
     address: "Via Corradini, Avezzano",
     image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1000&q=80",
-    caption: "Menu pranzo di stagione con calice incluso. Solo oggi punti doppi per chi prenota da MyAvezzano.",
-    stats: "Aperto ora"
+    caption: "Scheda locale dimostrativa: informazioni da verificare con il gestore.",
+    stats: "Da verificare"
   },
   {
     name: "Caffè Risorgimento",
@@ -18,8 +18,8 @@ const businesses = [
     lng: 13.4250,
     address: "Piazza Risorgimento, Avezzano",
     image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1000&q=80",
-    caption: "Colazione in centro: brioche artigianale e cappuccino a prezzo speciale fino alle 10:30.",
-    stats: "Sconto attivo"
+    caption: "Scheda locale dimostrativa: orari e offerte non ancora collegati al gestore.",
+    stats: "Da verificare"
   },
   {
     name: "Atelier Marsica",
@@ -29,7 +29,7 @@ const businesses = [
     lng: 13.4218,
     address: "Via XX Settembre, Avezzano",
     image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1000&q=80",
-    caption: "Preview saldi weekend: salva il coupon e mostra il QR in cassa per il 20% extra.",
+    caption: "Scheda locale dimostrativa: promozioni reali disponibili solo con autorizzazione.",
     stats: "Nuovi arrivi"
   }
 ];
@@ -396,6 +396,7 @@ const OSM_CACHE_KEY = "myavezzano_osm_businesses_v1";
 const MAX_REAL_PLACES = 120;
 const wikidataImageCache = new Map();
 const DEMO_STATE_KEY = "myavezzano_demo_state";
+const LOCAL_SAVED_EVENTS_KEY = "myavezzano_local_saved_events_v1";
 const ONBOARDING_KEY = "myavezzano_onboarding_seen";
 const THEME_STORAGE_KEY = "myavezzano_theme";
 const FX_MODE_STORAGE_KEY = "myavezzano_fx_mode";
@@ -444,6 +445,7 @@ const IS_DEMO = (() => {
   try {
     const params = new URLSearchParams(window.location.search);
     const host = window.location.hostname;
+    if (params.get("prod") === "1") return false;
     return params.get("demo") === "1" || localStorage.getItem("myavezzano_demo_mode") === "1" || ["localhost", "127.0.0.1", ""].includes(host);
   } catch {
     return false;
@@ -473,7 +475,7 @@ const categoryImages = {
 const quickActions = [
   ["EVENTI", "Cosa fare oggi", "events", "eventi"],
   ["MAPPA", "Locali e luoghi", "map", "mappa"],
-  ["COUPON", "Sconti attivi", "coupons", "coupon"]
+  ["COUPON", "Anteprime", "coupons", "coupon"]
 ];
 
 const cityHighlights = [
@@ -620,7 +622,14 @@ function normalizeEvent(item) {
     imageSource: fallbackImageUsed ? "Immagine tematica MyAvezzano" : (item.imageSource || (isRealPhoto ? "Fonte evento" : EVENT_FALLBACK_SOURCE)),
     isRealPhoto,
     sourceUrl: item.sourceUrl || "",
-    updatedAt: item.updatedAt || "2026-06-29"
+    organizer: item.organizer || "Non disponibile",
+    verificationStatus: item.verificationStatus || (item.sourceUrl ? "confermato" : "da verificare"),
+    status: item.status || (item.sourceUrl ? "confermato" : "da verificare"),
+    officialUrl: item.officialUrl || item.sourceUrl || "",
+    ticketUrl: item.ticketUrl || "",
+    lastVerifiedAt: item.lastVerifiedAt || item.updatedAt || "Non disponibile",
+    coordinates: item.coordinates || null,
+    updatedAt: item.updatedAt || currentDateKey()
   };
 }
 
@@ -690,6 +699,12 @@ const coupons = [
   ["Ingresso serata ridotto", "Discoteca Astra", "Valido entro le 00:30", "Lista MyAvezzano", "assets/coupons/aperitivo-2x1.svg", "AVZ-ASTRA-LISTA", "bar"]
 ];
 
+const productionCouponExamples = [
+  ["Esempio coupon ristorante", "Attività aderente", "Anteprima non utilizzabile", "Validazione non attiva", "assets/coupons/aperitivo-2x1.svg", "DEMO-NON-VALIDO-1", "ristoranti"],
+  ["Esempio coupon bar", "Attività aderente", "Anteprima non utilizzabile", "QR dimostrativo", "assets/coupons/fitlab-prova-gratis.svg", "DEMO-NON-VALIDO-2", "bar"],
+  ["Esempio coupon negozio", "Attività aderente", "Anteprima non utilizzabile", "Offerta da autorizzare", "assets/coupons/atelier-marsica-20.svg", "DEMO-NON-VALIDO-3", "negozi"]
+];
+
 const cityPulseZones = [
   { id: "centro", name: "Centro", status: "Vivace", kind: "live", base: 68, lat: 42.0329, lng: 13.4252, reason: "Aperitivi, passeggio ed eventi vicini" },
   { id: "torlonia", name: "Piazza Torlonia", status: "In movimento", kind: "live", base: 60, lat: 42.0345, lng: 13.4255, reason: "Attività diurne e appuntamenti urbani" },
@@ -711,17 +726,21 @@ const rewards = [
   ["Ticket evento", "1.200 punti", "Biglietto digitale per eventi selezionati."]
 ];
 
-const savedProfileCoupons = [
+const demoProfileCoupons = [
   ["Aperitivo 2x1", "Caffè Risorgimento", "Scade oggi alle 20:00"],
   ["-20% nuova collezione", "Atelier Marsica", "Valido fino a domenica"],
   ["Prova gratuita", "FitLab Avezzano", "Prenota entro 48 ore"]
 ];
 
-const savedProfileEvents = [
+const savedProfileCoupons = IS_DEMO ? demoProfileCoupons : [];
+
+const demoProfileEvents = [
   ["Io Mimmo M - Omaggio a Modugno", "Gio 23 luglio 2026 - 21:00", "Reminder disponibile"],
   ["BB Day 2026", "24-26 luglio 2026", "Da verificare"],
   ["Festiv'Alba: Antigone", "Ven 7 agosto 2026", "Salvato in calendario"]
 ];
+
+const savedProfileEvents = IS_DEMO ? demoProfileEvents : [];
 
 const userPreferences = ["Eventi", "Sconti", "Nuove aperture", "Ristoranti", "Palestre", "Shopping"];
 
@@ -835,10 +854,10 @@ const onboardingSteps = [
   },
   {
     view: "coupons", icon: "coupon", eyebrow: "Vantaggi",
-    title: "Usa coupon QR e raccogli punti",
-    copy: "I coupon digitali si salvano nel profilo, possono essere scansionati e alimentano il sistema fedeltà.",
-    tip: "Mostra il QR alla cassa prima della scadenza.",
-    points: ["Apri i coupon disponibili", "Scansiona un QR", "Riscatta premi con i punti"]
+    title: "Consulta le anteprime coupon",
+    copy: "La sezione coupon mostra esempi grafici. I QR reali richiederanno validazione sicura con gli esercenti.",
+    tip: "Quando il servizio sarà collegato, i coupon avranno codici verificabili.",
+    points: ["Guarda le anteprime disponibili", "Controlla validità e fonte", "Usa solo coupon autorizzati"]
   },
   {
     view: "summer", icon: "summer", eyebrow: "Estate 2026",
@@ -850,20 +869,21 @@ const onboardingSteps = [
   {
     view: "profile", icon: "profile", eyebrow: "Profilo",
     title: "Tutto resta nel tuo pannello utente",
-    copy: "Dopo la registrazione trovi coupon, eventi, preferenze, foto profilo e il percorso per creare il tuo negozio a pagamento.",
+    copy: "La versione pubblica non raccoglie dati personali. Gli account completi arriveranno con backend sicuro.",
     tip: "I salvataggi restano disponibili anche al prossimo accesso.",
     points: ["Registrati con Google, Apple, telefono o email", "Gestisci preferenze e salvataggi", "Crea una scheda negozio da 12,99 EUR/mese"]
   },
   {
     view: "feed", icon: "notifications", eyebrow: "Sempre aggiornato",
     title: "Notifiche utili, non rumore",
-    copy: "Il centro notifiche raccoglie promemoria, coupon in scadenza e comunicazioni importanti della città.",
+    copy: "Il centro notifiche raccoglie aggiornamenti locali confermati. Promemoria personali e push arriveranno con servizio sicuro.",
     tip: "Puoi cambiare le preferenze in qualsiasi momento dal profilo.",
-    points: ["Controlla il badge nella barra superiore", "Ricevi reminder degli eventi salvati", "Installa la PWA per averla sempre con te"]
+    points: ["Controlla il badge nella barra superiore", "Leggi aggiornamenti eventi", "Installa la PWA per averla sempre con te"]
   }
 ];
 
 function getDemoState() {
+  if (IS_PRODUCTION) return {};
   try {
     return JSON.parse(localStorage.getItem(DEMO_STATE_KEY)) || {};
   } catch {
@@ -872,10 +892,15 @@ function getDemoState() {
 }
 
 function saveDemoState(state) {
+  if (IS_PRODUCTION) return;
   localStorage.setItem(DEMO_STATE_KEY, JSON.stringify(state));
 }
 
 function addDemoItem(key, item) {
+  if (IS_PRODUCTION) {
+    showUnavailableFeature();
+    return 0;
+  }
   const state = getDemoState();
   const list = state[key] || [];
   if (!list.some((entry) => entry.title === item.title)) {
@@ -888,6 +913,10 @@ function addDemoItem(key, item) {
 }
 
 function addDemoItems(key, items) {
+  if (IS_PRODUCTION) {
+    showUnavailableFeature();
+    return 0;
+  }
   const state = getDemoState();
   const list = state[key] || [];
   items.forEach((item) => {
@@ -899,6 +928,23 @@ function addDemoItems(key, items) {
   saveDemoState(state);
   renderNotificationState();
   return list.length;
+}
+
+function getLocalSavedEvents() {
+  try {
+    return JSON.parse(localStorage.getItem(LOCAL_SAVED_EVENTS_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function addLocalSavedEvent(item) {
+  const rows = getLocalSavedEvents();
+  if (!rows.some((entry) => entry.id === item.id || entry.title === item.title)) {
+    rows.push({ ...item, savedAt: new Date().toISOString() });
+  }
+  localStorage.setItem(LOCAL_SAVED_EVENTS_KEY, JSON.stringify(rows.slice(-40)));
+  return rows.length;
 }
 
 function hashString(value) {
@@ -1344,13 +1390,13 @@ function renderDayPlan() {
     {
       label: "Eventi in agenda",
       value: events.length,
-      text: events.length ? events[0][0] : "Prenota o salva una serata.",
+      text: events.length ? events[0][0] : "Salva un evento su questo dispositivo.",
       view: "events"
     },
     {
       label: "Reminder",
       value: reminders.length,
-      text: reminders.length ? "Promemoria attivi per oggi." : "Attiva un reminder per stasera.",
+      text: reminders.length ? "Promemoria attivi per oggi." : "Promemoria disponibili con un servizio sicuro.",
       action: "create-reminder"
     }
   ];
@@ -1455,6 +1501,23 @@ function scopedEvents(items) {
 
 function scopedPlaces(items) {
   return activeTown === "all" ? items : items.filter(placeInSelectedTown);
+}
+
+function homeHighlightRows() {
+  if (IS_DEMO) return cityHighlights;
+  const today = currentDateKey();
+  return sortEventsByCurrentDate(scopedEvents(calendarEvents.filter((item) => eventIsHomeCandidate(item, today))), today)
+    .slice(0, 4)
+    .map((item) => ({
+      type: item.status === "confermato" ? "Evento confermato" : "Evento da verificare",
+      title: item.title,
+      place: item.place,
+      when: eventRangeLabel(item),
+      detail: item.detail,
+      image: item.image || EVENT_FALLBACK_IMAGE,
+      cta: "Dettagli",
+      eventId: item.id
+    }));
 }
 
 function weekendWindow(referenceKey = currentDateKey()) {
@@ -1581,11 +1644,16 @@ function eventCardMarkup(item, { compact = false, idPrefix = "event" } = {}) {
         <p>${item.detail}</p>
         ${isImportant && !item.past ? `<p class="agenda-importance"><span aria-hidden="true"></span> Evento importante</p>` : ""}
         ${eventAttendanceMarkup(item)}
+        <p class="agenda-trust">
+          <span>${item.status === "confermato" ? "Confermato" : "Da verificare"}</span>
+          <span>Aggiornato: ${item.updatedAt || "Non disponibile"}</span>
+          ${item.sourceUrl ? `<a href="${item.sourceUrl}" target="_blank" rel="noopener">Fonte</a>` : "<span>Fonte non disponibile</span>"}
+        </p>
         <div class="agenda-event-footer">
           <span class="agenda-price">${item.price}</span>
           ${item.past ? "" : `
             <div class="agenda-event-actions">
-              <button class="ghost" data-action="event-reminder" data-title="${item.title}" type="button">Reminder</button>
+              ${IS_DEMO ? `<button class="ghost" data-action="event-reminder" data-title="${item.title}" type="button">Reminder</button>` : ""}
               <a class="ghost agenda-details" href="eventi/${item.id}.html">Dettagli</a>
               <button class="save-action" data-action="save-event" data-event-id="${item.id}" data-title="${item.title}" type="button">Salva</button>
             </div>
@@ -1898,7 +1966,7 @@ function render() {
   renderNotificationState();
   renderSmartStrip();
   renderDayPlan();
-  document.querySelector("#feedList").innerHTML = cityHighlights.slice(0, 4).map((item) => {
+  document.querySelector("#feedList").innerHTML = homeHighlightRows().map((item) => {
     const relatedPlace = findPlaceByName(item.place);
     const searchText = [item.type, item.title, item.place, item.when, item.detail, item.cta, relatedPlace?.category, relatedPlace?.stats].filter(Boolean).join(" ");
     return `
@@ -1914,16 +1982,17 @@ function render() {
       <div class="post-body">
         <p>${item.detail}</p>
         <div class="post-actions">
-          <button data-action="highlight-primary" data-title="${item.title}" data-type="${item.type}" type="button">${item.cta}</button>
+          ${item.eventId ? `<a class="ghost agenda-details" href="eventi/${item.eventId}.html">${item.cta}</a>` : `<button data-action="highlight-primary" data-title="${item.title}" data-type="${item.type}" type="button">${item.cta}</button>`}
           <button data-action="open-map-place" data-place="${item.place}" type="button">Apri mappa</button>
-          <button class="save-action" data-action="save-highlight" data-title="${item.title}" data-type="${item.type}" type="button">Salva</button>
+          ${item.eventId ? `<button class="save-action" data-action="save-event" data-event-id="${item.eventId}" data-title="${item.title}" type="button">Salva</button>` : `<button class="save-action" data-action="save-highlight" data-title="${item.title}" data-type="${item.type}" type="button">Salva</button>`}
         </div>
       </div>
     </article>
   `;
   }).join("");
 
-  document.querySelector("#couponsGrid").innerHTML = coupons.map(([title, place, expires, meta, qrSrc, couponCode, category]) => `
+  const visibleCoupons = IS_DEMO ? coupons : productionCouponExamples;
+  document.querySelector("#couponsGrid").innerHTML = visibleCoupons.map(([title, place, expires, meta, qrSrc, couponCode, category]) => `
     <article class="coupon-card" data-coupon-category="${category}">
       <div class="card-body">
         <p class="eyebrow">${place}</p>
@@ -1934,8 +2003,8 @@ function render() {
           <div class="qr" aria-label="QR code coupon ${title}">
             <img src="${couponQrDataUri(couponCode || qrSrc)}" alt="QR coupon ${title} - ${place}" loading="lazy" decoding="async" />
           </div>
-          <span class="qr-validity-label">${IS_DEMO ? "QR univoco" : "Esempio QR"}</span>
-          <span class="coupon-code-label">${couponCode}</span>
+          <span class="qr-validity-label">${IS_DEMO ? "QR univoco" : "QR dimostrativo non valido"}</span>
+          <span class="coupon-code-label">${IS_DEMO ? couponCode : "CODICE NON UTILIZZABILE"}</span>
         </div>
       </div>
     </article>
@@ -1947,7 +2016,7 @@ function render() {
         <p class="eyebrow">${points}</p>
         <h2>${title}</h2>
         <p>${text}</p>
-        <button class="ghost" data-action="redeem-reward" data-title="${title}" type="button">Riscatta</button>
+        ${IS_DEMO ? `<button class="ghost" data-action="redeem-reward" data-title="${title}" type="button">Riscatta</button>` : `<span class="pill">Anteprima non riscattabile</span>`}
       </div>
     </article>
   `).join("");
@@ -1995,6 +2064,7 @@ function profileEventRows() {
   const state = getDemoState();
   return uniqueProfileRows([
     ...savedProfileEvents,
+    ...getLocalSavedEvents().map((item) => [item.title, "Salvato su questo dispositivo", "Locale"]),
     ...(state.events || []).map((item) => [item.title, item.type || "Evento MyAvezzano", "Salvato"]),
     ...(state.reminders || []).map((item) => [item.title, "Notifica eventi", "Reminder attivo"])
   ]);
@@ -2004,9 +2074,9 @@ function settingsPanel(user) {
   if (!user) {
     return `
       <div class="empty-profile">
-        <strong>Accedi per gestire il tuo profilo</strong>
-        <span>Registrandoti puoi salvare coupon, eventi, preferenze e creare una scheda negozio.</span>
-        <button class="primary-action" id="profilePanelSignup" type="button">Registrati ora</button>
+        <strong>Profilo in preparazione</strong>
+        <span>La versione pubblica non raccoglie dati personali. Puoi salvare eventi solo su questo dispositivo.</span>
+        <button class="primary-action" id="profilePanelSignup" type="button">Stato account</button>
       </div>
     `;
   }
@@ -2090,12 +2160,12 @@ function renderProfileActions() {
     </button>
     <button class="profile-action-card" data-profile-panel="coupons" type="button">
       <span class="profile-action-icon icon-ticket" aria-hidden="true"></span>
-      <span class="profile-action-copy"><strong>I miei coupon</strong><small>Sconti salvati e QR</small></span>
+      <span class="profile-action-copy"><strong>Esempi coupon</strong><small>Anteprime non utilizzabili</small></span>
       <span class="profile-action-arrow" aria-hidden="true"></span>
     </button>
     <button class="profile-action-card" data-profile-panel="events" type="button">
       <span class="profile-action-icon icon-calendar" aria-hidden="true"></span>
-      <span class="profile-action-copy"><strong>I miei eventi</strong><small>Prenotazioni e reminder</small></span>
+      <span class="profile-action-copy"><strong>Eventi salvati</strong><small>Solo su questo dispositivo</small></span>
       <span class="profile-action-arrow" aria-hidden="true"></span>
     </button>
     <button class="profile-action-card" data-profile-panel="preferences" type="button">
@@ -2117,8 +2187,8 @@ function renderProfilePanel(panel = "settings") {
   const eventRows = profileEventRows();
   const titleMap = {
     settings: ["Impostazioni", "Account"],
-    coupons: ["I miei coupon", `${couponRows.length} salvati`],
-    events: ["I miei eventi", `${eventRows.length} attivi`],
+    coupons: ["Esempi coupon", `${couponRows.length} elementi`],
+    events: ["Eventi salvati", `${eventRows.length} locali`],
     preferences: ["Preferenze", "Categorie"]
   };
   const [title, badge] = titleMap[panel] || titleMap.settings;
@@ -2141,9 +2211,9 @@ function renderProfilePanel(panel = "settings") {
 }
 
 function citizenLevelState(user = getStoredUser()) {
-  if (!user) return { level: "Esploratore", progress: 18, points: 0 };
+  if (!user) return { level: "Ospite", progress: 0, points: 0 };
   if (user.role === "admin") return { level: "Amministratore", progress: 96, points: 9990 };
-  const basePoints = 1240 + profileCouponRows().length * 110 + profileEventRows().length * 90;
+  const basePoints = (IS_DEMO ? 1240 : 0) + profileCouponRows().length * 110 + profileEventRows().length * 90;
   const progress = Math.min(92, 42 + Math.round((basePoints % 900) / 18));
   return { level: basePoints > 1600 ? "Insider locale" : "Cittadino", progress, points: basePoints };
 }
@@ -2189,31 +2259,30 @@ function actionableNotificationItems() {
   const today = currentDateKey();
   const state = getDemoState();
   const upcomingEvents = sortEventsByCurrentDate(calendarEvents.filter((item) => eventIsHomeCandidate(item, today))).slice(0, 2);
-  const merchantItems = getMerchantNotifications().slice(-2).reverse().map((item) => ({
+  const merchantItems = (IS_DEMO ? getMerchantNotifications() : []).slice(-2).reverse().map((item) => ({
     id: item.id,
     title: item.title,
     text: `${item.targetLabel} - ${item.status}`,
     tone: "gold",
-    time: "Attività locale",
-    view: "merchant"
+    time: "Attività locale"
   }));
-  const savedReminderItems = (state.reminders || []).slice(-2).reverse().map((item, index) => ({
-    id: `reminder-${eventSlug(item.title || "evento")}-${index}`,
-    title: item.title || "Reminder evento",
-    text: "Promemoria attivo nel tuo profilo.",
+  const savedReminderItems = (state.reminders || []).slice(-2).reverse().map((item) => ({
+    id: `reminder-${eventSlug(item.title)}`,
+    title: item.title,
+    text: "Promemoria salvato nel profilo.",
     tone: "event",
     time: "Reminder",
-    view: "events"
+    view: "profile"
   }));
   const eventItems = upcomingEvents.map((item) => ({
     id: `event-${item.id}`,
     title: item.title,
-    text: `${item.area} - ${item.time || "orario in aggiornamento"}`,
+    text: `${item.place} - ${item.time}`,
     tone: item.featured ? "gold" : "event",
     time: notificationDateLabel(item),
     view: "events"
   }));
-  const couponItems = coupons.slice(0, 2).map(([title, place, expires, , , couponCode]) => ({
+  const couponItems = (IS_DEMO ? coupons : []).slice(0, 2).map(([title, place, expires, , , couponCode]) => ({
     id: `coupon-${eventSlug(couponCode || title)}`,
     title,
     text: `${place} - ${expires}`,
@@ -2230,7 +2299,7 @@ function notificationItems() {
     return [{
       id: "notifications-paused",
       title: "Notifiche temporaneamente sospese",
-      text: "Il servizio riprenderà appena saranno disponibili nuovi aggiornamenti.",
+      text: "Il servizio riprender? appena saranno disponibili nuovi aggiornamenti.",
       tone: "quiet",
       time: "Sistema",
       silent: true
@@ -2242,7 +2311,7 @@ function notificationItems() {
     {
       id: user ? `profile-${user.id}` : "profile-guest",
       title: user ? `Ciao ${user.name}` : "Profilo non attivo",
-      text: user ? "Il tuo livello cittadino risulta aggiornato." : "Accedi per salvare notifiche e preferenze.",
+      text: user ? "Il tuo profilo risulta aggiornato." : "Le notifiche personali saranno disponibili con account sicuro.",
       tone: user ? "profile" : "quiet",
       time: "Profilo",
       view: user ? "profile" : "feed",
@@ -2251,30 +2320,11 @@ function notificationItems() {
     ...(actionableItems.length ? [] : [{
       id: "notifications-clear",
       title: "Nessuna notifica da leggere",
-      text: "Quando arriveranno eventi, coupon o aggiornamenti utili li troverai qui.",
+      text: "Quando arriveranno eventi confermati o aggiornamenti utili li troverai qui.",
       tone: "quiet",
       time: "Adesso",
       silent: true
     }])
-  ];
-  const merchantItems = getMerchantNotifications().slice(-2).reverse().map((item) => ({
-    id: item.id,
-    title: item.title,
-    text: `${item.targetLabel} - ${item.status}`,
-    tone: "gold",
-    time: "Attività locale"
-  }));
-  return [
-    { id: "event-aperitivo-centro", title: "Aperitivo lungo in centro", text: "Inizia alle 19:30. Puoi salvarlo tra gli eventi.", tone: "event", time: "Oggi" },
-    { id: "coupon-aperitivo-expiring", title: "Coupon in scadenza", text: "2x1 aperitivo valido fino alle 20:00.", tone: "coupon", time: "Tra poco" },
-    {
-      id: user ? `profile-${user.id}` : "profile-guest",
-      title: user ? `Ciao ${user.name}` : "Profilo non attivo",
-      text: user ? "Il tuo livello cittadino risulta aggiornato." : "Accedi per salvare notifiche e preferenze.",
-      tone: user ? "profile" : "quiet",
-      time: "Profilo"
-    },
-    ...merchantItems
   ];
 }
 
@@ -4360,9 +4410,36 @@ function findPlaceByName(name) {
   return mapPlaces.find((place) => place.name.toLowerCase().includes(lower) || lower.includes(place.name.toLowerCase()));
 }
 
+function showUnavailableFeature(message = "Funzione in preparazione: sarà disponibile quando verrà collegato il servizio sicuro.") {
+  showToast(message, "info");
+}
+
+function actionIsProductionBlocked(action) {
+  return [
+    "book-event",
+    "event-reminder",
+    "create-reminder",
+    "redeem-reward",
+    "create-coupon",
+    "new-campaign",
+    "upload-media",
+    "summer-plan",
+    "scan-qr",
+    "claim-last-minute",
+    "highlight-primary",
+    "save-highlight",
+    "save-weekend-plan"
+  ].includes(action);
+}
+
 function handleAction(button) {
   const action = button.dataset.action;
   if (!action) return;
+
+  if (IS_PRODUCTION && actionIsProductionBlocked(action)) {
+    showUnavailableFeature();
+    return;
+  }
 
   if (action === "open-onboarding") {
     openOnboarding(true);
@@ -4558,12 +4635,16 @@ function handleAction(button) {
 
   if (action === "save-event") {
     const wasAlreadySaved = button.classList.contains("is-saved");
-    addDemoItem("events", { title: button.dataset.title });
+    if (IS_PRODUCTION) {
+      addLocalSavedEvent({ id: button.dataset.eventId, title: button.dataset.title });
+    } else {
+      addDemoItem("events", { title: button.dataset.title });
+    }
     document.querySelectorAll(`[data-action="save-event"][data-event-id="${button.dataset.eventId}"]`).forEach((eventButton) => {
-      eventButton.textContent = "Salvato";
+      eventButton.textContent = IS_PRODUCTION ? "Salvato su questo dispositivo" : "Salvato";
       eventButton.classList.add("is-saved");
     });
-    if (!wasAlreadySaved) {
+    if (!wasAlreadySaved && IS_DEMO) {
       document.querySelectorAll(`[data-event-attendance="${button.dataset.eventId}"] strong`).forEach((counter) => {
         counter.textContent = String(Number(counter.textContent) + 1);
       });
@@ -4839,6 +4920,10 @@ document.addEventListener("submit", (event) => {
 
 document.querySelector("#publishDemo").addEventListener("click", () => {
   const button = document.querySelector("#publishDemo");
+  if (IS_PRODUCTION) {
+    showUnavailableFeature("La pubblicazione reale richiede un pannello commerciante verificato.");
+    return;
+  }
   addDemoItem("merchantPosts", { title: "Nuovo contenuto commerciante" });
   button.textContent = "Pubblicato";
   showToast("Contenuto pubblicato nella dashboard commerciante.", "success");
@@ -4877,6 +4962,11 @@ document.querySelector("#previewMerchantNotification")?.addEventListener("click"
 });
 
 document.querySelector("#sendMerchantNotification")?.addEventListener("click", async () => {
+  if (IS_PRODUCTION) {
+    setMerchantNotificationFeedback("Invio reale non attivo: sarà disponibile con account commerciante verificato.", "error");
+    showUnavailableFeature("Le notifiche promozionali reali richiedono un backend sicuro.");
+    return;
+  }
   const user = getStoredUser();
   const subscription = getMerchantSubscription();
   if (!user || !subscription || subscription.userId !== user.id) {
@@ -5621,7 +5711,7 @@ document.querySelectorAll(".start-plan").forEach((button) => {
     if (IS_PRODUCTION) {
       merchantCheckout.hidden = true;
       setMerchantFeedback("Pagamenti e abbonamenti non sono attivi nella versione pubblica. Usa la richiesta accesso al pilot.", "info");
-      showToast("Area commercianti in preparazione: nessun checkout demo in produzione.", "info");
+      showToast("Area commercianti in preparazione: attivazione reale solo con verifica.", "info");
       return;
     }
     const user = getStoredUser();
@@ -5646,7 +5736,7 @@ document.querySelectorAll(".start-plan").forEach((button) => {
 
 document.querySelector("#confirmMerchantPayment").addEventListener("click", () => {
   if (IS_PRODUCTION) {
-    setMerchantFeedback("Checkout disattivato: abbonamenti, pagamenti e fatture richiedono backend e gateway sicuri.", "info");
+    setMerchantFeedback("Attivazione disattivata nella versione pubblica: abbonamenti, pagamenti e documenti fiscali richiedono backend e gateway sicuri.", "info");
     return;
   }
   const user = getStoredUser();
@@ -5751,7 +5841,7 @@ document.querySelector("#printMerchantInvoice")?.addEventListener("click", () =>
   if (!subscription) return;
   const win = window.open("", "_blank", "noopener,noreferrer");
   if (!win) {
-    showToast("Popup bloccato: usa Scarica fattura.", "error");
+    showToast("Popup bloccato: usa l'anteprima documento.", "error");
     return;
   }
   win.document.write(merchantInvoiceHtml(subscription));

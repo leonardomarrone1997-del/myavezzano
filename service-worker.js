@@ -1,4 +1,4 @@
-const CACHE_NAME = "myavezzano-v101";
+const CACHE_NAME = "myavezzano-__BUILD_VERSION__";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -8,14 +8,19 @@ const APP_SHELL = [
   "./mappa.html",
   "./estate-2026.html",
   "./attivita-locali.html",
-  "./styles.css?v=100",
-  "./events-data.js?v=100",
-  "./app.js?v=100",
+  "./styles.css?v=__BUILD_VERSION__",
+  "./events-data.js?v=__BUILD_VERSION__",
+  "./app.js?v=__BUILD_VERSION__",
   "./manifest.json",
   "./robots.txt",
   "./llms.txt",
   "./sitemap.xml",
   "./assets/app-icon.svg",
+  "./assets/pwa/icon-192.png",
+  "./assets/pwa/icon-512.png",
+  "./assets/pwa/icon-maskable-512.png",
+  "./assets/pwa/screenshot-mobile.png",
+  "./assets/pwa/screenshot-desktop.png",
   "./assets/avezzano-hero-day.jpg",
   "./assets/avezzano-hero-night.jpg",
   "./assets/avezzano-hero-day-mobile.jpg",
@@ -38,7 +43,12 @@ const APP_SHELL = [
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL))
+    caches.open(CACHE_NAME).then((cache) =>
+      Promise.allSettled(APP_SHELL.map((url) => cache.add(url))).then((results) => {
+        const coreFailed = results.slice(0, 3).some((result) => result.status === "rejected");
+        if (coreFailed) throw new Error("Core app shell cache failed");
+      })
+    )
   );
   self.skipWaiting();
 });
