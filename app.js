@@ -386,6 +386,7 @@ let summerViewRendered = false;
 let mapViewRendered = false;
 let webglAuraInitialized = false;
 let lastMinuteCountdownTimer = 0;
+let activeEventSheetTrigger = null;
 const searchPlaceholders = [
   "Cerca locali, eventi, servizi...",
   "Dove vuoi andare oggi?",
@@ -971,6 +972,96 @@ function addLocalSavedEvent(item) {
   }
   localStorage.setItem(LOCAL_SAVED_EVENTS_KEY, JSON.stringify(rows.slice(-40)));
   return rows.length;
+}
+
+function removeLocalSavedEvent(id) {
+  const rows = getLocalSavedEvents().filter((entry) => entry.id !== id);
+  localStorage.setItem(LOCAL_SAVED_EVENTS_KEY, JSON.stringify(rows));
+  return rows.length;
+}
+
+function isLocalEventSaved(id) {
+  return getLocalSavedEvents().some((entry) => entry.id === id);
+}
+
+function findCalendarEvent(id) {
+  return [...calendarEvents, ...archivedEvents].find((item) => item.id === id || item.slug === id);
+}
+
+function syncSavedEventButtons(id) {
+  const saved = isLocalEventSaved(id);
+  document.querySelectorAll(`[data-action="save-event"][data-event-id="${id}"]`).forEach((eventButton) => {
+    eventButton.textContent = saved ? "Salvato" : "Salva";
+    eventButton.classList.toggle("is-saved", saved);
+    eventButton.setAttribute("aria-pressed", String(saved));
+  });
+}
+
+function eventCanonicalUrl(item) {
+  if (!item) return window.location.href.split("#")[0];
+  return `${window.location.origin}/eventi/${item.id}.html`;
+}
+
+function eventShareText(item) {
+  return `${item.title} - ${eventRangeLabel(item)} ${item.time}, ${item.place}. ${eventCanonicalUrl(item)}`;
+}
+
+function downloadEventIcs(item) {
+  if (!item) return;
+  const date = item.date.replaceAll("-", "");
+  const time = String(item.time || "09:00").match(/\d{1,2}:\d{2}/)?.[0] || "09:00";
+  const [hours, minutes] = time.split(":");
+  const start = `${date}T${hours.padStart(2, "0")}${minutes}00`;
+  const end = `${date}T${String(Math.min(23, Number(hours) + 2)).padStart(2, "0")}${minutes}00`;
+  const clean = (value = "") => String(value).replace(/([,;\\])/g, "\\$1").replace(/\n/g, "\\n");
+  const ics = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//MyAvezzano//Eventi//IT",
+    "BEGIN:VEVENT",
+    `UID:${item.id}@myavezzano.vercel.app`,
+    `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").split(".")[0]}Z`,
+    `DTSTART:${start}`,
+    `DTEND:${end}`,
+    `SUMMARY:${clean(item.title)}`,
+    `LOCATION:${clean(item.place)}`,
+    `DESCRIPTION:${clean(`${item.detail || ""} ${eventCanonicalUrl(item)}`.trim())}`,
+    "END:VEVENT",
+    "END:VCALENDAR"
+  ].join("\r\n");
+  const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${item.slug || item.id}.ics`;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+async function shareEvent(item) {
+  if (!item) return;
+  const payload = {
+    title: item.title,
+    text: `${eventRangeLabel(item)} ${item.time} - ${item.place}`,
+    url: eventCanonicalUrl(item)
+  };
+  if (navigator.share) {
+    try {
+      await navigator.share(payload);
+      return;
+    } catch (error) {
+      if (error?.name === "AbortError") return;
+    }
+  }
+  const text = eventShareText(item);
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast("Link evento copiato negli appunti.", "success");
+  } catch {
+    window.prompt("Copia il link evento", text);
+  }
 }
 
 function hashString(value) {
@@ -1655,6 +1746,7 @@ function eventCardMarkup(item, { compact = false, idPrefix = "event" } = {}) {
   const search = [item.title, item.place, item.area, item.category, item.detail, item.price].join(" ").toLowerCase();
   const imageLabel = item.isRealPhoto ? item.imageSource : "Immagine neutra";
   const isImportant = item.featured || item.importance === "high";
+  const saved = isLocalEventSaved(item.id);
   return `
     <article class="agenda-event${compact ? " agenda-event-featured" : ""}${isImportant ? " is-important" : ""}${item.past ? " is-past" : ""}" id="${idPrefix}-${item.id}" data-search="${search}" data-importance="${isImportant ? "high" : "normal"}">
       <figure class="agenda-event-media lazy-media" ${mediaAttrs(item.image || EVENT_FALLBACK_IMAGE, compact ? 720 : 520)} role="img" aria-label="${item.imageAlt || item.title}">
@@ -1685,14 +1777,65 @@ function eventCardMarkup(item, { compact = false, idPrefix = "event" } = {}) {
           ${item.past ? "" : `
             <div class="agenda-event-actions">
               ${IS_DEMO ? `<button class="ghost" data-action="event-reminder" data-title="${item.title}" type="button">Reminder</button>` : ""}
-              <a class="ghost agenda-details" href="eventi/${item.id}.html">Dettagli</a>
-              <button class="save-action" data-action="save-event" data-event-id="${item.id}" data-title="${item.title}" type="button">Salva</button>
+              <button class="ghost agenda-details" data-action="event-sheet" data-event-id="${item.id}" type="button">Apri</button>
+              <button class="save-action event-save-button${saved ? " is-saved" : ""}" data-action="save-event" data-event-id="${item.id}" data-title="${item.title}" aria-label="${saved ? "Rimuovi evento salvato" : "Salva evento"}: ${item.title}" aria-pressed="${saved}" type="button">${saved ? "Salvato" : "Salva"}</button>
             </div>
           `}
         </div>
       </div>
     </article>
   `;
+}
+
+function closeEventSheet() {
+  const sheet = document.querySelector("#eventBottomSheet");
+  const backdrop = document.querySelector("#eventSheetBackdrop");
+  if (!sheet || !backdrop) return;
+  sheet.setAttribute("hidden", "");
+  backdrop.setAttribute("hidden", "");
+  document.body.classList.remove("sheet-open");
+  if (activeEventSheetTrigger) activeEventSheetTrigger.focus();
+  activeEventSheetTrigger = null;
+}
+
+function openEventSheet(eventId, trigger = null) {
+  const item = findCalendarEvent(eventId);
+  const sheet = document.querySelector("#eventBottomSheet");
+  const backdrop = document.querySelector("#eventSheetBackdrop");
+  const content = document.querySelector("#eventSheetContent");
+  if (!item || !sheet || !backdrop || !content) return;
+  activeEventSheetTrigger = trigger;
+  const parts = eventDayParts(item);
+  const saved = isLocalEventSaved(item.id);
+  const sourceLabel = item.sourceType === "official" ? "Fonte ufficiale" : item.sourceUrl ? "Fonte consultata" : "Fonte non disponibile";
+  content.innerHTML = `
+    <div class="sheet-event-date">
+      <span>${notificationText(parts.weekday)}</span>
+      <strong>${notificationText(parts.day)}</strong>
+      <small>${notificationText(parts.month)}</small>
+    </div>
+    <div class="sheet-event-main">
+      <p class="eyebrow">${notificationText(item.category)} - ${item.status === "confermato" ? "Confermato" : item.status === "segnalato" ? "Segnalato" : "Da verificare"}</p>
+      <h2 id="eventSheetTitle">${notificationText(item.title)}</h2>
+      <p>${notificationText(eventRangeLabel(item))} - ${notificationText(item.time)} - ${notificationText(item.place)}</p>
+      <p>${notificationText(item.detail || "Dettagli in aggiornamento.")}</p>
+      <div class="sheet-event-meta">
+        <span>${notificationText(item.price || "Info prezzo non disponibile")}</span>
+        <span>${notificationText(sourceLabel)}</span>
+        <span>Aggiornato: ${notificationText(item.updatedAt || "Non disponibile")}</span>
+      </div>
+      <div class="sheet-event-actions">
+        <button class="primary-action" data-action="share-event" data-event-id="${item.id}" type="button">Condividi</button>
+        <button class="ghost" data-action="event-ics" data-event-id="${item.id}" type="button">Calendario</button>
+        <button class="save-action${saved ? " is-saved" : ""}" data-action="save-event" data-event-id="${item.id}" data-title="${notificationText(item.title)}" aria-pressed="${saved}" type="button">${saved ? "Salvato" : "Salva"}</button>
+      </div>
+      <a class="sheet-event-link" href="eventi/${item.id}.html">Apri pagina evento</a>
+    </div>
+  `;
+  backdrop.removeAttribute("hidden");
+  sheet.removeAttribute("hidden");
+  document.body.classList.add("sheet-open");
+  sheet.focus();
 }
 
 function renderEventCategories() {
@@ -2458,7 +2601,7 @@ function renderUserProfile(panel = "settings") {
     ? `${user.provider} - ${user.email || user.phone || "account locale"}`
     : "Account in preparazione. Gli eventi possono essere salvati soltanto su questo dispositivo.";
   document.querySelector("#profileCouponCount").textContent = user ? profileCouponRows().length : 0;
-  document.querySelector("#profileEventCount").textContent = user ? profileEventRows().length : 0;
+  document.querySelector("#profileEventCount").textContent = profileEventRows().length;
   document.querySelector("#profilePointCount").textContent = user ? citizenLevel.points.toLocaleString("it-IT") : 0;
   document.querySelector("#profileLevel").textContent = citizenLevel.level;
   document.querySelector("#profileProgressValue").textContent = `${citizenLevel.progress}%`;
@@ -4040,12 +4183,20 @@ function switchView(view, updateHash = true) {
   document.querySelectorAll(".nav-item").forEach((item) => {
     const isActive = item.dataset.view === view;
     item.classList.toggle("active", isActive);
-    item.toggleAttribute("aria-current", isActive);
+    if (isActive) {
+      item.setAttribute("aria-current", "page");
+    } else {
+      item.removeAttribute("aria-current");
+    }
   });
   document.querySelectorAll(".bottom-nav-item").forEach((item) => {
     const isActive = item.dataset.view === view;
     item.classList.toggle("active", isActive);
-    item.toggleAttribute("aria-current", isActive);
+    if (isActive) {
+      item.setAttribute("aria-current", "page");
+    } else {
+      item.removeAttribute("aria-current");
+    }
   });
   const meta = pageMeta[view] || pageMeta.feed;
   const signature = citySignatures[view] || citySignatures.feed;
@@ -4517,6 +4668,22 @@ function handleAction(button) {
     return;
   }
 
+  if (action === "event-sheet") {
+    openEventSheet(button.dataset.eventId, button);
+    return;
+  }
+
+  if (action === "share-event") {
+    shareEvent(findCalendarEvent(button.dataset.eventId));
+    return;
+  }
+
+  if (action === "event-ics") {
+    downloadEventIcs(findCalendarEvent(button.dataset.eventId));
+    showToast("File calendario creato per questo evento.", "success");
+    return;
+  }
+
   if (action === "notifications") {
     toggleNotificationMenu();
     return;
@@ -4695,21 +4862,23 @@ function handleAction(button) {
   if (action === "save-event") {
     const wasAlreadySaved = button.classList.contains("is-saved");
     if (IS_PRODUCTION) {
-      addLocalSavedEvent({ id: button.dataset.eventId, title: button.dataset.title });
+      if (wasAlreadySaved) {
+        removeLocalSavedEvent(button.dataset.eventId);
+      } else {
+        addLocalSavedEvent({ id: button.dataset.eventId, title: button.dataset.title });
+      }
     } else {
       addDemoItem("events", { title: button.dataset.title });
     }
-    document.querySelectorAll(`[data-action="save-event"][data-event-id="${button.dataset.eventId}"]`).forEach((eventButton) => {
-      eventButton.textContent = IS_PRODUCTION ? "Salvato su questo dispositivo" : "Salvato";
-      eventButton.classList.add("is-saved");
-    });
+    syncSavedEventButtons(button.dataset.eventId);
     if (!wasAlreadySaved && IS_DEMO) {
       document.querySelectorAll(`[data-event-attendance="${button.dataset.eventId}"] strong`).forEach((counter) => {
         counter.textContent = String(Number(counter.textContent) + 1);
       });
     }
     renderDayPlan();
-    showToast(`Evento salvato: ${button.dataset.title}.`, "success");
+    if (document.querySelector("#profileView")?.classList.contains("active")) renderProfilePanel("events");
+    showToast(wasAlreadySaved && IS_PRODUCTION ? `Evento rimosso: ${button.dataset.title}.` : `Evento salvato: ${button.dataset.title}.`, "success");
     return;
   }
 
@@ -4799,10 +4968,16 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && overlay.classList.contains("active")) {
     closeOnboarding(true);
   }
+  if (event.key === "Escape" && document.body.classList.contains("sheet-open")) {
+    closeEventSheet();
+  }
   if (event.key === "Escape" && document.body.classList.contains("menu-open")) {
     closeMobileMenu();
   }
 });
+
+document.querySelector("#closeEventSheet")?.addEventListener("click", closeEventSheet);
+document.querySelector("#eventSheetBackdrop")?.addEventListener("click", closeEventSheet);
 
 document.querySelector("#mapBusinessList").addEventListener("click", (event) => {
   const item = event.target.closest("[data-place-id]");
@@ -6170,7 +6345,7 @@ async function bootApp() {
   window.addEventListener("beforeinstallprompt", (event) => {
     event.preventDefault();
     installPromptEvent = event;
-  showToast("MyAvezzano può essere installata come app.", "success");
+    showToast("MyAvezzano può essere installata come app dal menu del browser.", "success");
   });
 
   window.addEventListener("offline", () => showToast("Sei offline: uso dati salvati e funzioni locali.", "error"));

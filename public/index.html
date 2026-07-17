@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="MyAvezzano" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="icon" href="assets/app-icon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="assets/app-icon.svg" />
+    <link rel="apple-touch-icon" href="assets/pwa/icon-192.png" />
     <link rel="manifest" href="manifest.json" />
     <link rel="canonical" href="https://myavezzano.vercel.app/" />
     <link rel="preconnect" href="https://unpkg.com" crossorigin />
@@ -60,7 +60,7 @@
         ]
       }
     </script>
-    <link rel="stylesheet" href="styles.css?v=9d96939" />
+    <link rel="stylesheet" href="styles.css?v=36cddc7" />
   </head>
 <body class="view-feed">
     <a class="skip-link" href="#mainContent">Vai al contenuto</a>
@@ -330,7 +330,7 @@
                 <strong>Seleziona una destinazione</strong>
                 <span>Scegli un'attività dall'elenco o dalla mappa per avviare la navigazione reale.</span>
               </div>
-              <p class="map-status" id="mapStatus">Mappa centrata su Avezzano. Importazione automatica delle attività reali da OpenStreetMap.</p>
+              <p class="map-status" id="mapStatus">Mappa centrata su Avezzano. Tocca "Usa posizione" solo se vuoi calcolare il percorso dal punto in cui ti trovi: la posizione precisa non viene salvata.</p>
             </div>
             <aside class="panel map-panel">
               <div class="panel-head">
@@ -607,12 +607,30 @@
     </div>
 
     <nav class="bottom-nav" aria-label="Navigazione rapida mobile">
-      <button class="bottom-nav-item active" data-view-target="feed" data-view="feed" type="button">Oggi</button>
-      <button class="bottom-nav-item" data-view-target="events" data-view="events" type="button">Eventi</button>
-      <button class="bottom-nav-item" data-view-target="map" data-view="map" type="button">Mappa</button>
-      <button class="bottom-nav-item" data-view-target="coupons" data-view="coupons" type="button">Coupon</button>
-      <button class="bottom-nav-item" data-view-target="profile" data-view="profile" type="button">Profilo</button>
+      <button class="bottom-nav-item active" data-view-target="feed" data-view="feed" type="button" aria-current="page">
+        <span class="bottom-nav-icon icon-today" aria-hidden="true"></span>
+        <span>Oggi</span>
+      </button>
+      <button class="bottom-nav-item" data-view-target="events" data-view="events" type="button">
+        <span class="bottom-nav-icon icon-explore" aria-hidden="true"></span>
+        <span>Esplora</span>
+      </button>
+      <button class="bottom-nav-item" data-view-target="map" data-view="map" type="button">
+        <span class="bottom-nav-icon icon-map-pin" aria-hidden="true"></span>
+        <span>Mappa</span>
+      </button>
+      <button class="bottom-nav-item" data-view-target="profile" data-view="profile" type="button">
+        <span class="bottom-nav-icon icon-saved" aria-hidden="true"></span>
+        <span>Salvati</span>
+      </button>
     </nav>
+
+    <div class="bottom-sheet-backdrop" id="eventSheetBackdrop" hidden></div>
+    <section class="bottom-sheet" id="eventBottomSheet" role="dialog" aria-modal="true" aria-labelledby="eventSheetTitle" hidden tabindex="-1">
+      <button class="bottom-sheet-close" id="closeEventSheet" type="button" aria-label="Chiudi dettaglio evento">x</button>
+      <div class="bottom-sheet-handle" aria-hidden="true"></div>
+      <div class="bottom-sheet-body" id="eventSheetContent"></div>
+    </section>
 
     <section class="notification-menu" id="notificationMenu" aria-label="Centro notifiche" hidden>
       <div class="notification-menu-head">
@@ -672,7 +690,7 @@
 
     <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
-    <script defer src="events-data.js?v=9d96939"></script>
-    <script defer src="app.js?v=9d96939"></script>
+    <script defer src="events-data.js?v=36cddc7"></script>
+    <script defer src="app.js?v=36cddc7"></script>
   </body>
 </html>

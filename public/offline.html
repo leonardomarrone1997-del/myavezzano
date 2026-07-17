@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#f7f8fb" />
     <title>MyAvezzano offline</title>
     <style>
       :root {
@@ -12,49 +13,134 @@
         background: #f6f8fb;
         color: #07111f;
       }
+      * { box-sizing: border-box; }
       body {
         min-height: 100vh;
         margin: 0;
+        padding: 18px;
         display: grid;
         place-items: center;
-        padding: 24px;
       }
       main {
-        width: min(520px, 100%);
-        padding: 28px;
+        width: min(560px, 100%);
+        display: grid;
+        gap: 16px;
+        padding: 22px;
         border: 1px solid rgba(7, 17, 31, .12);
-        border-radius: 18px;
-        background: rgba(255, 255, 255, .88);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, .92);
         box-shadow: 0 20px 70px rgba(7, 17, 31, .12);
       }
       h1 {
-        margin: 0 0 10px;
-        font-size: clamp(1.8rem, 6vw, 2.8rem);
+        margin: 0;
+        font-size: clamp(1.8rem, 7vw, 2.8rem);
         line-height: 1;
       }
       p {
-        margin: 0 0 18px;
+        margin: 0;
         color: #42526a;
+        line-height: 1.45;
       }
-      a {
+      .offline-badge,
+      .saved-list li {
+        border: 1px solid rgba(7, 17, 31, .10);
+        border-radius: 16px;
+        background: #f8fafc;
+      }
+      .offline-badge {
+        display: grid;
+        gap: 5px;
+        padding: 14px;
+      }
+      .offline-badge span,
+      .saved-list small {
+        color: #64748b;
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .offline-badge strong {
+        font-size: 20px;
+      }
+      .saved-list {
+        display: grid;
+        gap: 8px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .saved-list li {
+        display: grid;
+        gap: 4px;
+        padding: 12px;
+      }
+      .actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      a,
+      button {
+        min-height: 48px;
         display: inline-flex;
-        min-height: 44px;
         align-items: center;
-        padding: 0 18px;
+        justify-content: center;
         border-radius: 999px;
+        border: 0;
         background: #0f6bff;
         color: white;
-        font-weight: 800;
+        font: inherit;
+        font-weight: 850;
         text-decoration: none;
+      }
+      button {
+        background: #e2e8f0;
+        color: #07111f;
+      }
+      @media (max-width: 360px) {
+        body { padding: 12px; }
+        main { padding: 18px; }
+        .actions { grid-template-columns: 1fr; }
       }
     </style>
   </head>
   <body>
     <main>
       <p>MyAvezzano</p>
-      <h1>Sei offline.</h1>
-      <p>La connessione non e' disponibile. Riapri la home quando torni online per aggiornare eventi, mappa e coupon.</p>
-      <a href="/">Torna alla home</a>
+      <h1>Modalita offline</h1>
+      <p>La connessione non e' disponibile. Puoi consultare gli eventi salvati su questo dispositivo e riprovare l'aggiornamento appena torna la rete.</p>
+      <section class="offline-badge" aria-live="polite">
+        <span>Disponibile ora</span>
+        <strong id="savedCount">Salvataggi locali</strong>
+        <p id="updatedAt">Dati memorizzati sul dispositivo. Potrebbero non essere aggiornati.</p>
+      </section>
+      <ul class="saved-list" id="savedList"></ul>
+      <div class="actions">
+        <a href="/">Apri home</a>
+        <button id="retryButton" type="button">Riprova</button>
+      </div>
     </main>
+    <script>
+      const key = "myavezzano_local_saved_events_v1";
+      const list = document.querySelector("#savedList");
+      const count = document.querySelector("#savedCount");
+      const updated = document.querySelector("#updatedAt");
+      let rows = [];
+      try {
+        rows = JSON.parse(localStorage.getItem(key)) || [];
+      } catch {
+        rows = [];
+      }
+      count.textContent = rows.length
+        ? `${rows.length} ${rows.length === 1 ? "evento salvato" : "eventi salvati"}`
+        : "Nessun evento salvato";
+      const newest = rows.map((item) => item.savedAt).filter(Boolean).sort().at(-1);
+      if (newest) {
+        updated.textContent = `Aggiornato alle ${new Date(newest).toLocaleString("it-IT")}. I dati potrebbero non essere aggiornati.`;
+      }
+      list.innerHTML = rows.length
+        ? rows.slice(-6).reverse().map((item) => `<li><strong>${String(item.title || "Evento salvato").replace(/[&<>"']/g, "")}</strong><small>Salvato su questo dispositivo</small></li>`).join("")
+        : "<li><strong>Niente da mostrare offline</strong><small>Quando salvi un evento, lo ritrovi qui anche senza rete.</small></li>";
+      document.querySelector("#retryButton").addEventListener("click", () => window.location.reload());
+    </script>
   </body>
 </html>
