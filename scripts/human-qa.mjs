@@ -234,22 +234,23 @@ async function runHumanScenario(browser, viewportName, viewport) {
     return `${visible} segnalazioni visibili`;
   });
 
-  await safeStep(run, "Apre registrazione e crea account test", async () => {
-    await clickHuman(page, "#openSignup");
-    await expectVisible(run, page, "#authOverlay .signup-panel", "Modal registrazione");
-    const suffix = Date.now().toString().slice(-6);
-    await fillIfVisible(page, "#signupName", "Tester");
-    await fillIfVisible(page, "#signupSurname", "Umano");
-    await fillIfVisible(page, "#signupEmail", `tester-${viewportName}-${suffix}@example.com`);
-    await fillIfVisible(page, "#signupPassword", "Test12345!");
-    await fillIfVisible(page, "#signupPasswordConfirm", "Test12345!");
-    const legal = page.locator("#acceptLegal");
-    if (await legal.isVisible().catch(() => false)) await legal.check({ force: true });
-    await clickHuman(page, "#createAccount");
-    await wait(600);
-    const profileName = await page.locator("#topProfileName").innerText().catch(() => "");
-    if (!/Tester|Ospite/i.test(profileName)) run.issue("warning", "Account", "Registrazione con feedback inatteso", profileName);
-    return profileName || "account creato";
+  await safeStep(run, "Controlla account pubblico in preparazione", async () => {
+    let accountButton = page.locator("#openSignup:visible").first();
+    if (!await accountButton.isVisible().catch(() => false)) {
+      await navigateHuman(page, "profile");
+      accountButton = page.locator("#profileSignupButton:visible").first();
+    }
+    await accountButton.click();
+    await expectVisible(run, page, "#authOverlay .signup-panel", "Dialog account");
+    const title = await page.locator("#signupTitle").innerText();
+    const copy = await page.locator("#signupCopy").innerText();
+    const personalFields = await page.locator("#authOverlay input, #authOverlay select, #authOverlay textarea").count();
+    if (personalFields) run.issue("critical", "Account", "Campi personali presenti in produzione", `${personalFields} campi trovati`);
+    if (!/preparazione/i.test(title) || !/non raccoglie credenziali/i.test(copy)) {
+      run.issue("warning", "Account", "Messaggio pubblico poco chiaro", `${title} - ${copy}`);
+    }
+    await clickHuman(page, "#accountInfoConfirm");
+    return `${title}; ${personalFields} campi personali`;
   });
 
   await safeStep(run, "Controlla responsive base", async () => {

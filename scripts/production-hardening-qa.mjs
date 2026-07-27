@@ -199,8 +199,7 @@ try {
   const profileCounts = await page.locator("#homeProfileCoupons, #homeProfileEvents, #homeProfilePoints").evaluateAll((nodes) => nodes.map((node) => node.textContent?.trim()));
   if (profileCounts.some((value) => value !== "0")) fail(`profilo ospite non vuoto in home: ${profileCounts.join(", ")}`);
 
-  await gotoChecked(`${baseUrl}/?prod=1`, "home produzione");
-  await page.locator("[data-view-target='coupons']:visible").first().click();
+  await gotoChecked(`${baseUrl}/?prod=1#coupons`, "coupon produzione");
   await page.locator("#couponsGrid .coupon-card").first().waitFor({ state: "visible", timeout: 5000 });
   await textMustNotContain(page, forbiddenPublicText, "coupon produzione");
   if (await page.locator("text=QR dimostrativo non valido").count() < 1) fail("manca etichetta QR dimostrativo non valido");

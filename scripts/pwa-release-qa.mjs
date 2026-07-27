@@ -21,6 +21,17 @@ function fail(message) {
   process.exit(1);
 }
 
+function pngDimensions(buffer) {
+  const signature = "89504e470d0a1a0a";
+  if (buffer.subarray(0, 8).toString("hex") !== signature) {
+    fail("uno screenshot dichiarato nel manifest non e' un PNG valido");
+  }
+  return {
+    width: buffer.readUInt32BE(16),
+    height: buffer.readUInt32BE(20)
+  };
+}
+
 const referenceDate = process.env.MYAVEZZANO_NOW
   ? todayInRome(new Date(process.env.MYAVEZZANO_NOW))
   : todayInRome();
@@ -36,6 +47,18 @@ const manifest = JSON.parse(manifestRaw);
 const shortcutNames = (manifest.shortcuts || []).map((shortcut) => shortcut.name).join("|");
 if (shortcutNames !== "Oggi|Esplora|Mappa|Salvati") {
   fail(`shortcut manifest non coerenti: ${shortcutNames}`);
+}
+
+for (const screenshot of manifest.screenshots || []) {
+  const expected = screenshot.sizes?.split("x").map(Number);
+  if (!expected || expected.length !== 2 || expected.some((value) => !Number.isFinite(value))) {
+    fail(`dimensioni manifest non valide per ${screenshot.src}`);
+  }
+  const screenshotBuffer = await readFile(path.join(root, screenshot.src));
+  const actual = pngDimensions(screenshotBuffer);
+  if (actual.width !== expected[0] || actual.height !== expected[1]) {
+    fail(`${screenshot.src} misura ${actual.width}x${actual.height}, atteso ${expected.join("x")}`);
+  }
 }
 
 if (/assets\/marketing|assets\/home-actions|avezzano-hero-(day|night)\.jpg|screenshot-(mobile|desktop)\.png/.test(serviceWorker)) {
@@ -68,4 +91,4 @@ if (!eventsHtml.includes("Casa chiusa. Ma non troppo")) {
   fail("eventi.html non contiene il primo evento futuro singolo atteso ad Avezzano");
 }
 
-console.log(`PWA release QA ok: referenceDate=${referenceDate}, shortcuts=${shortcutNames}.`);
+console.log(`PWA release QA ok: referenceDate=${referenceDate}, shortcuts=${shortcutNames}, screenshots=${manifest.screenshots?.length || 0}.`);

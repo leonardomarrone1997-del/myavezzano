@@ -6,7 +6,7 @@
     <title>MyAvezzano | Eventi, coupon e attività ad Avezzano</title>
     <meta name="description" content="Scopri eventi, coupon, mappa, nuove aperture e attività locali ad Avezzano. Una PWA semplice per scegliere cosa fare oggi in città." />
     <meta name="robots" content="index, follow" />
-    <meta name="theme-color" content="#f7f8fb" />
+    <meta name="theme-color" content="#f4f2ec" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="MyAvezzano" />
@@ -17,10 +17,8 @@
     <link rel="canonical" href="https://myavezzano.vercel.app/" />
     <link rel="preconnect" href="https://unpkg.com" crossorigin />
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
-    <link rel="preload" as="image" href="assets/avezzano-hero-day-mobile.jpg" media="(max-width: 760px) and (prefers-color-scheme: light)" fetchpriority="high" />
-    <link rel="preload" as="image" href="assets/avezzano-hero-night-mobile.jpg" media="(max-width: 760px) and (prefers-color-scheme: dark)" fetchpriority="high" />
-    <link rel="preload" as="image" href="assets/avezzano-hero-day.jpg" media="(min-width: 761px) and (prefers-color-scheme: light)" fetchpriority="high" />
-    <link rel="preload" as="image" href="assets/avezzano-hero-night.jpg" media="(min-width: 761px) and (prefers-color-scheme: dark)" fetchpriority="high" />
+    <link rel="preload" as="image" href="assets/avezzano-hero-day-mobile.jpg" media="(max-width: 760px)" fetchpriority="high" />
+    <link rel="preload" as="image" href="assets/avezzano-hero-day.jpg" media="(min-width: 761px)" fetchpriority="high" />
     <meta property="og:locale" content="it_IT" />
     <meta property="og:site_name" content="MyAvezzano" />
     <meta property="og:title" content="MyAvezzano | Eventi, coupon e attività ad Avezzano" />
@@ -64,19 +62,25 @@
   </head>
 <body class="view-feed">
     <a class="skip-link" href="#mainContent">Vai al contenuto</a>
-    <canvas class="webgl-aura" id="webglAura" aria-hidden="true"></canvas>
     <div class="theme-sky-transition" id="themeSkyTransition" aria-hidden="true"></div>
-    <div class="atmosphere-fx" id="atmosphereFx" aria-hidden="true">
-      <div class="fx-dust fx-dust-a"></div>
-      <div class="fx-dust fx-dust-b"></div>
-      <div class="fx-star-field">
-        <span style="--x: 18%; --y: 18%; --s: 1;"></span>
-        <span style="--x: 32%; --y: 11%; --s: .72;"></span>
-        <span style="--x: 58%; --y: 19%; --s: .86;"></span>
-        <span style="--x: 73%; --y: 14%; --s: .64;"></span>
-        <span style="--x: 88%; --y: 24%; --s: .78;"></span>
-      </div>
-    </div>
+    <svg class="icon-sprite" aria-hidden="true">
+      <symbol id="icon-home" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></symbol>
+      <symbol id="icon-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></symbol>
+      <symbol id="icon-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5 5-2Z"/></symbol>
+      <symbol id="icon-map" viewBox="0 0 24 24"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15M15 6v15"/></symbol>
+      <symbol id="icon-pin" viewBox="0 0 24 24"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+      <symbol id="icon-bookmark" viewBox="0 0 24 24"><path d="M6 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18l-6-4-6 4V4Z"/></symbol>
+      <symbol id="icon-ticket" viewBox="0 0 24 24"><path d="M3 9a3 3 0 0 0 0 6v4h18v-4a3 3 0 0 0 0-6V5H3v4Z"/><path d="M13 5v14"/></symbol>
+      <symbol id="icon-star" viewBox="0 0 24 24"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z"/></symbol>
+      <symbol id="icon-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+      <symbol id="icon-store" viewBox="0 0 24 24"><path d="M4 10v11h16V10"/><path d="M3 4h18l-2 6H5L3 4Z"/><path d="M9 21v-6h6v6"/></symbol>
+      <symbol id="icon-megaphone" viewBox="0 0 24 24"><path d="m3 11 14-6v14L3 13v-2Z"/><path d="m7 14 2 6h4l-2-5M19 9l2-1M19 15l2 1"/></symbol>
+      <symbol id="icon-shield" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.4 8.2 8 10 4.6-1.8 8-5 8-10V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></symbol>
+      <symbol id="icon-weather" viewBox="0 0 24 24"><circle cx="8" cy="8" r="4"/><path d="M8 2V1M8 15v-1M2 8H1M15 8h-1M3.8 3.8 3 3M13 13l-.8-.8"/><path d="M8 18a4 4 0 0 1 4-4 5 5 0 0 1 9 3 3 3 0 0 1-3 3H8a2 2 0 1 1 0-4"/></symbol>
+      <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20 15.2A8.5 8.5 0 0 1 8.8 4 8.5 8.5 0 1 0 20 15.2Z"/></symbol>
+      <symbol id="icon-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.4 2.4 0 1 1 3.4 2.2c-.8.4-1.2.9-1.2 1.8M12 17h.01"/></symbol>
+      <symbol id="icon-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4"/></symbol>
+    </svg>
     <button class="mobile-menu-toggle" id="mobileMenuToggle" type="button" aria-label="Apri menu" aria-controls="mainNav" aria-expanded="false">
       <span></span>
       <span></span>
@@ -93,16 +97,16 @@
         </div>
 
         <nav class="nav" id="mainNav">
-          <button class="nav-item active" data-view="feed" type="button">Oggi</button>
-          <button class="nav-item" data-view="map" type="button">Mappa</button>
-          <button class="nav-item" data-view="summer" type="button">Estate 2026</button>
-          <button class="nav-item" data-view="events" type="button">Eventi</button>
-          <button class="nav-item" data-view="coupons" type="button">Coupon</button>
-          <button class="nav-item" data-view="loyalty" type="button">Punti e premi</button>
-          <button class="nav-item" data-view="profile" type="button">Profilo</button>
-          <button class="nav-item" data-view="merchant" type="button">Area commercianti</button>
-          <button class="nav-item" data-view="campaign" type="button">Campagna</button>
-          <button class="nav-item" data-view="legal" type="button">Privacy e termini</button>
+          <button class="nav-item active" data-view="feed" type="button"><svg class="ui-icon" aria-hidden="true"><use href="#icon-home"></use></svg><span>Oggi</span></button>
+          <button class="nav-item" data-view="map" type="button"><svg class="ui-icon" aria-hidden="true"><use href="#icon-map"></use></svg><span>Mappa</span></button>
+          <button class="nav-item" data-view="summer" type="button"><svg class="ui-icon" aria-hidden="true"><use href="#icon-calendar"></use></svg><span>Estate 2026</span></button>
+          <button class="nav-item" data-view="events" type="button"><svg class="ui-icon" aria-hidden="true"><use href="#icon-compass"></use></svg><span>Eventi</span></button>
+          <button class="nav-item" data-view="coupons" type="button"><svg class="ui-icon" aria-hidden="true"><use href="#icon-ticket"></use></svg><span>Coupon</span></button>
+          <button class="nav-item" data-view="loyalty" type="button"><svg class="ui-icon" aria-hidden="true"><use href="#icon-star"></use></svg><span>Punti e premi</span></button>
+          <button class="nav-item" data-view="profile" type="button"><svg class="ui-icon" aria-hidden="true"><use href="#icon-user"></use></svg><span>Profilo</span></button>
+          <button class="nav-item" data-view="merchant" type="button"><svg class="ui-icon" aria-hidden="true"><use href="#icon-store"></use></svg><span>Area commercianti</span></button>
+          <button class="nav-item" data-view="campaign" type="button"><svg class="ui-icon" aria-hidden="true"><use href="#icon-megaphone"></use></svg><span>Campagna</span></button>
+          <button class="nav-item" data-view="legal" type="button"><svg class="ui-icon" aria-hidden="true"><use href="#icon-shield"></use></svg><span>Privacy e termini</span></button>
         </nav>
 
         <div class="side-card city-selector-card" aria-label="Comune attivo">
@@ -128,9 +132,29 @@
 
       <main class="main" id="mainContent" tabindex="-1">
         <header class="topbar">
-          <div>
+          <div class="topbar-appbar" aria-label="Barra applicazione">
+            <div class="appbar-place">
+              <img src="assets/app-icon.svg" alt="" width="36" height="36" />
+              <span><small>MyAvezzano</small><strong id="appbarCityName">Avezzano</strong></span>
+            </div>
+            <div class="appbar-tools">
+              <div class="weather-widget command-weather" aria-label="Meteo Avezzano">
+                <svg class="ui-icon" aria-hidden="true"><use href="#icon-weather"></use></svg>
+                <span><strong id="weatherTemperature">--&deg;C</strong><small id="weatherSummary">Meteo</small></span>
+              </div>
+              <button class="theme-toggle" id="themeToggle" type="button" aria-label="Attiva tema notturno" aria-pressed="false">
+                <svg class="ui-icon" aria-hidden="true"><use href="#icon-moon"></use></svg>
+                <span id="themeToggleLabel">Notte</span>
+              </button>
+              <button class="icon-button notification-button" id="notificationButton" data-action="notifications" type="button" title="Notifiche" aria-label="Apri notifiche" aria-expanded="false">
+                <svg class="ui-icon" aria-hidden="true"><use href="#icon-bell"></use></svg>
+                <span class="notification-badge" id="notificationBadge" aria-label="0 notifiche non lette" hidden>0</span>
+              </button>
+            </div>
+          </div>
+          <div class="topbar-intro">
             <p class="eyebrow" id="pageEyebrow">MyAvezzano</p>
-            <h1 id="pageTitle">Cosa succede oggi ad Avezzano?</h1>
+            <h1 id="pageTitle">Oggi ad Avezzano</h1>
             <p class="topbar-copy" id="pageCopy">Eventi segnalati, luoghi e informazioni pratiche per scegliere cosa fare. Controlla sempre fonte e stato della scheda.</p>
             <div class="city-signature" aria-label="Coordinate sezione">
               <span id="pageCode">AVZ-00</span>
@@ -139,66 +163,29 @@
               <span id="pagePulse">Aggiornato</span>
             </div>
           </div>
-          <div class="top-actions home-command-bar" aria-label="Strumenti rapidi">
-            <div class="command-status-strip">
-              <div class="weather-widget command-weather" aria-label="Meteo Avezzano">
-                <span class="weather-icon" aria-hidden="true"></span>
-                <div>
-                  <strong id="weatherTemperature">--&deg;C</strong>
-                  <span id="weatherSummary">Meteo Avezzano</span>
-                </div>
-              </div>
-              <button class="command-city-pill" data-view-target="map" type="button" aria-label="Apri il comune selezionato in mappa">
-                <span>Comune</span>
-                <strong id="commandCityName">Avezzano</strong>
-              </button>
-              <div class="theme-mode-group command-theme" aria-label="Tema giorno e notte">
-                <button class="theme-toggle" id="themeToggle" type="button" aria-label="Attiva tema notturno" aria-pressed="false">
-                  <span aria-hidden="true"></span>
-                  <strong><small>Tema</small><b id="themeToggleLabel">Notte</b></strong>
-                </button>
-              </div>
-            </div>
-            <div class="command-access-strip">
-              <button class="top-profile-status command-profile" id="topProfileStatus" type="button" aria-label="Apri profilo">
-                <span class="prestige-ring" aria-hidden="true">
-                  <img id="topProfileAvatar" src="assets/app-icon.svg" alt="" />
-                </span>
-                <span class="top-profile-copy">
-                  <strong id="topProfileName">Ospite</strong>
-                  <small id="topProfileLevel">Esploratore - 18%</small>
-                </span>
-              </button>
-              <div class="command-small-actions">
-                <button class="ghost guide-button" data-action="open-onboarding" type="button" aria-label="Apri guida"><span aria-hidden="true"></span><b>Guida</b></button>
-                <button class="icon-button notification-button" id="notificationButton" data-action="notifications" type="button" title="Notifiche" aria-label="Apri notifiche" aria-expanded="false">
-                  <span class="notification-glyph" aria-hidden="true"></span>
-                  <span class="notification-badge" id="notificationBadge" aria-label="0 notifiche non lette" hidden>0</span>
-                </button>
-              </div>
-              <button class="primary-action command-account" id="openSignup" type="button">Entra</button>
-            </div>
-            <div class="command-primary-strip" aria-label="Azioni principali">
-              <button data-view-target="events" type="button"><span>Oggi</span><strong>Eventi</strong></button>
-              <button data-view-target="map" type="button"><span>Luoghi</span><strong>Mappa</strong></button>
-              <button data-view-target="coupons" type="button"><span>Vantaggi</span><strong>Coupon</strong></button>
-            </div>
+          <picture class="topbar-visual">
+            <source media="(max-width: 760px)" srcset="assets/avezzano-hero-day-mobile.jpg" />
+            <img src="assets/avezzano-hero-day.jpg" alt="Piazza Risorgimento e il centro di Avezzano" width="1600" height="900" fetchpriority="high" />
+          </picture>
+          <div class="top-actions home-command-bar" aria-label="Strumenti secondari">
+            <button class="top-profile-status command-profile" id="topProfileStatus" type="button" aria-label="Apri profilo">
+              <span class="prestige-ring" aria-hidden="true"><img id="topProfileAvatar" src="assets/app-icon.svg" alt="" /></span>
+              <span class="top-profile-copy"><strong id="topProfileName">Ospite</strong><small id="topProfileLevel">Salvataggi locali</small></span>
+            </button>
+            <button class="ghost guide-button" data-action="open-onboarding" type="button"><svg class="ui-icon" aria-hidden="true"><use href="#icon-help"></use></svg><span>Guida</span></button>
+            <button class="ghost command-account" id="openSignup" type="button">Account</button>
           </div>
         </header>
 
         <section class="view active" id="feedView" aria-label="Home">
-          <section class="home-quick-actions" aria-label="Azioni rapide">
-            <div class="stories" id="stories"></div>
-          </section>
           <section class="home-event-focus" id="homeEventFocus" aria-label="Evento del giorno"></section>
-          <section class="home-live-brief" id="homeLiveBrief" aria-label="Panoramica rapida della giornata"></section>
-          <section class="weekend-home" id="weekendHome" aria-label="Eventi di questo weekend" hidden>
-            <div class="weekend-home-head">
-              <div><p class="eyebrow">Questo weekend</p><strong id="weekendHomeMeta">Programma in aggiornamento</strong></div>
-              <button class="ghost compact-button" data-action="event-category" data-category="Questo weekend" data-event-filter="weekend" type="button">Vedi tutti</button>
-            </div>
-            <div class="weekend-home-list" id="weekendHomeList"></div>
+          <section class="home-filter-strip" aria-label="Filtri rapidi">
+            <button data-action="event-category" data-category="Ora" data-event-filter="today" type="button">Ora</button>
+            <button data-action="event-category" data-category="Stasera" data-event-filter="tonight" type="button">Stasera</button>
+            <button data-action="event-category" data-category="Weekend" data-event-filter="weekend" type="button">Weekend</button>
+            <button data-action="event-category" data-category="Gratis" data-event-filter="free" type="button">Gratis</button>
           </section>
+          <section class="home-live-brief" id="homeLiveBrief" aria-label="Panoramica rapida della giornata"></section>
           <section class="summer-home-band" id="summerHomeBand" aria-label="Programma Estate 2026">
             <div class="summer-home-copy">
               <span class="summer-home-mark" aria-hidden="true">26</span>
@@ -210,94 +197,20 @@
             </div>
             <button class="summer-home-action" data-view-target="summer" type="button">Apri programma</button>
           </section>
-          <section class="city-now-grid" aria-label="Avezzano ora e opportunità last minute">
-            <article class="city-pulse-panel">
-              <div class="city-now-head">
-                <div>
-                  <p class="eyebrow">Avezzano ora</p>
-                  <h2>Il ritmo della città</h2>
-                </div>
-                <button class="ghost compact-button" data-view-target="map" type="button">Apri mappa</button>
-              </div>
-              <div class="city-pulse-home" id="cityPulseHome"></div>
-              <p class="city-now-note">Stima da eventi, orari e offerte attive.</p>
-            </article>
-            <article class="last-minute-panel">
-              <div class="city-now-head">
-                <div>
-                  <p class="eyebrow">Ultimo momento</p>
-                  <h2>Occasioni disponibili ora</h2>
-                </div>
-                <button class="ghost compact-button" data-view-target="coupons" type="button">Vedi tutte</button>
-              </div>
-              <div class="last-minute-home" id="lastMinuteHome"></div>
-            </article>
-          </section>
-          <section class="home-command-center" aria-label="Dashboard locale">
-            <div class="command-copy">
-              <p class="eyebrow">Dashboard locale</p>
-              <h2>Scegli cosa fare oggi</h2>
-              <p>Eventi, sconti e luoghi utili in un’unica schermata semplice.</p>
-              <div class="command-actions">
-                <button class="primary-action" data-view-target="events" type="button">Eventi</button>
-                <button class="ghost" data-view-target="map" type="button">Mappa</button>
-                <button class="ghost" data-view-target="coupons" type="button">Coupon</button>
-              </div>
+          <section class="home-quick-actions" aria-labelledby="exploreHomeTitle">
+            <div class="section-head compact-section-head">
+              <div><p class="eyebrow">Esplora</p><h2 id="exploreHomeTitle">Tutto a portata di mano</h2></div>
             </div>
+            <div class="stories" id="stories"></div>
           </section>
-          <div class="utility-shell">
-            <section class="utility-column">
-              <section class="smart-strip" id="smartStrip" aria-label="Suggerimenti intelligenti"></section>
-              <section class="day-plan panel" aria-label="La tua giornata">
-                <div class="panel-head">
-                  <div>
-                    <p class="eyebrow">La tua giornata</p>
-                    <h2>Salvati, reminder e prossime azioni</h2>
-                  </div>
-                  <button class="ghost" data-view-target="profile" type="button">Apri profilo</button>
-                </div>
-                <div class="day-plan-grid" id="dayPlanGrid"></div>
-              </section>
-              <section class="feed-list" id="feedList"></section>
-            </section>
-            <aside class="right-rail">
-              <div class="profile-card home-account-card">
-                <div class="home-account-kicker">
-                  <span>Area utente</span>
-                  <b id="homeProfileStatus">Non collegato</b>
-                </div>
-                <div class="home-account-main">
-                  <img id="homeProfileAvatar" src="assets/app-icon.svg" alt="MyAvezzano" />
-                  <div>
-                    <strong id="homeProfileName">Area personale</strong>
-                    <span id="homeProfileCopy">Accedi per salvare coupon, eventi e luoghi preferiti.</span>
-                  </div>
-                </div>
-                <div class="home-account-stats" aria-label="Riepilogo account">
-                  <span><b id="homeProfileCoupons">0</b><small>Coupon</small></span>
-                  <span><b id="homeProfileEvents">0</b><small>Eventi</small></span>
-                  <span><b id="homeProfilePoints">0</b><small>Punti</small></span>
-                </div>
-                <div class="home-account-actions">
-                  <button class="ghost compact-button" id="openSignupMini" type="button">Accedi</button>
-                  <button class="light-action compact-button" data-view-target="profile" type="button">Profilo</button>
-                  <button class="ghost compact-button" data-action="open-onboarding" type="button">Guida</button>
-                </div>
-              </div>
-              <div class="panel accent-panel">
-                <p class="eyebrow">Nuova apertura</p>
-                <h2>Esempio nuova apertura</h2>
-                <p>Anteprima informativa non verificata: nessuna offerta reale disponibile.</p>
-                <button class="light-action" data-view-target="coupons" type="button">Vedi vantaggi</button>
-              </div>
-              <div class="panel campaign-mini-panel">
-                <p class="eyebrow">Campagna città</p>
-                <h2>QR, vetrine e materiali locali</h2>
-                <p>Un sistema di touchpoint fisici per portare MyAvezzano nei negozi, negli eventi e nelle strade.</p>
-                <button class="light-action" data-view-target="campaign" type="button">Apri campagna</button>
-              </div>
-            </aside>
-          </div>
+          <section class="home-campaign-card" id="homeCampaignCard" aria-label="Campagna MyAvezzano">
+            <div>
+              <p class="eyebrow">Il progetto sul territorio</p>
+              <h2>MyAvezzano nei luoghi della città</h2>
+              <p>QR, vetrine e materiali coordinati per collegare persone, eventi e attività locali.</p>
+            </div>
+            <button class="ghost" data-view-target="campaign" type="button"><svg class="ui-icon" aria-hidden="true"><use href="#icon-megaphone"></use></svg><span>Scopri il progetto</span></button>
+          </section>
         </section>
 
         <section class="view" id="mapView">
@@ -546,7 +459,7 @@
             <div class="campaign-copy">
               <p class="eyebrow">Campagna cittadina</p>
               <h2>MyAvezzano fuori dallo schermo</h2>
-              <p>Una rete di QR, vetrofanie, locandine e materiali leggeri per portare eventi, mappa e coupon nei punti reali della citta. La sezione e pensata per spiegare il progetto a negozi, locali, enti e sponsor senza attivare pagamenti o raccolta dati.</p>
+              <p>Una rete di QR, vetrofanie e materiali leggeri porta eventi, mappa e coupon nei luoghi reali della città. Il pilot è informativo: non attiva pagamenti e non raccoglie dati.</p>
               <div class="campaign-actions">
                 <button class="primary-action" data-view-target="merchant" type="button">Area commercianti</button>
                 <a class="light-action" href="assets/marketing/iavezzano-piano-pubblicitario.pptx" download>Scarica piano</a>
@@ -559,19 +472,19 @@
 
           <section class="campaign-metrics" aria-label="Stato campagna MyAvezzano">
             <article>
-              <span>Touchpoint</span>
-              <strong>4</strong>
-              <p>Vetrine, tavoli, locandine e materiali evento collegati alla PWA.</p>
+              <span>Obiettivo 1</span>
+              <strong>Scoprire</strong>
+              <p>Rendere immediati eventi, luoghi e informazioni utili.</p>
             </article>
             <article>
-              <span>Stato</span>
-              <strong>Pilot</strong>
-              <p>Campagna informativa in preparazione, senza adesioni o pagamenti pubblici.</p>
+              <span>Obiettivo 2</span>
+              <strong>Collegare</strong>
+              <p>Portare il digitale nei punti fisici della città.</p>
             </article>
             <article>
-              <span>Focus</span>
-              <strong>QR</strong>
-              <p>Ogni materiale rimanda a eventi, mappa, coupon o guida della citta.</p>
+              <span>Obiettivo 3</span>
+              <strong>Valorizzare</strong>
+              <p>Dare spazio a iniziative e attività locali verificate.</p>
             </article>
           </section>
 
@@ -615,6 +528,11 @@
               <article><strong>2</strong><span>La PWA apre la scheda utile: evento, coupon, mappa o guida.</span></article>
               <article><strong>3</strong><span>Il contenuto resta salvabile sul dispositivo, senza account obbligatorio.</span></article>
               <article><strong>4</strong><span>L'admin approva solo contenuti verificati prima della pubblicazione.</span></article>
+            </div>
+            <div class="campaign-status">
+              <span>Stato reale</span>
+              <strong>Pilot in preparazione</strong>
+              <a class="ghost" href="assets/marketing/iavezzano-piano-pubblicitario.pptx" download>Scarica piano</a>
             </div>
           </section>
         </section>
@@ -686,19 +604,19 @@
 
     <nav class="bottom-nav" aria-label="Navigazione rapida mobile">
       <button class="bottom-nav-item active" data-view-target="feed" data-view="feed" type="button" aria-current="page">
-        <span class="bottom-nav-icon icon-today" aria-hidden="true"></span>
+        <svg class="ui-icon" aria-hidden="true"><use href="#icon-home"></use></svg>
         <span>Oggi</span>
       </button>
       <button class="bottom-nav-item" data-view-target="events" data-view="events" type="button">
-        <span class="bottom-nav-icon icon-explore" aria-hidden="true"></span>
+        <svg class="ui-icon" aria-hidden="true"><use href="#icon-compass"></use></svg>
         <span>Esplora</span>
       </button>
       <button class="bottom-nav-item" data-view-target="map" data-view="map" type="button">
-        <span class="bottom-nav-icon icon-map-pin" aria-hidden="true"></span>
+        <svg class="ui-icon" aria-hidden="true"><use href="#icon-map"></use></svg>
         <span>Mappa</span>
       </button>
       <button class="bottom-nav-item" data-view-target="profile" data-view="profile" type="button">
-        <span class="bottom-nav-icon icon-saved" aria-hidden="true"></span>
+        <svg class="ui-icon" aria-hidden="true"><use href="#icon-bookmark"></use></svg>
         <span>Salvati</span>
       </button>
     </nav>
@@ -768,7 +686,22 @@
 
     <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
-    <script defer src="events-data.js?v=__BUILD_VERSION__"></script>
-    <script defer src="app.js?v=__BUILD_VERSION__"></script>
+    <script>
+      const deferredViews = document.createDocumentFragment();
+      document.querySelectorAll(".view:not(.active)").forEach((view) => deferredViews.appendChild(view));
+      window.requestAnimationFrame(() => {
+        window.setTimeout(() => {
+          document.querySelector("#feedView")?.after(deferredViews);
+          const eventsScript = document.createElement("script");
+          eventsScript.src = "events-data.js?v=__BUILD_VERSION__";
+          eventsScript.onload = () => {
+            const appScript = document.createElement("script");
+            appScript.src = "app.js?v=__BUILD_VERSION__";
+            document.body.appendChild(appScript);
+          };
+          document.body.appendChild(eventsScript);
+        }, 120);
+      });
+    </script>
   </body>
 </html>

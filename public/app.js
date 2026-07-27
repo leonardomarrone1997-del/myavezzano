@@ -112,7 +112,7 @@ const userSubmittedBusinesses = [
     address: "Via XX Settembre 411, Avezzano",
     phone: "",
     stats: "Attività inserita",
-    photo: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Shopping_Park_Ten.jpg/330px-Shopping_Park_Ten.jpg",
+    photo: "assets/social-preview.jpg",
     photoCredit: "Wikimedia Commons",
     image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=600&q=80",
     caption: "Attività commerciale inserita nella rete MyAvezzano."
@@ -215,21 +215,23 @@ const marsicaFoodVenues = [
 ];
 
 const marsicaTownImages = {
-  "Celano": "https://commons.wikimedia.org/wiki/Special:FilePath/Celano%20-%20Castello%20Piccolomini.jpg",
-  "Tagliacozzo": "https://commons.wikimedia.org/wiki/Special:FilePath/TagliacozzoobeliscoMarsica2.jpg",
-  "Pescina": "https://commons.wikimedia.org/wiki/Special:FilePath/Pescina%20view.jpg",
-  "Luco dei Marsi": "https://commons.wikimedia.org/wiki/Special:FilePath/Luco%20dei%20Marsi%20Chiesa%20San%20Giovanni%20Battista%201.jpg",
-  "Trasacco": "https://commons.wikimedia.org/wiki/Special:FilePath/Trasacco.jpg",
-  "Carsoli": "https://commons.wikimedia.org/wiki/Special:FilePath/Italien%20vicino%20Autostrada%2024%2004%20%28RaBoe%29.jpg",
-  "Scurcola Marsicana": "https://commons.wikimedia.org/wiki/Special:FilePath/Scurcola%20Marsicana%20view.jpg",
-  "Magliano de' Marsi": "https://commons.wikimedia.org/wiki/Special:FilePath/Magliano%20De%27%20Marsi%202013%20by-RaBoe%205.jpg"
+  "Celano": "assets/social-preview.jpg",
+  "Tagliacozzo": "assets/towns/tagliacozzo-obelisco.webp",
+  "Pescina": "assets/social-preview.jpg",
+  "Luco dei Marsi": "assets/towns/luco-san-giovanni.webp",
+  "Trasacco": "assets/towns/trasacco.webp",
+  "Carsoli": "assets/towns/carsoli.webp",
+  "Scurcola Marsicana": "assets/social-preview.jpg",
+  "Magliano de' Marsi": "assets/social-preview.jpg"
 };
 
 marsicaFoodVenues.forEach((place) => {
   const townImage = marsicaTownImages[place.area];
   if (townImage && !place.photo) {
     place.image = townImage;
-    place.photoCredit = "Wikimedia Commons - immagine del comune";
+    place.photoCredit = townImage.includes("/towns/")
+      ? "Wikimedia Commons - copia locale"
+      : "Immagine neutra MyAvezzano";
   }
 });
 
@@ -474,10 +476,22 @@ const categoryImages = {
 };
 
 const quickActions = [
-  ["EVENTI", "Cosa fare oggi", "events", "eventi"],
-  ["MAPPA", "Locali e luoghi", "map", "mappa"],
-  ["COUPON", "Anteprime", "coupons", "coupon"]
+  ["Eventi", "Calendario locale", "events", "calendar"],
+  ["Mappa", "Orientati in città", "map", "map"],
+  ["Luoghi", "Locali e servizi", "map", "pin"],
+  ["Salvati", "Sul dispositivo", "profile", "bookmark"]
 ];
+
+function iconSvg(name, className = "ui-icon") {
+  const icon = {
+    calendar: "icon-calendar",
+    map: "icon-map",
+    pin: "icon-pin",
+    bookmark: "icon-bookmark",
+    campaign: "icon-megaphone"
+  }[name] || "icon-compass";
+  return `<svg class="${className}" aria-hidden="true"><use href="#${icon}"></use></svg>`;
+}
 
 const cityHighlights = [
   {
@@ -538,6 +552,9 @@ const cityHighlights = [
 
 const eventCategories = [
   ["Tutti", "Agenda completa", "all"],
+  ["Oggi", "In programma oggi", "today"],
+  ["Stasera", "Dalle 18 in poi", "tonight"],
+  ["Gratis", "Ingresso libero", "free"],
   ["Questo weekend", "Da venerdì a domenica", "weekend"],
   ["Vicino a te", "Marsica e paesi vicini", "nearby"],
   ["Avezzano", "Eventi in città", "avezzano"],
@@ -774,8 +791,8 @@ const userPreferences = ["Eventi", "Sconti", "Nuove aperture", "Ristoranti", "Pa
 const pageMeta = {
   feed: {
     eyebrow: "MyAvezzano",
-    title: "Cosa succede oggi ad Avezzano?",
-    copy: "Eventi segnalati, luoghi e informazioni pratiche per scegliere cosa fare. Controlla sempre fonte e stato della scheda."
+    title: "Oggi ad Avezzano",
+    copy: "Eventi e luoghi utili per scegliere cosa fare, con fonte e stato sempre visibili."
   },
   map: {
     eyebrow: "Mappa",
@@ -1640,7 +1657,9 @@ function selectedTownLabel() {
 
 function syncCommandCityLabel() {
   const commandCityName = document.querySelector("#commandCityName");
+  const appbarCityName = document.querySelector("#appbarCityName");
   if (commandCityName) commandCityName.textContent = selectedTownLabel();
+  if (appbarCityName) appbarCityName.textContent = selectedTownLabel();
 }
 
 function placeTown(place) {
@@ -1739,6 +1758,14 @@ function eventMatchesFilter(item, filter) {
   if (filter === "all") return !item.past && eventIsHomeCandidate(item);
   if (filter === "archivio") return Boolean(item.past);
   if (item.past) return false;
+  if (filter === "today") return eventIsLiveToday(item);
+  if (filter === "tonight") {
+    const startHour = Number.parseInt(String(item.time || "").match(/\d{1,2}/)?.[0] || "0", 10);
+    return eventIsLiveToday(item) && startHour >= 18;
+  }
+  if (filter === "free") {
+    return eventIsHomeCandidate(item) && /\b(gratuit|liber|free|0\s*euro)\b/i.test(String(item.price || ""));
+  }
   if (filter === "weekend") {
     const { start, end } = weekendWindow();
     return eventOverlapsRange(item, start, end);
@@ -1901,65 +1928,33 @@ function renderHomeEventFocus() {
   const nextAvezzano = avezzanoEvents.find((event) => eventStartsOnOrAfter(event, today));
   const nextNearby = nearbyTownEvents.find((event) => eventStartsOnOrAfter(event, today));
   const item = avezzanoToday[0] || nearbyToday[0] || nextAvezzano || nextNearby;
-  const nextSuggested = sortEventsByCurrentDate([nextAvezzano, nextNearby].filter((event) => event && event.id !== item?.id), today)[0];
-  const dinnerSpot = scopedPlaces(intelligentPlaces("cena")).find((place) => /ristor|trattoria|osteria|food|pub|bar/i.test(`${place.category} ${place.name}`)) || scopedPlaces(mapPlaces)[0];
   if (!item) {
     panel.hidden = true;
     return;
   }
   const parts = eventDayParts(item);
-  const attendanceText = IS_DEMO ? ` - ${eventAttendanceCount(item)} interessati` : "";
-  const extraAvezzanoToday = avezzanoToday.filter((event) => event.id !== item.id);
   const headingLabel = avezzanoToday.length ? "Oggi ad Avezzano" : nearbyToday.length ? "Oggi nei dintorni" : nextAvezzano ? "Prossimo ad Avezzano" : "Prossimo nella Marsica";
+  const sourceStatus = item.status === "confermato" ? "Confermato" : item.status === "segnalato" ? "Segnalato" : "Da verificare";
+  const saved = isLocalEventSaved(item.id);
   panel.hidden = false;
   panel.innerHTML = `
     <div class="home-event-heading">
-      <div><p class="eyebrow">Cosa si fa questa sera?</p><strong>${headingLabel}</strong></div>
-      <button class="ghost compact-button" data-view-target="events" type="button">Calendario</button>
+      <div><p class="eyebrow">In primo piano</p><strong>${headingLabel}</strong></div>
+      <span class="home-source-status">${sourceStatus}</span>
     </div>
     <div class="home-event-main">
       <time datetime="${item.date}"><span>${parts.weekday}</span><strong>${parts.day}</strong><small>${parts.month}</small></time>
-      <div><span class="agenda-tag">${item.category}</span><h2>${item.title}</h2><p>${item.time} - ${item.place}</p></div>
-      <button class="save-action" data-action="save-event" data-event-id="${item.id}" data-title="${item.title}" type="button">Salva</button>
+      <div class="home-event-copy">
+        <span class="agenda-tag">${item.category}</span>
+        <h2>${item.title}</h2>
+        <p>${item.time} · ${item.place}</p>
+        <small>Aggiornato ${item.updatedAt || "di recente"}</small>
+      </div>
+      <div class="home-event-actions">
+        <button class="primary-action" data-action="event-sheet" data-event-id="${item.id}" type="button">Apri</button>
+        <button class="ghost save-action${saved ? " is-saved" : ""}" data-action="save-event" data-event-id="${item.id}" data-title="${item.title}" aria-pressed="${saved}" type="button">${saved ? "Salvato" : "Salva"}</button>
+      </div>
     </div>
-    <div class="tonight-plan-strip">
-      <span><strong>Piano rapido</strong> ${item.price || "Info evento"}${attendanceText}</span>
-      ${dinnerSpot ? `<button class="ghost compact-button" data-action="open-map-place" data-place="${dinnerSpot.name}" type="button">Locale vicino</button>` : ""}
-      <a class="ghost compact-button" href="eventi/${item.id}.html">Dettagli</a>
-    </div>
-    ${extraAvezzanoToday.length ? `
-      <div class="today-more-events" aria-label="Altri eventi di oggi">
-        <span>Altri eventi oggi ad Avezzano</span>
-        ${extraAvezzanoToday.slice(0, 3).map((event) => `
-          <button class="today-more-event" data-action="save-event" data-event-id="${event.id}" data-title="${event.title}" type="button">
-            <strong>${event.time}</strong>
-            <span>${event.title}</span>
-          </button>
-        `).join("")}
-        ${extraAvezzanoToday.length > 3 ? `<button class="today-more-link" data-view-target="events" type="button">+${extraAvezzanoToday.length - 3}</button>` : ""}
-      </div>
-    ` : ""}
-    ${nearbyToday.length ? `
-      <div class="today-more-events nearby" aria-label="Eventi di oggi nei comuni limitrofi">
-        <span>Oggi nei comuni vicini</span>
-        ${nearbyToday.slice(0, 3).map((event) => `
-          <button class="today-more-event" data-action="save-event" data-event-id="${event.id}" data-title="${event.title}" type="button">
-            <strong>${event.area}</strong>
-            <span>${event.title}</span>
-          </button>
-        `).join("")}
-        ${nearbyToday.length > 3 ? `<button class="today-more-link" data-view-target="events" type="button">+${nearbyToday.length - 3}</button>` : ""}
-      </div>
-    ` : ""}
-    ${nextSuggested && nextSuggested.id !== item.id ? `
-      <div class="next-suggestion" aria-label="Prossimo evento consigliato">
-        <span>Prossimo consigliato</span>
-        <button data-action="save-event" data-event-id="${nextSuggested.id}" data-title="${nextSuggested.title}" type="button">
-          <strong>${eventRangeLabel(nextSuggested)} - ${nextSuggested.area}</strong>
-          <small>${nextSuggested.title}</small>
-        </button>
-      </div>
-    ` : ""}
   `;
   hydrateLazyMedia(panel, true);
   syncLocalSavedEventsUi();
@@ -1969,41 +1964,38 @@ function renderHomeLiveBrief() {
   const panel = document.querySelector("#homeLiveBrief");
   if (!panel) return;
   const today = currentDateKey();
-  const nextEvent = sortEventsByCurrentDate(calendarEvents.filter((item) => eventIsHomeCandidate(item, today)), today)[0];
-  const nearbyEvent = sortEventsByCurrentDate(calendarEvents.filter((item) => item.area !== "Avezzano" && coverageTowns.includes(item.area) && eventIsHomeCandidate(item, today)), today)[0];
-  const pulse = cityPulseSnapshot().sort((a, b) => b.score - a.score)[0];
-  const bestDeal = lastMinuteDeals[0];
-  const cards = [
-    {
-      eyebrow: "Agenda",
-      title: nextEvent ? nextEvent.title : "Eventi in aggiornamento",
-      text: nextEvent ? `${nextEvent.area} - ${eventRangeLabel(nextEvent)} - ${nextEvent.time}` : "Apri il calendario per vedere i prossimi appuntamenti.",
-      action: "events",
-      cta: "Apri eventi"
-    },
-    {
-      eyebrow: "Vicino a te",
-      title: nearbyEvent ? nearbyEvent.area : "Marsica",
-      text: nearbyEvent ? nearbyEvent.title : "Scopri eventi, sagre e serate nei comuni limitrofi.",
-      action: "nearby",
-      cta: "Vedi vicino"
-    },
-    {
-      eyebrow: pulse ? pulse.status : "Vantaggi",
-      title: pulse ? pulse.name : bestDeal.title,
-      text: pulse ? pulse.reason : `${bestDeal.place} - ${bestDeal.value}`,
-      action: pulse ? "map" : "coupons",
-      cta: pulse ? "Apri mappa" : "Apri coupon"
-    }
-  ];
-  panel.innerHTML = cards.map((item) => `
-    <article class="home-brief-card">
-      <span>${item.eyebrow}</span>
-      <strong>${item.title}</strong>
-      <small>${item.text}</small>
-      <button ${item.action === "nearby" ? 'data-action="event-category" data-category="Vicino a te" data-event-filter="nearby"' : `data-view-target="${item.action}"`} type="button">${item.cta}</button>
-    </article>
-  `).join("");
+  const primaryId = document.querySelector("#homeEventFocus [data-event-id]")?.dataset.eventId;
+  const upcoming = sortEventsByCurrentDate(
+    scopedEvents(calendarEvents).filter((item) => eventIsHomeCandidate(item, today) && item.id !== primaryId),
+    today
+  ).slice(0, 3);
+  panel.innerHTML = `
+    <div class="section-head compact-section-head">
+      <div><p class="eyebrow">Prossimi eventi</p><h2>Da mettere in agenda</h2></div>
+      <button class="ghost compact-button" data-view-target="events" type="button">Vedi tutti</button>
+    </div>
+    <div class="upcoming-event-list">
+      ${upcoming.length ? upcoming.map((item) => {
+        const parts = eventDayParts(item);
+        const saved = isLocalEventSaved(item.id);
+        return `
+          <article class="upcoming-event-card">
+            <time datetime="${item.date}"><strong>${parts.day}</strong><span>${parts.month}</span></time>
+            <div>
+              <span>${item.area} · ${item.time}</span>
+              <h3>${item.title}</h3>
+              <small>${item.place}</small>
+            </div>
+            <div class="upcoming-event-actions">
+              <button class="ghost" data-action="event-sheet" data-event-id="${item.id}" type="button">Apri</button>
+              <button class="save-action${saved ? " is-saved" : ""}" data-action="save-event" data-event-id="${item.id}" data-title="${item.title}" aria-label="${saved ? "Rimuovi dai salvati" : "Salva"}: ${item.title}" aria-pressed="${saved}" type="button">${saved ? "Salvato" : "Salva"}</button>
+            </div>
+          </article>
+        `;
+      }).join("") : `<p class="agenda-empty">Il prossimo programma è in aggiornamento.</p>`}
+    </div>
+  `;
+  syncLocalSavedEventsUi();
 }
 
 function renderWeekendHome() {
@@ -2196,8 +2188,8 @@ function ensureSummerViewRendered() {
 function render() {
   applyEnvironmentVisibility();
   document.querySelector("#stories").innerHTML = quickActions.map(([title, text, view, icon]) => `
-    <button class="shortcut-card" data-view-target="${view}" data-shortcut="${icon}" type="button" aria-label="${title}: ${text}">
-      <span class="shortcut-icon shortcut-icon-${icon}" aria-hidden="true"></span>
+    <button class="shortcut-card" data-view-target="${view}" data-shortcut="${icon}" type="button">
+      ${iconSvg(icon, "shortcut-icon ui-icon")}
       <span class="shortcut-copy"><strong>${title}</strong><small>${text}</small></span>
       <span class="shortcut-arrow" aria-hidden="true"></span>
     </button>
@@ -2212,7 +2204,8 @@ function render() {
   renderNotificationState();
   renderSmartStrip();
   renderDayPlan();
-  document.querySelector("#feedList").innerHTML = homeHighlightRows().map((item) => {
+  const feedList = document.querySelector("#feedList");
+  if (feedList) feedList.innerHTML = homeHighlightRows().map((item) => {
     const relatedPlace = findPlaceByName(item.place);
     const searchText = [item.type, item.title, item.place, item.when, item.detail, item.cta, relatedPlace?.category, relatedPlace?.stats].filter(Boolean).join(" ");
     return `
@@ -4247,13 +4240,19 @@ function switchView(view, updateHash = true) {
   });
   const meta = pageMeta[view] || pageMeta.feed;
   const signature = citySignatures[view] || citySignatures.feed;
-  document.querySelector("#pageEyebrow").textContent = meta.eyebrow;
-  document.querySelector("#pageTitle").textContent = meta.title;
-  document.querySelector("#pageCopy").textContent = meta.copy;
-  document.querySelector("#pageCode").textContent = signature[0];
-  document.querySelector("#pageCoords").textContent = signature[1];
-  document.querySelector("#pageArtifact").textContent = signature[2];
-  document.querySelector("#pagePulse").textContent = signature[3];
+  const setTextIfChanged = (selector, value) => {
+    const element = document.querySelector(selector);
+    if (element && element.textContent !== value) element.textContent = value;
+  };
+  setTextIfChanged("#pageEyebrow", meta.eyebrow);
+  setTextIfChanged("#pageTitle", meta.title);
+  setTextIfChanged("#pageCopy", view === "feed"
+    ? `${new Intl.DateTimeFormat("it-IT", { weekday: "long", day: "numeric", month: "long", timeZone: "Europe/Rome" }).format(new Date(`${currentDateKey()}T12:00:00`))}. ${meta.copy}`
+    : meta.copy);
+  setTextIfChanged("#pageCode", signature[0]);
+  setTextIfChanged("#pageCoords", signature[1]);
+  setTextIfChanged("#pageArtifact", signature[2]);
+  setTextIfChanged("#pagePulse", signature[3]);
   hydrateLazyMedia(targetView);
   applySearchFilter();
 
@@ -4363,7 +4362,7 @@ function applyTheme(theme = preferredTheme()) {
   const isDark = theme === "dark";
   document.body.classList.toggle("theme-dark", isDark);
   document.documentElement.style.colorScheme = isDark ? "dark" : "light";
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", isDark ? "#07111f" : "#f7f8fb");
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", isDark ? "#111921" : "#f4f2ec");
   const toggle = document.querySelector("#themeToggle");
   const label = document.querySelector("#themeToggleLabel");
   if (toggle) {
@@ -5290,7 +5289,7 @@ document.querySelector("#sendMerchantNotification")?.addEventListener("click", a
 });
 
 const authOverlay = document.querySelector("#authOverlay");
-const openSignupButtons = [document.querySelector("#openSignup"), document.querySelector("#openSignupMini")];
+const openSignupButtons = [document.querySelector("#openSignup"), document.querySelector("#openSignupMini")].filter(Boolean);
 const AUTH_STORAGE_KEY = "myavezzano_user";
 const USERS_STORAGE_KEY = "myavezzano_users_v1";
 const RESET_STORAGE_KEY = "myavezzano_password_resets_v1";
@@ -5656,8 +5655,10 @@ function updateAuthUi() {
   const homeEvents = document.querySelector("#homeProfileEvents");
   const homePoints = document.querySelector("#homeProfilePoints");
 
-  document.querySelector("#openSignup").textContent = accountLabel;
-  document.querySelector("#openSignupMini").textContent = miniLabel;
+  const openSignupButton = document.querySelector("#openSignup");
+  const openSignupMiniButton = document.querySelector("#openSignupMini");
+  if (openSignupButton) openSignupButton.textContent = accountLabel;
+  if (openSignupMiniButton) openSignupMiniButton.textContent = miniLabel;
   if (homeAvatar) homeAvatar.src = user?.avatar || "assets/app-icon.svg";
   if (homeName) homeName.textContent = user ? user.name : "Area personale";
   if (homeStatus) homeStatus.textContent = user ? "Collegato" : "Non collegato";
@@ -6392,7 +6393,6 @@ async function bootApp() {
   window.addEventListener("beforeinstallprompt", (event) => {
     event.preventDefault();
     installPromptEvent = event;
-    showToast("MyAvezzano può essere installata come app dal menu del browser.", "success");
   });
 
   window.addEventListener("offline", () => showToast("Sei offline: uso dati salvati e funzioni locali.", "error"));
@@ -6402,4 +6402,4 @@ async function bootApp() {
 document.querySelector("#themeToggle")?.addEventListener("click", toggleTheme);
 document.querySelector("#citySelector")?.addEventListener("change", (event) => setActiveTown(event.target.value));
 
-bootApp();
+bootApp().catch((error) => console.error("Avvio MyAvezzano non riuscito.", error));
