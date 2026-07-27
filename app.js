@@ -4394,7 +4394,7 @@ function applyTheme(theme = preferredTheme()) {
   const isDark = theme === "dark";
   document.body.classList.toggle("theme-dark", isDark);
   document.documentElement.style.colorScheme = isDark ? "dark" : "light";
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", isDark ? "#111921" : "#f4f2ec");
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", isDark ? "#03172b" : "#edf5f7");
   const toggle = document.querySelector("#themeToggle");
   const label = document.querySelector("#themeToggleLabel");
   if (toggle) {

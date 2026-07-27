@@ -69,15 +69,16 @@ function contrast(foreground, background) {
 
 function assertPaletteContrast() {
   const pairs = [
-    ["testo chiaro su fondo", "#26323d", "#f4f2ec"],
-    ["testo chiaro su superficie", "#26323d", "#fffdf9"],
-    ["secondario chiaro su superficie", "#66727d", "#fffdf9"],
-    ["pulsante primario", "#ffffff", "#2f7073"],
-    ["pulsante primario notte", "#111921", "#75b9b8"],
-    ["testo notte su fondo", "#f1f3f2", "#111921"],
-    ["secondario notte su fondo", "#b4bec3", "#111921"],
-    ["testo notte su superficie", "#f1f3f2", "#19242d"],
-    ["secondario notte su superficie", "#b4bec3", "#19242d"]
+    ["testo chiaro su fondo", "#08233b", "#edf5f7"],
+    ["testo chiaro su superficie", "#08233b", "#ffffff"],
+    ["secondario chiaro su superficie", "#52697a", "#ffffff"],
+    ["pulsante primario", "#ffffff", "#057180"],
+    ["corallo accessibile", "#06233e", "#f15a52"],
+    ["pulsante primario notte", "#03223b", "#44d3de"],
+    ["testo notte su fondo", "#f7f8f5", "#03172b"],
+    ["secondario notte su fondo", "#b8cbd5", "#03172b"],
+    ["testo notte su superficie", "#f7f8f5", "#08243d"],
+    ["secondario notte su superficie", "#b8cbd5", "#08243d"]
   ];
   for (const [label, foreground, background] of pairs) {
     const ratio = contrast(foreground, background);
