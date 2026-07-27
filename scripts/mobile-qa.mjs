@@ -87,6 +87,73 @@ async function assertManifest(page, baseUrl) {
   if (!appleTouch || !appleTouch.includes("icon-192")) fail("Apple touch icon non coerente");
 }
 
+async function assertMapImagesAreContained(page, label) {
+  await page.waitForSelector(".google-map-marker-shell .google-map-marker img", { state: "attached" });
+  await page.waitForTimeout(250);
+
+  const result = await page.evaluate(() => {
+    const tolerance = 1;
+    const outside = (inner, outer) => (
+      inner.left < outer.left - tolerance
+      || inner.top < outer.top - tolerance
+      || inner.right > outer.right + tolerance
+      || inner.bottom > outer.bottom + tolerance
+    );
+
+    const markerProblems = [...document.querySelectorAll(".google-map-marker-shell")].flatMap((shell) => {
+      const pin = shell.querySelector(".google-map-marker");
+      const image = pin?.querySelector("img");
+      if (!pin || !image) return ["pin senza contenitore o immagine"];
+      const shellBox = shell.getBoundingClientRect();
+      const pinBox = pin.getBoundingClientRect();
+      const imageBox = image.getBoundingClientRect();
+      const invalid = pinBox.width > 54
+        || pinBox.height > 64
+        || imageBox.width > 38
+        || imageBox.height > 38
+        || outside(imageBox, pinBox)
+        || outside(pinBox, shellBox);
+      return invalid ? [`${image.getAttribute("src") || "immagine"} (${Math.round(imageBox.width)}x${Math.round(imageBox.height)})`] : [];
+    });
+
+    const destinationProblems = [...document.querySelectorAll(".destination-logo")].flatMap((image) => {
+      const box = image.getBoundingClientRect();
+      const item = image.closest(".destination-item");
+      const itemBox = item?.getBoundingClientRect();
+      const invalid = box.width > 50
+        || box.height > 50
+        || (itemBox && outside(box, itemBox));
+      return invalid ? [`${image.getAttribute("src") || "miniatura"} (${Math.round(box.width)}x${Math.round(box.height)})`] : [];
+    });
+
+    const visibleMarkerBoxes = [...document.querySelectorAll(".google-map-marker-shell")]
+      .filter((shell) => Number.parseFloat(getComputedStyle(shell).opacity) > 0.5)
+      .map((shell) => shell.getBoundingClientRect());
+    const markerOverlaps = [];
+    visibleMarkerBoxes.forEach((box, index) => {
+      visibleMarkerBoxes.slice(index + 1).forEach((candidate) => {
+        const overlapWidth = Math.max(0, Math.min(box.right, candidate.right) - Math.max(box.left, candidate.left));
+        const overlapHeight = Math.max(0, Math.min(box.bottom, candidate.bottom) - Math.max(box.top, candidate.top));
+        if (overlapWidth * overlapHeight > 180) {
+          markerOverlaps.push(`${Math.round(overlapWidth)}x${Math.round(overlapHeight)}`);
+        }
+      });
+    });
+
+    return { markerProblems, destinationProblems, markerOverlaps };
+  });
+
+  if (result.markerProblems.length) {
+    fail(`${label}: foto dei pin fuori contenitore: ${result.markerProblems.slice(0, 3).join(" | ")}`);
+  }
+  if (result.destinationProblems.length) {
+    fail(`${label}: miniature destinazioni fuori contenitore: ${result.destinationProblems.slice(0, 3).join(" | ")}`);
+  }
+  if (result.markerOverlaps.length) {
+    fail(`${label}: pin visibili sovrapposti: ${result.markerOverlaps.slice(0, 3).join(" | ")}`);
+  }
+}
+
 async function runMobileFlow(browser, baseUrl) {
   const context = await browser.newContext({
     ...devices["iPhone 13"],
@@ -156,6 +223,9 @@ async function runMobileFlow(browser, baseUrl) {
 
   await page.locator(".bottom-nav-item[data-view-target='map']").click();
   await page.waitForSelector("#mapView.active");
+  await assertMapImagesAreContained(page, "iPhone 13 mappa");
+  await assertNoOverflow(page, "iPhone 13 mappa");
+  await page.screenshot({ path: path.join(artifactDir, "map-iphone13.png"), fullPage: true });
   if (await page.evaluate(() => window.__geoCalls) !== 0) fail("geolocalizzazione richiesta prima del click esplicito");
   await page.locator("#useLocation").click();
   if (await page.evaluate(() => window.__geoCalls) !== 1) fail("geolocalizzazione non richiesta sul click esplicito");

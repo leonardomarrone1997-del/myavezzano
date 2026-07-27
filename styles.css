@@ -1524,6 +1524,83 @@ body.view-campaign .top-actions {
   height: clamp(440px, 62vh, 650px);
 }
 
+.google-map-marker-shell {
+  border: 0;
+  background: transparent;
+  opacity: 1;
+  transition: opacity 120ms ease;
+}
+
+.google-map-marker-shell.is-collided {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.google-map-marker {
+  position: relative;
+  width: 48px;
+  height: 58px;
+  display: block;
+  isolation: isolate;
+  filter: drop-shadow(0 5px 6px rgb(3 23 43 / 28%));
+}
+
+.google-map-marker::before {
+  position: absolute;
+  inset: 0 0 10px;
+  z-index: 0;
+  border: 3px solid #fff;
+  border-radius: 50% 50% 50% 8px;
+  background: var(--color-accent);
+  box-shadow: 0 0 0 1px rgb(3 23 43 / 18%);
+  content: "";
+  transform: rotate(-45deg);
+  transform-origin: center;
+}
+
+.google-map-marker img {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  z-index: 1;
+  width: 34px !important;
+  max-width: 34px !important;
+  height: 34px !important;
+  max-height: 34px !important;
+  display: block;
+  overflow: hidden;
+  padding: 0;
+  border: 2px solid rgb(255 255 255 / 92%);
+  border-radius: 50%;
+  background: var(--color-surface);
+  object-fit: cover;
+  object-position: center;
+}
+
+.google-map-marker.food::before {
+  background: #f15a52;
+}
+
+.google-map-marker.night::before {
+  background: #6c5ce7;
+}
+
+.google-map-marker.shop::before {
+  background: #057180;
+}
+
+.google-map-marker.sport::before {
+  background: #23836d;
+}
+
+.google-map-marker-shell.selected {
+  z-index: 1000 !important;
+}
+
+.google-map-marker-shell.selected .google-map-marker {
+  filter: drop-shadow(0 7px 9px rgb(3 23 43 / 36%));
+}
+
 .map-fallback {
   height: 100%;
   display: grid;
@@ -1599,16 +1676,17 @@ body.view-campaign .top-actions {
 
 .destination-logo {
   width: 48px;
+  min-width: 48px;
+  max-width: 48px;
   height: 48px;
+  min-height: 48px;
+  max-height: 48px;
+  display: block;
   overflow: hidden;
   border-radius: 12px;
   background: var(--color-surface-muted);
-}
-
-.destination-logo img {
-  width: 100%;
-  height: 100%;
   object-fit: cover;
+  object-position: center;
 }
 
 .destination-copy {

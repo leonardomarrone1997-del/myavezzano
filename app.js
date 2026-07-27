@@ -3888,6 +3888,29 @@ function renderMapBusinessList() {
   applySearchFilter();
 }
 
+function updateMapMarkerVisibility() {
+  if (!interactiveMap || !mapMarkers.size) return;
+
+  const occupiedPoints = [];
+  const orderedMarkers = [...mapMarkers.entries()].sort(([firstId], [secondId]) => {
+    if (firstId === selectedPlace?.id) return -1;
+    if (secondId === selectedPlace?.id) return 1;
+    return 0;
+  });
+
+  orderedMarkers.forEach(([id, marker]) => {
+    const element = marker.getElement();
+    if (!element) return;
+    const point = interactiveMap.latLngToContainerPoint(marker.getLatLng());
+    const collides = id !== selectedPlace?.id && occupiedPoints.some((visiblePoint) => (
+      Math.abs(point.x - visiblePoint.x) < 52
+      && Math.abs(point.y - visiblePoint.y) < 62
+    ));
+    element.classList.toggle("is-collided", collides);
+    if (!collides) occupiedPoints.push(point);
+  });
+}
+
 function rebuildMapMarkers() {
   if (!interactiveMap || !window.L) return;
 
@@ -3903,6 +3926,8 @@ function rebuildMapMarkers() {
     marker.on("click", () => selectMapPlace(place.id, false));
     mapMarkers.set(place.id, marker);
   });
+
+  requestAnimationFrame(updateMapMarkerVisibility);
 }
 
 function applyImportedPlaces(places, statusText) {
@@ -4053,6 +4078,7 @@ function selectMapPlace(placeId, shouldPan = true) {
     const element = marker.getElement();
     if (element) element.classList.toggle("selected", id === place.id);
   });
+  requestAnimationFrame(updateMapMarkerVisibility);
 }
 
 function refreshInteractiveMapLayout() {
@@ -4213,6 +4239,7 @@ function initInteractiveMap() {
   }).addTo(interactiveMap);
 
   L.control.zoom({ position: "topright" }).addTo(interactiveMap);
+  interactiveMap.on("moveend zoomend", updateMapMarkerVisibility);
 
   renderCityPulseLayer();
   rebuildMapMarkers();

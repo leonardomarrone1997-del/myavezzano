@@ -66,7 +66,7 @@
         ]
       }
     </script>
-    <link rel="stylesheet" href="styles.css?v=6572ba4" />
+    <link rel="stylesheet" href="styles.css?v=4311bfb" />
   </head>
 <body class="view-feed">
     <a class="skip-link" href="#mainContent">Vai al contenuto</a>
@@ -776,10 +776,10 @@
           window.setTimeout(() => {
             activeView?.after(deferredViews);
             const eventsScript = document.createElement("script");
-            eventsScript.src = "events-data.js?v=6572ba4";
+            eventsScript.src = "events-data.js?v=4311bfb";
             eventsScript.onload = () => {
               const appScript = document.createElement("script");
-              appScript.src = "app.js?v=6572ba4";
+              appScript.src = "app.js?v=4311bfb";
               document.body.appendChild(appScript);
             };
             document.body.appendChild(eventsScript);
