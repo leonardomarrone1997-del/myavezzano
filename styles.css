@@ -1893,6 +1893,46 @@ body.view-campaign .top-actions {
   object-fit: cover;
 }
 
+.campaign-image-trigger {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: var(--color-text);
+  cursor: zoom-in;
+}
+
+.campaign-image-trigger:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: -4px;
+}
+
+.campaign-image-hint {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid rgb(255 255 255 / .68);
+  border-radius: 50%;
+  background: rgb(8 23 36 / .78);
+  color: #fff;
+  box-shadow: 0 8px 20px rgb(0 0 0 / .18);
+  pointer-events: none;
+}
+
+.campaign-image-hint .ui-icon {
+  width: 18px;
+  height: 18px;
+}
+
 .campaign-metrics {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -1938,6 +1978,10 @@ body.view-campaign .top-actions {
 
 .campaign-feature.is-large img {
   height: 100%;
+}
+
+.campaign-feature.is-large > .campaign-image-trigger {
+  min-height: 100%;
 }
 
 .campaign-feature > div {
@@ -2011,6 +2055,114 @@ body.view-campaign .top-actions {
   border-color: #53666f;
   background: transparent;
   color: #f1f3f2;
+}
+
+.campaign-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  place-items: center;
+  background: rgb(4 12 19 / .88);
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.campaign-lightbox[hidden] {
+  display: none;
+}
+
+.campaign-lightbox.active {
+  opacity: 1;
+}
+
+.campaign-lightbox-dialog {
+  display: grid;
+  width: min(1240px, 100%);
+  height: min(92dvh, 900px);
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / .16);
+  border-radius: var(--radius-card);
+  background: #0c1822;
+  box-shadow: 0 24px 70px rgb(0 0 0 / .42);
+}
+
+.campaign-lightbox-header {
+  display: flex;
+  min-height: 58px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px 10px 18px;
+  border-bottom: 1px solid rgb(255 255 255 / .12);
+  color: #fff;
+}
+
+.campaign-lightbox-header p {
+  margin: 0;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.campaign-lightbox-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 6px;
+}
+
+.campaign-lightbox-actions button {
+  display: grid;
+  min-width: 38px;
+  height: 38px;
+  padding: 0 10px;
+  place-items: center;
+  border: 1px solid rgb(255 255 255 / .18);
+  border-radius: 7px;
+  background: rgb(255 255 255 / .08);
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.campaign-lightbox-actions button:hover,
+.campaign-lightbox-actions button:focus-visible {
+  border-color: rgb(255 255 255 / .52);
+  background: rgb(255 255 255 / .16);
+}
+
+.campaign-lightbox-close {
+  margin-left: 4px;
+}
+
+.campaign-lightbox-stage {
+  overflow: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-x pan-y pinch-zoom;
+}
+
+.campaign-lightbox-canvas {
+  width: min(1160px, calc(100vw - 48px));
+  min-height: 100%;
+  margin: 0 auto;
+}
+
+.campaign-lightbox-canvas img {
+  display: block;
+  width: 100%;
+  max-width: none;
+  height: auto;
+  margin: auto;
+  cursor: zoom-in;
+}
+
+body.campaign-image-open {
+  overflow: hidden;
 }
 
 /* Admin e area commercianti */
@@ -3206,6 +3358,49 @@ body.theme-to-light .theme-sky-transition {
   .campaign-feature.is-large {
     grid-column: auto;
     display: block;
+  }
+
+  .campaign-image-trigger,
+  .campaign-feature.is-large > .campaign-image-trigger {
+    height: auto;
+    min-height: 0;
+  }
+
+  .campaign-image-hint {
+    right: 9px;
+    bottom: 9px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .campaign-lightbox {
+    padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+  }
+
+  .campaign-lightbox-dialog {
+    height: min(94dvh, 860px);
+  }
+
+  .campaign-lightbox-header {
+    align-items: flex-start;
+    padding: 9px;
+  }
+
+  .campaign-lightbox-header p {
+    display: none;
+  }
+
+  .campaign-lightbox-actions {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .campaign-lightbox-close {
+    margin-left: auto;
+  }
+
+  .campaign-lightbox-canvas {
+    width: calc(100vw - 32px);
   }
 
   .campaign-steps {

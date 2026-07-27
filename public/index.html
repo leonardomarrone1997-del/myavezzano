@@ -66,7 +66,7 @@
         ]
       }
     </script>
-    <link rel="stylesheet" href="styles.css?v=b34420f" />
+    <link rel="stylesheet" href="styles.css?v=31b968e" />
   </head>
 <body class="view-feed">
     <a class="skip-link" href="#mainContent">Vai al contenuto</a>
@@ -84,6 +84,7 @@
       <symbol id="icon-store" viewBox="0 0 24 24"><path d="M4 10v11h16V10"/><path d="M3 4h18l-2 6H5L3 4Z"/><path d="M9 21v-6h6v6"/></symbol>
       <symbol id="icon-megaphone" viewBox="0 0 24 24"><path d="m3 11 14-6v14L3 13v-2Z"/><path d="m7 14 2 6h4l-2-5M19 9l2-1M19 15l2 1"/></symbol>
       <symbol id="icon-shield" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.4 8.2 8 10 4.6-1.8 8-5 8-10V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></symbol>
+      <symbol id="icon-expand" viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></symbol>
       <symbol id="icon-weather" viewBox="0 0 24 24"><circle cx="8" cy="8" r="4"/><path d="M8 2V1M8 15v-1M2 8H1M15 8h-1M3.8 3.8 3 3M13 13l-.8-.8"/><path d="M8 18a4 4 0 0 1 4-4 5 5 0 0 1 9 3 3 3 0 0 1-3 3H8a2 2 0 1 1 0-4"/></symbol>
       <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20 15.2A8.5 8.5 0 0 1 8.8 4 8.5 8.5 0 1 0 20 15.2Z"/></symbol>
       <symbol id="icon-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.4 2.4 0 1 1 3.4 2.2c-.8.4-1.2.9-1.2 1.8M12 17h.01"/></symbol>
@@ -477,7 +478,10 @@
               </div>
             </div>
             <figure class="campaign-visual">
-              <img src="assets/marketing/citta-live.webp" alt="Concept MyAvezzano: citta live con app, mappa, eventi e coupon" loading="lazy" width="1600" height="900" />
+              <button class="campaign-image-trigger" data-action="open-campaign-image" type="button" aria-label="Ingrandisci il concept MyAvezzano città live">
+                <img src="assets/marketing/citta-live.webp" alt="Concept MyAvezzano: città live con app, mappa, eventi e coupon" loading="lazy" width="1600" height="900" />
+                <span class="campaign-image-hint" aria-hidden="true"><svg class="ui-icon"><use href="#icon-expand"></use></svg></span>
+              </button>
             </figure>
           </section>
 
@@ -501,7 +505,10 @@
 
           <section class="campaign-feature-grid">
             <article class="campaign-feature is-large">
-              <img src="assets/marketing/touchpoint-kit.webp" alt="Kit touchpoint MyAvezzano per negozi, eventi e punti vendita" loading="lazy" width="1600" height="900" />
+              <button class="campaign-image-trigger" data-action="open-campaign-image" type="button" aria-label="Ingrandisci il kit touchpoint MyAvezzano">
+                <img src="assets/marketing/touchpoint-kit.webp" alt="Kit touchpoint MyAvezzano per negozi, eventi e punti vendita" loading="lazy" width="1600" height="900" />
+                <span class="campaign-image-hint" aria-hidden="true"><svg class="ui-icon"><use href="#icon-expand"></use></svg></span>
+              </button>
               <div>
                 <p class="eyebrow">Materiali locali</p>
                 <h3>Presenza fisica nei luoghi della citta</h3>
@@ -509,7 +516,10 @@
               </div>
             </article>
             <article class="campaign-feature">
-              <img src="assets/marketing/estate-avezzano-2026.webp" alt="Campagna Estate Avezzano 2026 con calendario eventi e coupon" loading="lazy" width="1600" height="900" />
+              <button class="campaign-image-trigger" data-action="open-campaign-image" type="button" aria-label="Ingrandisci la campagna Estate Avezzano 2026">
+                <img src="assets/marketing/estate-avezzano-2026.webp" alt="Campagna Estate Avezzano 2026 con calendario eventi e coupon" loading="lazy" width="1600" height="900" />
+                <span class="campaign-image-hint" aria-hidden="true"><svg class="ui-icon"><use href="#icon-expand"></use></svg></span>
+              </button>
               <div>
                 <p class="eyebrow">Estate 2026</p>
                 <h3>Calendario e promozioni nello stesso flusso</h3>
@@ -517,7 +527,10 @@
               </div>
             </article>
             <article class="campaign-feature">
-              <img src="assets/marketing/trova-il-qr.webp" alt="Concept Trova il QR per scoprire coupon, eventi e premi" loading="lazy" width="1600" height="900" />
+              <button class="campaign-image-trigger" data-action="open-campaign-image" type="button" aria-label="Ingrandisci il concept Trova il QR">
+                <img src="assets/marketing/trova-il-qr.webp" alt="Concept Trova il QR per scoprire coupon, eventi e premi" loading="lazy" width="1600" height="900" />
+                <span class="campaign-image-hint" aria-hidden="true"><svg class="ui-icon"><use href="#icon-expand"></use></svg></span>
+              </button>
               <div>
                 <p class="eyebrow">Coinvolgimento</p>
                 <h3>Trova il QR</h3>
@@ -639,6 +652,25 @@
       <div class="bottom-sheet-body" id="eventSheetContent"></div>
     </section>
 
+    <div class="campaign-lightbox" id="campaignImageLightbox" hidden>
+      <section class="campaign-lightbox-dialog" role="dialog" aria-modal="true" aria-labelledby="campaignImageTitle">
+        <header class="campaign-lightbox-header">
+          <p id="campaignImageTitle">Immagine Campagna</p>
+          <div class="campaign-lightbox-actions">
+            <button data-action="campaign-image-zoom-out" type="button" aria-label="Riduci immagine">-</button>
+            <button id="campaignImageZoomLevel" data-action="campaign-image-zoom-reset" type="button" aria-label="Ripristina dimensione immagine">100%</button>
+            <button data-action="campaign-image-zoom-in" type="button" aria-label="Ingrandisci immagine">+</button>
+            <button class="campaign-lightbox-close" data-action="close-campaign-image" type="button" aria-label="Chiudi immagine">x</button>
+          </div>
+        </header>
+        <div class="campaign-lightbox-stage" id="campaignImageStage">
+          <div class="campaign-lightbox-canvas">
+            <img id="campaignImagePreview" src="" alt="" />
+          </div>
+        </div>
+      </section>
+    </div>
+
     <section class="notification-menu" id="notificationMenu" aria-label="Centro notifiche" hidden>
       <div class="notification-menu-head">
         <div>
@@ -744,10 +776,10 @@
           window.setTimeout(() => {
             activeView?.after(deferredViews);
             const eventsScript = document.createElement("script");
-            eventsScript.src = "events-data.js?v=b34420f";
+            eventsScript.src = "events-data.js?v=31b968e";
             eventsScript.onload = () => {
               const appScript = document.createElement("script");
-              appScript.src = "app.js?v=b34420f";
+              appScript.src = "app.js?v=31b968e";
               document.body.appendChild(appScript);
             };
             document.body.appendChild(eventsScript);

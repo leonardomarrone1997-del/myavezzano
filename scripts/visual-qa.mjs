@@ -242,6 +242,53 @@ async function assertCampaignNavigation(browser, baseUrl) {
   await context.close();
 }
 
+async function assertCampaignImageLightbox(browser, baseUrl) {
+  const context = await prepareContext(browser, { width: 390, height: 844 });
+  const page = await context.newPage();
+  const errors = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  page.on("console", (message) => {
+    if (message.type() === "error") errors.push(message.text());
+  });
+  await page.goto(`${baseUrl}/?prod=1&campaign-lightbox=1#campaign`, { waitUntil: "networkidle" });
+  await waitForApp(page, "campaign");
+
+  const triggers = page.locator("#campaignView .campaign-image-trigger");
+  if (await triggers.count() !== 4) fail("Campagna: attesi quattro visual ingrandibili");
+  const firstTrigger = triggers.first();
+  await firstTrigger.click();
+
+  const lightbox = page.locator("#campaignImageLightbox");
+  await lightbox.waitFor({ state: "visible" });
+  if (!await page.locator("body").evaluate((body) => body.classList.contains("campaign-image-open"))) {
+    fail("Campagna: blocco scroll non attivo con lightbox aperto");
+  }
+  const preview = page.locator("#campaignImagePreview");
+  if (!await preview.getAttribute("src") || !await preview.getAttribute("alt")) {
+    fail("Campagna: immagine o testo alternativo non trasferiti nel lightbox");
+  }
+
+  await page.locator("[data-action='campaign-image-zoom-in']").click();
+  await page.locator("[data-action='campaign-image-zoom-in']").click();
+  if (await page.locator("#campaignImageZoomLevel").textContent() !== "200%") {
+    fail("Campagna: controllo zoom non aggiornato");
+  }
+  const zoomedWidth = await preview.evaluate((image) => image.style.width);
+  if (zoomedWidth !== "200%") fail(`Campagna: zoom immagine non applicato (${zoomedWidth})`);
+
+  await page.locator("[data-action='campaign-image-zoom-reset']").click();
+  if (await page.locator("#campaignImageZoomLevel").textContent() !== "100%") {
+    fail("Campagna: ripristino zoom non riuscito");
+  }
+  await page.keyboard.press("Escape");
+  await lightbox.waitFor({ state: "hidden" });
+  if (!await firstTrigger.evaluate((trigger) => trigger === document.activeElement)) {
+    fail("Campagna: focus non ripristinato dopo la chiusura");
+  }
+  if (errors.length) fail(`Campagna lightbox: errori console (${errors.join(" | ")})`);
+  await context.close();
+}
+
 async function assertDeepLinkFirstRender(browser, baseUrl) {
   const context = await prepareContext(browser, { width: 390, height: 844 });
   const expectedViews = {
@@ -405,6 +452,7 @@ try {
   await assertDeepLinkFirstRender(browser, baseUrl);
   await assertMobileHeroCopy(browser, baseUrl);
   await assertCampaignNavigation(browser, baseUrl);
+  await assertCampaignImageLightbox(browser, baseUrl);
   await assertSavedEvent(browser, baseUrl);
   await assertThemeModes(browser, baseUrl);
   await assertSeoAndPwa(browser, baseUrl);
