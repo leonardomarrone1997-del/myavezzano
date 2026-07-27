@@ -1,11 +1,11 @@
-const CACHE_NAME = "myavezzano-37e45b3";
+const CACHE_NAME = "myavezzano-1213b20";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./offline.html",
-  "./styles.css?v=37e45b3",
-  "./events-data.js?v=37e45b3",
-  "./app.js?v=37e45b3",
+  "./styles.css?v=1213b20",
+  "./events-data.js?v=1213b20",
+  "./app.js?v=1213b20",
   "./manifest.json",
   "./assets/app-icon.svg",
   "./assets/pwa/icon-192.png",

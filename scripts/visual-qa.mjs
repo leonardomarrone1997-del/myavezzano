@@ -144,6 +144,17 @@ async function assertPageVisualRules(page, label, { mobile = false, campaign = f
     const nav = document.querySelector(".bottom-nav");
     const navBox = nav?.getBoundingClientRect();
     const bodyPaddingBottom = Number.parseFloat(getComputedStyle(document.querySelector(".main")).paddingBottom);
+    const campaignImages = [...document.querySelectorAll(".campaign-visual img, .campaign-feature img")]
+      .filter(visible)
+      .map((image) => {
+        const box = image.getBoundingClientRect();
+        return {
+          source: image.getAttribute("src"),
+          objectFit: getComputedStyle(image).objectFit,
+          renderedRatio: box.height ? box.width / box.height : 0,
+          naturalRatio: image.naturalHeight ? image.naturalWidth / image.naturalHeight : 0
+        };
+      });
     return {
       overflow: Math.ceil(document.documentElement.scrollWidth - document.documentElement.clientWidth),
       h1Sizes: headings.map((heading) => Number.parseFloat(getComputedStyle(heading).fontSize)),
@@ -155,7 +166,8 @@ async function assertPageVisualRules(page, label, { mobile = false, campaign = f
       navVisible: Boolean(navBox && navBox.width && navBox.height),
       navBottom: navBox ? navBox.bottom : 0,
       viewportHeight: window.innerHeight,
-      bodyPaddingBottom
+      bodyPaddingBottom,
+      campaignImages
     };
   });
 
@@ -170,6 +182,17 @@ async function assertPageVisualRules(page, label, { mobile = false, campaign = f
   if (measurements.blurredCards) fail(`${label}: card con backdrop-filter`);
   if (campaign && !mobile && measurements.campaignHeight > 390) {
     fail(`${label}: hero Campagna alto ${Math.round(measurements.campaignHeight)}px`);
+  }
+  if (campaign && mobile) {
+    const croppedImages = measurements.campaignImages.filter((image) => (
+      image.objectFit === "cover"
+      || !image.renderedRatio
+      || !image.naturalRatio
+      || Math.abs(image.renderedRatio - image.naturalRatio) > 0.03
+    ));
+    if (croppedImages.length) {
+      fail(`${label}: immagini Campagna ritagliate (${croppedImages.map((image) => image.source).join(" | ")})`);
+    }
   }
   if (mobile) {
     if (!measurements.navVisible) fail(`${label}: bottom navigation non visibile`);

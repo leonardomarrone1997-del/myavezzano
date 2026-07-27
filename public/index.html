@@ -58,7 +58,7 @@
         ]
       }
     </script>
-    <link rel="stylesheet" href="styles.css?v=37e45b3" />
+    <link rel="stylesheet" href="styles.css?v=1213b20" />
   </head>
 <body class="view-feed">
     <a class="skip-link" href="#mainContent">Vai al contenuto</a>
@@ -693,10 +693,10 @@
         window.setTimeout(() => {
           document.querySelector("#feedView")?.after(deferredViews);
           const eventsScript = document.createElement("script");
-          eventsScript.src = "events-data.js?v=37e45b3";
+          eventsScript.src = "events-data.js?v=1213b20";
           eventsScript.onload = () => {
             const appScript = document.createElement("script");
-            appScript.src = "app.js?v=37e45b3";
+            appScript.src = "app.js?v=1213b20";
             document.body.appendChild(appScript);
           };
           document.body.appendChild(eventsScript);
