@@ -28,7 +28,7 @@ function buildVersion() {
   }
 }
 
-const buildDate = process.env.BUILD_DATE || todayInRome();
+const buildDate = process.env.BUILD_DATE || todayInRome(process.env.MYAVEZZANO_NOW ? new Date(process.env.MYAVEZZANO_NOW) : new Date());
 const assetVersion = buildVersion();
 const entries = [
   "index.html",
@@ -56,6 +56,15 @@ function withBuildTokens(content) {
 
 function cleanOutput(content) {
   return content.replace(/[ \t]+$/gm, "");
+}
+
+function minifyCss(content) {
+  return content
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/\s+/g, " ")
+    .replace(/\s*([{}:;,>+~])\s*/g, "$1")
+    .replace(/;}/g, "}")
+    .trim();
 }
 
 const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (character) => ({
@@ -449,6 +458,9 @@ await Promise.all([
   const content = await readFile(target, "utf8");
   await writeFile(target, cleanOutput(withBuildTokens(content)), "utf8");
 }));
+
+const cssPath = path.join(output, "styles.css");
+await writeFile(cssPath, minifyCss(withBuildTokens(await readFile(cssPath, "utf8"))), "utf8");
 
 const eventsSource = await readFile(path.join(root, "events-data.js"), "utf8");
 const sandbox = { window: {} };

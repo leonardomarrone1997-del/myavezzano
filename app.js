@@ -991,10 +991,42 @@ function findCalendarEvent(id) {
 function syncSavedEventButtons(id) {
   const saved = isLocalEventSaved(id);
   document.querySelectorAll(`[data-action="save-event"][data-event-id="${id}"]`).forEach((eventButton) => {
-    eventButton.textContent = saved ? "Salvato" : "Salva";
+    if (eventButton.classList.contains("save-action")) {
+      eventButton.textContent = saved ? "Salvato" : "Salva";
+    }
     eventButton.classList.toggle("is-saved", saved);
     eventButton.setAttribute("aria-pressed", String(saved));
+    const title = eventButton.dataset.title || findCalendarEvent(id)?.title || "evento";
+    eventButton.setAttribute("aria-label", `${saved ? "Rimuovi evento salvato" : "Salva evento"}: ${title}`);
   });
+}
+
+function syncLocalSavedEventsUi() {
+  const savedRows = getLocalSavedEvents();
+  const validRows = savedRows.filter((entry) => entry?.id && findCalendarEvent(entry.id));
+  if (validRows.length !== savedRows.length) {
+    localStorage.setItem(LOCAL_SAVED_EVENTS_KEY, JSON.stringify(validRows));
+  }
+  const savedIds = new Set(validRows.map((entry) => entry.id));
+
+  document.querySelectorAll('[data-action="save-event"][data-event-id]').forEach((eventButton) => {
+    const saved = savedIds.has(eventButton.dataset.eventId);
+    if (eventButton.classList.contains("save-action")) {
+      eventButton.textContent = saved ? "Salvato" : "Salva";
+    }
+    eventButton.classList.toggle("is-saved", saved);
+    eventButton.setAttribute("aria-pressed", String(saved));
+    const title = eventButton.dataset.title || findCalendarEvent(eventButton.dataset.eventId)?.title || "evento";
+    eventButton.setAttribute("aria-label", `${saved ? "Rimuovi evento salvato" : "Salva evento"}: ${title}`);
+  });
+
+  const homeEvents = document.querySelector("#homeProfileEvents");
+  if (homeEvents) homeEvents.textContent = String(profileEventRows().length);
+  renderDayPlan();
+  const profileView = document.querySelector("#profileView");
+  if (profileView?.classList.contains("active") && profileView.dataset.activeProfilePanel === "events") {
+    renderProfilePanel("events");
+  }
 }
 
 function eventCanonicalUrl(item) {
@@ -1552,8 +1584,16 @@ function eventRangeLabel(item) {
 }
 
 function currentDateKey() {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  const forcedNow = typeof window !== "undefined" ? window.MYAVEZZANO_NOW : "";
+  const now = forcedNow ? new Date(forcedNow) : new Date();
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Rome",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(now);
+  const get = (type) => parts.find((part) => part.type === type)?.value;
+  return `${get("year")}-${get("month")}-${get("day")}`;
 }
 
 function dateKey(date) {
@@ -1922,6 +1962,7 @@ function renderHomeEventFocus() {
     ` : ""}
   `;
   hydrateLazyMedia(panel, true);
+  syncLocalSavedEventsUi();
 }
 
 function renderHomeLiveBrief() {
@@ -2012,6 +2053,7 @@ function renderTonightAgenda() {
     : `Oggi non risultano eventi per questo comune. Il prossimo appuntamento è ${eventRangeLabel(visible[0])}.`;
   grid.innerHTML = visible.map((item) => eventCardMarkup(item, { compact: true, idPrefix: "tonight-event" })).join("");
   hydrateLazyMedia(grid, true);
+  syncLocalSavedEventsUi();
 }
 
 function renderEventAgenda(filter = activeEventCategory) {
@@ -2029,6 +2071,7 @@ function renderEventAgenda(filter = activeEventCategory) {
 
   grid.innerHTML = eventAgendaMarkup(filtered);
   hydrateLazyMedia(grid);
+  syncLocalSavedEventsUi();
 }
 
 function ensureEventsViewRendered() {
@@ -2139,6 +2182,7 @@ function renderSummerProgram(filter = activeSummerCategory) {
     ? eventAgendaMarkup(filtered, { idPrefix: "summer-event" })
     : `<div class="agenda-empty"><strong>Nessun evento in questo filtro.</strong><span>Apri l'intero cartellone Estate 2026.</span></div>`;
   hydrateLazyMedia(grid);
+  syncLocalSavedEventsUi();
 }
 
 function ensureSummerViewRendered() {
@@ -2229,6 +2273,7 @@ function render() {
   hydrateLazyMedia(document.querySelector(".view.active") || document);
   stampCityArtifacts(document);
   animateGlobalSurfaces();
+  syncLocalSavedEventsUi();
 }
 
 function profileRows(items) {
@@ -2384,6 +2429,7 @@ function renderProfileActions() {
 }
 
 function renderProfilePanel(panel = "settings") {
+  document.querySelector("#profileView")?.setAttribute("data-active-profile-panel", panel);
   const user = getStoredUser();
   const couponRows = profileCouponRows();
   const eventRows = profileEventRows();
@@ -4082,6 +4128,7 @@ function refreshTownScopedViews({ panMap = false } = {}) {
       interactiveMap.setView([townCoordinates[activeTown].lat, townCoordinates[activeTown].lng], 14);
     }
   }
+  syncLocalSavedEventsUi();
 }
 
 function setActiveTown(town) {
@@ -4250,6 +4297,7 @@ function switchView(view, updateHash = true) {
 
   stampCityArtifacts(targetView);
   animateActiveView(targetView);
+  syncLocalSavedEventsUi();
   closeMobileMenu();
   if (window.scrollY > 0) window.scrollTo({ top: 0, behavior: "auto" });
 }
@@ -4876,8 +4924,7 @@ function handleAction(button) {
         counter.textContent = String(Number(counter.textContent) + 1);
       });
     }
-    renderDayPlan();
-    if (document.querySelector("#profileView")?.classList.contains("active")) renderProfilePanel("events");
+    syncLocalSavedEventsUi();
     showToast(wasAlreadySaved && IS_PRODUCTION ? `Evento rimosso: ${button.dataset.title}.` : `Evento salvato: ${button.dataset.title}.`, "success");
     return;
   }
@@ -5620,7 +5667,7 @@ function updateAuthUi() {
       : "Accedi per avere coupon, eventi e guida rapida sempre a portata.";
   }
   if (homeCoupons) homeCoupons.textContent = user ? profileCouponRows().length : 0;
-  if (homeEvents) homeEvents.textContent = user ? profileEventRows().length : 0;
+  if (homeEvents) homeEvents.textContent = profileEventRows().length;
   if (homePoints) homePoints.textContent = user ? levelState.points.toLocaleString("it-IT") : 0;
   if (signupCopy) {
     signupCopy.textContent = user

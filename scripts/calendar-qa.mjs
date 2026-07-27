@@ -4,7 +4,18 @@ import vm from "node:vm";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(fileURLToPath(new URL("..", import.meta.url)));
-const referenceDate = process.env.CALENDAR_QA_DATE || new Date().toISOString().slice(0, 10);
+function todayInRome(date = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Rome",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(date);
+  const get = (type) => parts.find((part) => part.type === type)?.value;
+  return `${get("year")}-${get("month")}-${get("day")}`;
+}
+
+const referenceDate = process.env.CALENDAR_QA_DATE || todayInRome(process.env.MYAVEZZANO_NOW ? new Date(process.env.MYAVEZZANO_NOW) : new Date());
 
 function eventDate(date) {
   return new Date(`${date}T12:00:00`);

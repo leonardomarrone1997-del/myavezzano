@@ -55,17 +55,17 @@
   ],
   "shortcuts": [
     {
-      "name": "Eventi stasera",
-      "short_name": "Eventi",
-      "description": "Apri gli eventi e le serate di oggi",
-      "url": "/#events",
+      "name": "Oggi",
+      "short_name": "Oggi",
+      "description": "Apri cosa fare oggi",
+      "url": "/#feed",
       "icons": [{ "src": "assets/pwa/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
-      "name": "Coupon e sconti",
-      "short_name": "Coupon",
-      "description": "Apri sconti e coupon disponibili",
-      "url": "/#coupons",
+      "name": "Esplora",
+      "short_name": "Esplora",
+      "description": "Apri eventi e luoghi da esplorare",
+      "url": "/#events",
       "icons": [{ "src": "assets/pwa/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
@@ -76,17 +76,10 @@
       "icons": [{ "src": "assets/pwa/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
-      "name": "Estate 2026",
-      "short_name": "Estate",
-      "description": "Apri la pagina estiva di MyAvezzano",
-      "url": "/#summer",
-      "icons": [{ "src": "assets/pwa/icon-192.png", "sizes": "192x192", "type": "image/png" }]
-    },
-    {
-      "name": "Campagna MyAvezzano",
-      "short_name": "Campagna",
-      "description": "Apri materiali pubblicitari, QR e touchpoint",
-      "url": "/#campaign",
+      "name": "Salvati",
+      "short_name": "Salvati",
+      "description": "Apri eventi e contenuti salvati sul dispositivo",
+      "url": "/#profile",
       "icons": [{ "src": "assets/pwa/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]

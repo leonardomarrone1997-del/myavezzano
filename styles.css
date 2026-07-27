@@ -12541,3 +12541,148 @@ body.theme-dark .sheet-event-meta span {
     max-width: 44px !important;
   }
 }
+
+/* Production polish: calmer contrast and clearer reading over photographic backgrounds. */
+.topbar {
+  min-height: clamp(300px, 32vw, 440px) !important;
+  background:
+    linear-gradient(90deg, rgba(248, 250, 252, .97) 0%, rgba(248, 250, 252, .92) 52%, rgba(248, 250, 252, .62) 100%),
+    var(--avezzano-bg) !important;
+  box-shadow: 0 18px 48px rgba(15, 23, 42, .10) !important;
+}
+
+.topbar::before {
+  opacity: .22 !important;
+}
+
+.topbar h1 {
+  max-width: 13ch !important;
+  color: #102033 !important;
+  text-shadow: none !important;
+}
+
+.topbar-copy {
+  color: #334155 !important;
+  font-weight: 650;
+}
+
+.topbar .eyebrow,
+.city-signature,
+.topbar > .top-actions {
+  background: rgba(255, 255, 255, .92) !important;
+}
+
+.panel,
+.post,
+.event-card,
+.coupon-card,
+.reward-card,
+.profile-card,
+.profile-detail-panel,
+.profile-action-card,
+.home-event-focus,
+.weekend-home,
+.summer-home-band,
+.shortcut-card,
+.map-panel,
+.map-card,
+.merchant-pricing-hero,
+.admin-hero,
+.campaign-metrics article,
+.campaign-feature,
+.campaign-playbook,
+.campaign-gallery article {
+  background-color: rgba(255, 255, 255, .94) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.panel p,
+.post p,
+.event-card p,
+.coupon-card p,
+.profile-card span,
+.profile-detail-panel span,
+.campaign-feature p,
+.campaign-metrics p,
+.campaign-gallery span {
+  color: #475569;
+}
+
+.campaign-mini-panel {
+  background:
+    linear-gradient(145deg, rgba(5, 20, 38, .88), rgba(5, 36, 50, .78)),
+    url("assets/marketing/citta-live.webp") center/cover !important;
+}
+
+.campaign-mini-panel .light-action {
+  background: rgba(255, 255, 255, .92);
+  color: #0f172a;
+}
+
+body.theme-dark .topbar {
+  background:
+    linear-gradient(90deg, rgba(7, 17, 31, .96) 0%, rgba(7, 17, 31, .88) 54%, rgba(7, 17, 31, .62) 100%),
+    var(--avezzano-bg) !important;
+}
+
+body.theme-dark .topbar h1,
+body.theme-dark .topbar-copy {
+  color: #eef6ff !important;
+}
+
+body.theme-dark .topbar .eyebrow,
+body.theme-dark .city-signature,
+body.theme-dark .topbar > .top-actions {
+  background: rgba(11, 18, 32, .90) !important;
+}
+
+body.theme-dark .panel,
+body.theme-dark .post,
+body.theme-dark .event-card,
+body.theme-dark .coupon-card,
+body.theme-dark .reward-card,
+body.theme-dark .profile-card,
+body.theme-dark .profile-detail-panel,
+body.theme-dark .profile-action-card,
+body.theme-dark .home-event-focus,
+body.theme-dark .weekend-home,
+body.theme-dark .summer-home-band,
+body.theme-dark .shortcut-card,
+body.theme-dark .map-panel,
+body.theme-dark .map-card,
+body.theme-dark .merchant-pricing-hero,
+body.theme-dark .admin-hero,
+body.theme-dark .campaign-metrics article,
+body.theme-dark .campaign-feature,
+body.theme-dark .campaign-playbook,
+body.theme-dark .campaign-gallery article {
+  background-color: rgba(11, 18, 32, .92) !important;
+}
+
+body.theme-dark .panel p,
+body.theme-dark .post p,
+body.theme-dark .event-card p,
+body.theme-dark .coupon-card p,
+body.theme-dark .profile-card span,
+body.theme-dark .profile-detail-panel span,
+body.theme-dark .campaign-feature p,
+body.theme-dark .campaign-metrics p,
+body.theme-dark .campaign-gallery span {
+  color: #cbd5e1;
+}
+
+@media (max-width: 760px) {
+  .topbar {
+    min-height: 0 !important;
+    padding: 18px !important;
+  }
+
+  .topbar h1 {
+    font-size: clamp(34px, 10vw, 48px) !important;
+  }
+
+  .campaign-hero {
+    border-radius: 18px;
+  }
+}

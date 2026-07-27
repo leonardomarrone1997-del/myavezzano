@@ -12,7 +12,8 @@
     "qa:human": "npm run build && node scripts/human-qa.mjs",
     "qa:production": "npm run build && node scripts/production-hardening-qa.mjs",
     "qa:raw-html": "node scripts/raw-html-qa.mjs",
-    "qa:mobile": "npm run build && node scripts/mobile-qa.mjs"
+    "qa:mobile": "npm run build && node scripts/mobile-qa.mjs",
+    "qa:pwa-release": "node scripts/pwa-release-qa.mjs"
   },
   "keywords": [
     "myavezzano",
