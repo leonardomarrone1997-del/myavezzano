@@ -577,6 +577,10 @@ small {
   line-height: 1.5;
 }
 
+.topbar-copy-mobile {
+  display: none;
+}
+
 .city-signature {
   display: flex;
   flex-wrap: wrap;
@@ -2869,13 +2873,21 @@ body.theme-to-light .theme-sky-transition {
   }
 
   .topbar-copy {
-    display: -webkit-box;
-    overflow: hidden;
+    display: block;
+    overflow: visible;
     margin: 0;
     font-size: 14px;
     line-height: 1.45;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .topbar-copy-desktop {
+    display: none;
+  }
+
+  .topbar-copy-mobile {
+    display: block;
   }
 
   .city-signature,
@@ -2904,10 +2916,6 @@ body.theme-to-light .theme-sky-transition {
 
   body:not(.view-feed) .topbar-intro h1 {
     font-size: 34px;
-  }
-
-  body:not(.view-feed) .topbar-copy {
-    -webkit-line-clamp: 2;
   }
 
   body.view-campaign .topbar {

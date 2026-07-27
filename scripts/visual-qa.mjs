@@ -233,7 +233,95 @@ async function assertCampaignNavigation(browser, baseUrl) {
   await page.reload({ waitUntil: "networkidle" });
   await page.waitForSelector("#campaignView.active");
   if (await page.locator(".campaign-hero").count() !== 1) fail("Campagna: hero non disponibile dopo reload");
+  if (await page.locator("#campaignView h1").innerText() !== "MyAvezzano fuori dallo schermo") {
+    fail("Campagna: H1 errato dopo reload");
+  }
+  if (await page.locator(".nav-item[data-view='campaign']").getAttribute("aria-current") !== "page") {
+    fail("Campagna: aria-current non mantenuto dopo reload");
+  }
   await context.close();
+}
+
+async function assertDeepLinkFirstRender(browser, baseUrl) {
+  const context = await prepareContext(browser, { width: 390, height: 844 });
+  const expectedViews = {
+    campaign: "campaign",
+    events: "events",
+    map: "map",
+    saved: "profile"
+  };
+
+  for (const [route, expectedView] of Object.entries(expectedViews)) {
+    const page = await context.newPage();
+    const errors = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    page.on("console", (message) => {
+      if (message.type() === "error") errors.push(message.text());
+    });
+    await page.goto(`${baseUrl}/?prod=1&deep=${route}#${route}`, { waitUntil: "domcontentloaded" });
+    const shell = await page.evaluate(() => {
+      const visible = (element) => Boolean(element && element.getClientRects().length && getComputedStyle(element).visibility !== "hidden");
+      return {
+        initialView: document.documentElement.dataset.initialView,
+        activeView: document.querySelector(".view.active")?.id || "",
+        firstVisibleH1: [...document.querySelectorAll("h1")].find(visible)?.textContent?.trim() || "",
+        campaignCurrent: document.querySelector(".nav-item[data-view='campaign']")?.getAttribute("aria-current") || "",
+        feedActive: document.querySelector("#feedView")?.classList.contains("active") || false
+      };
+    });
+    if (shell.initialView !== expectedView || shell.activeView !== `${expectedView}View`) {
+      fail(`Deep-link #${route}: shell iniziale non risolta (${shell.initialView}/${shell.activeView})`);
+    }
+    if (shell.feedActive) fail(`Deep-link #${route}: Home attiva nel primo rendering`);
+    if (route === "campaign") {
+      if (shell.firstVisibleH1 !== "MyAvezzano fuori dallo schermo") {
+        fail(`Deep-link Campagna: primo H1 visibile errato (${shell.firstVisibleH1})`);
+      }
+      if (shell.campaignCurrent !== "page") fail("Deep-link Campagna: aria-current iniziale mancante");
+    }
+    await waitForApp(page, expectedView);
+    if (errors.length) fail(`Deep-link #${route}: errori console (${errors.join(" | ")})`);
+    await page.close();
+  }
+
+  await context.close();
+}
+
+async function assertMobileHeroCopy(browser, baseUrl) {
+  const expected = "Eventi e luoghi utili, con fonti sempre visibili.";
+  for (const width of [320, 360, 390]) {
+    const context = await prepareContext(browser, { width, height: 844 });
+    const page = await context.newPage();
+    await page.goto(`${baseUrl}/?prod=1&copy=${width}#feed`, { waitUntil: "networkidle" });
+    await waitForApp(page, "feed");
+    const result = await page.locator("#pageCopyMobile").evaluate((element) => {
+      const style = getComputedStyle(element);
+      return {
+        text: element.textContent.trim(),
+        visible: Boolean(element.getClientRects().length),
+        clipped: element.scrollWidth > element.clientWidth + 1 || element.scrollHeight > element.clientHeight + 1,
+        lineClamp: style.webkitLineClamp,
+        textOverflow: style.textOverflow
+      };
+    });
+    if (result.text !== expected || !result.visible) fail(`Hero ${width}px: copy mobile non corretta`);
+    if (result.clipped || result.lineClamp !== "none" || result.textOverflow === "ellipsis") {
+      fail(`Hero ${width}px: copy mobile troncata`);
+    }
+    await context.close();
+  }
+}
+
+async function assertThemeModes(browser, baseUrl) {
+  for (const theme of ["light", "dark"]) {
+    const context = await prepareContext(browser, { width: 390, height: 844 }, theme);
+    const page = await context.newPage();
+    await page.goto(`${baseUrl}/?prod=1&theme=${theme}#feed`, { waitUntil: "networkidle" });
+    await waitForApp(page, "feed");
+    const isDark = await page.evaluate(() => document.body.classList.contains("theme-dark"));
+    if (isDark !== (theme === "dark")) fail(`Tema ${theme}: stato iniziale errato`);
+    await context.close();
+  }
 }
 
 async function assertSavedEvent(browser, baseUrl) {
@@ -314,8 +402,11 @@ try {
   for (const scenario of scenarios) {
     await captureScenario(browser, baseUrl, scenario);
   }
+  await assertDeepLinkFirstRender(browser, baseUrl);
+  await assertMobileHeroCopy(browser, baseUrl);
   await assertCampaignNavigation(browser, baseUrl);
   await assertSavedEvent(browser, baseUrl);
+  await assertThemeModes(browser, baseUrl);
   await assertSeoAndPwa(browser, baseUrl);
   await capturePwaScreenshots(browser, baseUrl);
 } finally {

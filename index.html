@@ -3,6 +3,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>
+      document.documentElement.classList.add("js");
+    </script>
+    <style>
+      html.js:not(.route-shell-ready) body {
+        visibility: hidden;
+      }
+    </style>
     <title>MyAvezzano | Eventi, coupon e attività ad Avezzano</title>
     <meta name="description" content="Scopri eventi, coupon, mappa, nuove aperture e attività locali ad Avezzano. Una PWA semplice per scegliere cosa fare oggi in città." />
     <meta name="robots" content="index, follow" />
@@ -155,7 +163,10 @@
           <div class="topbar-intro">
             <p class="eyebrow" id="pageEyebrow">MyAvezzano</p>
             <h1 id="pageTitle">Oggi ad Avezzano</h1>
-            <p class="topbar-copy" id="pageCopy">Eventi segnalati, luoghi e informazioni pratiche per scegliere cosa fare. Controlla sempre fonte e stato della scheda.</p>
+            <p class="topbar-copy" id="pageCopy">
+              <span class="topbar-copy-desktop" id="pageCopyDesktop">Eventi segnalati, luoghi e informazioni pratiche per scegliere cosa fare. Controlla sempre fonte e stato della scheda.</span>
+              <span class="topbar-copy-mobile" id="pageCopyMobile">Eventi e luoghi utili, con fonti sempre visibili.</span>
+            </p>
             <div class="city-signature" aria-label="Coordinate sezione">
               <span id="pageCode">AVZ-00</span>
               <span id="pageCoords">42.0326 N / 13.4256 E</span>
@@ -170,10 +181,10 @@
           <div class="top-actions home-command-bar" aria-label="Strumenti secondari">
             <button class="top-profile-status command-profile" id="topProfileStatus" type="button" aria-label="Apri profilo">
               <span class="prestige-ring" aria-hidden="true"><img id="topProfileAvatar" src="assets/app-icon.svg" alt="" /></span>
-              <span class="top-profile-copy"><strong id="topProfileName">Ospite</strong><small id="topProfileLevel">Salvataggi locali</small></span>
+              <span class="top-profile-copy"><strong id="topProfileName">Salvataggi locali</strong><small id="topProfileLevel">Sul dispositivo</small></span>
             </button>
             <button class="ghost guide-button" data-action="open-onboarding" type="button"><svg class="ui-icon" aria-hidden="true"><use href="#icon-help"></use></svg><span>Guida</span></button>
-            <button class="ghost command-account" id="openSignup" type="button">Account</button>
+            <button class="ghost command-account" id="openSignup" type="button" hidden>Account</button>
           </div>
         </header>
 
@@ -687,21 +698,62 @@
     <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
     <script>
-      const deferredViews = document.createDocumentFragment();
-      document.querySelectorAll(".view:not(.active)").forEach((view) => deferredViews.appendChild(view));
-      window.requestAnimationFrame(() => {
-        window.setTimeout(() => {
-          document.querySelector("#feedView")?.after(deferredViews);
-          const eventsScript = document.createElement("script");
-          eventsScript.src = "events-data.js?v=__BUILD_VERSION__";
-          eventsScript.onload = () => {
-            const appScript = document.createElement("script");
-            appScript.src = "app.js?v=__BUILD_VERSION__";
-            document.body.appendChild(appScript);
-          };
-          document.body.appendChild(eventsScript);
-        }, 120);
-      });
+      (() => {
+        const routeAliases = { saved: "profile" };
+        const supportedViews = new Set(["feed", "map", "events", "coupons", "loyalty", "profile", "merchant", "campaign", "summer", "legal"]);
+        const requestedRoute = window.location.hash.slice(1).toLowerCase();
+        const initialView = routeAliases[requestedRoute] || requestedRoute;
+        const resolvedView = supportedViews.has(initialView) ? initialView : "feed";
+        const routeMeta = {
+          map: ["Mappa", "Trova luoghi utili vicino a te", "Attivita', eventi e punti di interesse ordinati per zona, categoria e distanza."],
+          events: ["Agenda cittadina", "Cosa fare, con date vere", "Eventi, sport, ambiente, motori, musica e teatro tra Avezzano e Alba Fucens."],
+          coupons: ["Coupon", "Offerte locali da consultare", "Coupon e promozioni restano esempi finche' non saranno collegati a validazione sicura."],
+          loyalty: ["Salvati", "Preferenze e vantaggi", "Una sezione personale per eventi, coupon e preferenze salvate sul dispositivo."],
+          profile: ["Salvataggi", "Il tuo spazio locale", "Eventi e preferenze salvati soltanto su questo dispositivo."],
+          merchant: ["Area commercianti", "Pilot in preparazione", "La presenza business sara' attivata solo con verifica e servizi sicuri."],
+          summer: ["Programma estivo", "Estate 2026, senza perdere un appuntamento", "Calendario completo tra Avezzano e Alba Fucens."],
+          legal: ["Fiducia e regole", "Chiarezza prima della crescita", "Privacy, termini e cookie in un unico spazio leggibile."]
+        };
+
+        document.body.classList.add(`view-${resolvedView}`);
+        document.documentElement.dataset.initialView = resolvedView;
+        document.querySelectorAll(".view").forEach((view) => {
+          view.classList.toggle("active", view.id === `${resolvedView}View`);
+        });
+        document.querySelectorAll("[data-view]").forEach((item) => {
+          const isActive = item.dataset.view === resolvedView;
+          item.classList.toggle("active", isActive);
+          if (isActive) item.setAttribute("aria-current", "page");
+          else item.removeAttribute("aria-current");
+        });
+
+        const meta = routeMeta[resolvedView];
+        if (meta) {
+          document.querySelector("#pageEyebrow").textContent = meta[0];
+          document.querySelector("#pageTitle").textContent = meta[1];
+          document.querySelector("#pageCopyDesktop").textContent = meta[2];
+          document.querySelector("#pageCopyMobile").textContent = meta[2];
+        }
+
+        const activeView = document.querySelector(".view.active");
+        const deferredViews = document.createDocumentFragment();
+        document.querySelectorAll(".view:not(.active)").forEach((view) => deferredViews.appendChild(view));
+        document.documentElement.classList.add("route-shell-ready");
+
+        window.requestAnimationFrame(() => {
+          window.setTimeout(() => {
+            activeView?.after(deferredViews);
+            const eventsScript = document.createElement("script");
+            eventsScript.src = "events-data.js?v=__BUILD_VERSION__";
+            eventsScript.onload = () => {
+              const appScript = document.createElement("script");
+              appScript.src = "app.js?v=__BUILD_VERSION__";
+              document.body.appendChild(appScript);
+            };
+            document.body.appendChild(eventsScript);
+          }, 120);
+        });
+      })();
     </script>
   </body>
 </html>

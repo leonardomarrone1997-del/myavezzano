@@ -386,6 +386,7 @@ let scrollAtmosphereFrame = 0;
 let eventsViewRendered = false;
 let summerViewRendered = false;
 let mapViewRendered = false;
+let couponsViewRendered = false;
 let webglAuraInitialized = false;
 let lastMinuteCountdownTimer = 0;
 let activeEventSheetTrigger = null;
@@ -859,6 +860,16 @@ const titles = {
   summer: pageMeta.summer.title,
   legal: pageMeta.legal.title
 };
+
+const hashViewAliases = {
+  saved: "profile"
+};
+
+function viewFromLocationHash() {
+  const route = window.location.hash.slice(1).toLowerCase();
+  const view = hashViewAliases[route] || route;
+  return titles[view] ? view : "feed";
+}
 
 const citySignatures = {
   feed: ["AVZ-01", "Centro / 42.0326 N", "Guida eventi", "Aggiornato"],
@@ -2185,6 +2196,32 @@ function ensureSummerViewRendered() {
   summerViewRendered = true;
 }
 
+function ensureCouponsViewRendered() {
+  if (couponsViewRendered) return;
+  const grid = document.querySelector("#couponsGrid");
+  if (!grid) return;
+  const visibleCoupons = IS_DEMO ? coupons : productionCouponExamples;
+  grid.innerHTML = visibleCoupons.map(([title, place, expires, meta, qrSrc, couponCode, category]) => `
+    <article class="coupon-card" data-coupon-category="${category}">
+      <div class="card-body">
+        <p class="eyebrow">${place}</p>
+        <h2>${title}</h2>
+        <p>${expires}</p>
+        <span class="pill success">${meta}</span>
+        <div class="qr-stack">
+          <div class="qr" aria-label="QR code coupon ${title}">
+            <img src="${couponQrDataUri(couponCode || qrSrc)}" alt="QR coupon ${title} - ${place}" loading="lazy" decoding="async" />
+          </div>
+          <span class="qr-validity-label">${IS_DEMO ? "QR univoco" : "QR dimostrativo non valido"}</span>
+          <span class="coupon-code-label">${IS_DEMO ? couponCode : "CODICE NON UTILIZZABILE"}</span>
+        </div>
+      </div>
+    </article>
+  `).join("");
+  couponsViewRendered = true;
+  hydrateLazyMedia(grid);
+}
+
 function render() {
   applyEnvironmentVisibility();
   document.querySelector("#stories").innerHTML = quickActions.map(([title, text, view, icon]) => `
@@ -2229,25 +2266,6 @@ function render() {
     </article>
   `;
   }).join("");
-
-  const visibleCoupons = IS_DEMO ? coupons : productionCouponExamples;
-  document.querySelector("#couponsGrid").innerHTML = visibleCoupons.map(([title, place, expires, meta, qrSrc, couponCode, category]) => `
-    <article class="coupon-card" data-coupon-category="${category}">
-      <div class="card-body">
-        <p class="eyebrow">${place}</p>
-        <h2>${title}</h2>
-        <p>${expires}</p>
-        <span class="pill success">${meta}</span>
-        <div class="qr-stack">
-          <div class="qr" aria-label="QR code coupon ${title}">
-            <img src="${couponQrDataUri(couponCode || qrSrc)}" alt="QR coupon ${title} - ${place}" loading="lazy" decoding="async" />
-          </div>
-          <span class="qr-validity-label">${IS_DEMO ? "QR univoco" : "QR dimostrativo non valido"}</span>
-          <span class="coupon-code-label">${IS_DEMO ? couponCode : "CODICE NON UTILIZZABILE"}</span>
-        </div>
-      </div>
-    </article>
-  `).join("");
 
   document.querySelector("#rewardsGrid").innerHTML = rewards.map(([title, points, text]) => `
     <article class="reward-card">
@@ -2464,10 +2482,15 @@ function renderTopProfileStatus() {
   const state = citizenLevelState(user);
   const status = document.querySelector("#topProfileStatus");
   if (!status) return;
+  const savedCount = getLocalSavedEvents().length;
   document.querySelector("#topProfileAvatar").src = user?.avatar || "assets/app-icon.svg";
-  document.querySelector("#topProfileName").textContent = user ? user.name : "Ospite";
-  document.querySelector("#topProfileLevel").textContent = `${state.level} - ${state.progress}%`;
-  status.style.setProperty("--prestige-progress", `${state.progress}%`);
+  document.querySelector("#topProfileName").textContent = user ? user.name : "Salvataggi locali";
+  document.querySelector("#topProfileLevel").textContent = user
+    ? `${state.level} - ${state.progress}%`
+    : `${savedCount} ${savedCount === 1 ? "evento" : "eventi"} sul dispositivo`;
+  if (user) status.style.setProperty("--prestige-progress", `${state.progress}%`);
+  else status.style.removeProperty("--prestige-progress");
+  status.setAttribute("aria-label", user ? "Apri profilo" : "Apri salvataggi locali");
   status.classList.toggle("is-admin", user?.role === "admin");
 }
 
@@ -4244,11 +4267,16 @@ function switchView(view, updateHash = true) {
     const element = document.querySelector(selector);
     if (element && element.textContent !== value) element.textContent = value;
   };
+  const desktopCopy = view === "feed"
+    ? `${new Intl.DateTimeFormat("it-IT", { weekday: "long", day: "numeric", month: "long", timeZone: "Europe/Rome" }).format(new Date(`${currentDateKey()}T12:00:00`))}. ${meta.copy}`
+    : meta.copy;
+  const mobileCopy = view === "feed"
+    ? "Eventi e luoghi utili, con fonti sempre visibili."
+    : meta.copy;
   setTextIfChanged("#pageEyebrow", meta.eyebrow);
   setTextIfChanged("#pageTitle", meta.title);
-  setTextIfChanged("#pageCopy", view === "feed"
-    ? `${new Intl.DateTimeFormat("it-IT", { weekday: "long", day: "numeric", month: "long", timeZone: "Europe/Rome" }).format(new Date(`${currentDateKey()}T12:00:00`))}. ${meta.copy}`
-    : meta.copy);
+  setTextIfChanged("#pageCopyDesktop", desktopCopy);
+  setTextIfChanged("#pageCopyMobile", mobileCopy);
   setTextIfChanged("#pageCode", signature[0]);
   setTextIfChanged("#pageCoords", signature[1]);
   setTextIfChanged("#pageArtifact", signature[2]);
@@ -4276,6 +4304,10 @@ function switchView(view, updateHash = true) {
 
   if (view === "events") {
     ensureEventsViewRendered();
+  }
+
+  if (view === "coupons") {
+    ensureCouponsViewRendered();
   }
 
   if (view === "summer") {
@@ -5657,8 +5689,14 @@ function updateAuthUi() {
 
   const openSignupButton = document.querySelector("#openSignup");
   const openSignupMiniButton = document.querySelector("#openSignupMini");
-  if (openSignupButton) openSignupButton.textContent = accountLabel;
-  if (openSignupMiniButton) openSignupMiniButton.textContent = miniLabel;
+  if (openSignupButton) {
+    openSignupButton.textContent = accountLabel;
+    openSignupButton.hidden = IS_PRODUCTION && !user;
+  }
+  if (openSignupMiniButton) {
+    openSignupMiniButton.textContent = miniLabel;
+    openSignupMiniButton.hidden = IS_PRODUCTION && !user;
+  }
   if (homeAvatar) homeAvatar.src = user?.avatar || "assets/app-icon.svg";
   if (homeName) homeName.textContent = user ? user.name : "Area personale";
   if (homeStatus) homeStatus.textContent = user ? "Collegato" : "Non collegato";
@@ -6372,14 +6410,12 @@ async function bootApp() {
   selectMapPlace(selectedPlace.id, false);
   updateAuthUi();
 
-  const initialView = window.location.hash.replace("#", "");
-  switchView(titles[initialView] ? initialView : "feed", false);
+  switchView(viewFromLocationHash(), false);
 
   maybeStartOnboarding();
 
   window.addEventListener("hashchange", () => {
-    const view = window.location.hash.replace("#", "");
-    if (titles[view]) switchView(view, false);
+    switchView(viewFromLocationHash(), false);
   });
 
   if ("serviceWorker" in navigator) {
